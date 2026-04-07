@@ -1,16 +1,18 @@
 package com.libre.controller;
 
+import cn.hutool.core.bean.BeanUtil;
+import com.libre.pojo.dto.AuthorDTO;
 import com.libre.pojo.dto.AuthorPageDTO;
+import com.libre.pojo.po.Author;
 import com.libre.pojo.vo.AuthorPageVO;
+import com.libre.pojo.vo.AuthorVO;
 import com.libre.result.PageResult;
 import com.libre.result.Result;
 import com.libre.service.AuthorService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -26,5 +28,34 @@ public class AuthorController {
     public Result<PageResult<List<AuthorPageVO>>> pageQueryAuthor(AuthorPageDTO authorPageDTO) {
         PageResult<List<AuthorPageVO>> pageResult = authorService.pageQueryAuthor(authorPageDTO);
         return Result.success(pageResult);
+    }
+
+    @ApiOperation("获取指定作者信息")
+    @GetMapping("{authorId}")
+    public Result<AuthorVO> getAuthor(@PathVariable Long authorId) {
+        Author author = authorService.getById(authorId);
+        AuthorVO authorVO = BeanUtil.copyProperties(author, AuthorVO.class);
+        return Result.success(authorVO);
+    }
+
+    @ApiOperation("作者添加接口")
+    @PostMapping
+    public Result<Void> addAuthor(@RequestBody AuthorDTO authorDTO) {
+        authorService.addAuthor(authorDTO);
+        return Result.success();
+    }
+
+    @ApiOperation("作者修改接口")
+    @PutMapping
+    public Result<Void> modifyAuthor(@RequestBody AuthorDTO authorDTO) {
+        authorService.modifyAuthor(authorDTO);
+        return Result.success();
+    }
+
+    @ApiOperation("作者删除接口")
+    @DeleteMapping("{authorId}")
+    private Result<Void> deleteAuthor(@PathVariable Long authorId) {
+        authorService.deleteAuthor(authorId);
+        return Result.success();
     }
 }

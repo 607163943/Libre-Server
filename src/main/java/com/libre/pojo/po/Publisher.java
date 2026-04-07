@@ -8,14 +8,14 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@TableName("tb_author")
 @EqualsAndHashCode(callSuper = true)
+@TableName("tb_publisher")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Author extends BasePO {
-    // 作者名
-    private String authorName;
+public class Publisher extends BasePO {
+    // 出版社名称
+    private String publisherName;
     // 修改时间
     private LocalDateTime updateTime;
 }

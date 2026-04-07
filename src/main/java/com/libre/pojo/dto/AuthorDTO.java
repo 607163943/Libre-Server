@@ -1,18 +1,15 @@
-package com.libre.pojo.vo;
+package com.libre.pojo.dto;
 
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@ApiModel("作者分页视图对象")
+@ApiModel("作者DTO")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthorPageVO {
-    @ApiModelProperty("作者id")
+public class AuthorDTO {
     private Long id;
-    @ApiModelProperty("作者名称")
     private String authorName;
 }

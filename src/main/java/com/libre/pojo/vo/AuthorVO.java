@@ -6,13 +6,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@ApiModel("作者分页视图对象")
+@ApiModel("作者VO")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthorPageVO {
+public class AuthorVO {
     @ApiModelProperty("作者id")
     private Long id;
-    @ApiModelProperty("作者名称")
+    @ApiModelProperty("作者名")
     private String authorName;
 }

@@ -14,6 +14,6 @@ public class BasePO {
     private Long id;
     // 创建时间
     private LocalDateTime createTime;
-    // 修改时间
-    private LocalDateTime updateTime;
+    // 删除标记
+    private Long isDelete;
 }

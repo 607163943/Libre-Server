@@ -16,6 +16,18 @@ spring:
     url: jdbc:mysql://${mysql.host}:${mysql.port}/${mysql.database}?serverTimezone=UTC&useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2b8
     username: ${mysql.username}
     password: ${mysql.password}
+# 日志配置
+logging:
+  file:
+    name: logs/app.log  # 会在项目根目录下生成 logs/app.log
+  level:
+    root: warn # 框架日志级别
+    com.libre: debug # 业务日志级别
+  pattern:
+    # 控制台日志格式（开发用，更简洁）
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] [%logger{36}] - %msg%n"
+    # 文件日志格式（保留完整日期时间）
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] [%logger{36}] - %msg%n"
 
 # mybatis-plus
 mybatis-plus:
@@ -23,3 +35,5 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: auto # 全局设置主键默认自增长
+      logic-delete-field: isDelete
+      logic-not-delete-value: 0
