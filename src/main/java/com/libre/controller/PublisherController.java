@@ -38,6 +38,13 @@ public class PublisherController {
         return Result.success(publisherVO);
     }
 
+    @ApiOperation("获取所有出版社")
+    @GetMapping("all")
+    public Result<List<PublisherVO>> getAllPublishers() {
+        List<Publisher> publisherList = publisherService.list();
+        List<PublisherVO> publisherVOList = BeanUtil.copyToList(publisherList, PublisherVO.class);
+        return Result.success(publisherVOList);
+    }
     @ApiOperation("出版社添加接口")
     @PostMapping
     public Result<Void> addPublisher(@RequestBody PublisherDTO publisherDTO) {

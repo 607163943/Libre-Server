@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.libre.mapper.BookMapper">
+    <!--图书分页查询-->
+    <select id="pageQueryBook" resultType="com.libre.pojo.vo.BookPageVO">
+        select book.id,
+        book.book_name,
+        book.author_id,
+        book.publisher_id,
+        book.cover_url,
+        book.isbn,
+        book.introduction,
+        book.language,
+        book.publish_date,
+        book.price,
+        book.number,
+        author.author_name,
+        publish.publisher_name
+        from tb_book book
+        join tb_author author on book.author_id = author.id
+        join tb_publisher publish
+        on book.publisher_id = publish.id
+        where book.is_delete=0
+        <if test="bookPageDTO.bookName != null and bookPageDTO.bookName != ''">
+            and book.book_name like concat('%', #{bookPageDTO.bookName}, '%')
+        </if>
+        <if test="bookPageDTO.isbn != null and bookPageDTO.isbn != ''">
+            and book.isbn like concat('%', #{bookPageDTO.isbn}, '%')
+        </if>
+        <if test="bookPageDTO.authorId != null">
+            and book.author_id = #{bookPageDTO.authorId}
+        </if>
+        <if test="bookPageDTO.publisherId != null">
+            and book.publisher_id = #{bookPageDTO.publisherId}
+        </if>
+        <if test="bookPageDTO.language != null and bookPageDTO.language != ''">
+            and book.language = #{bookPageDTO.language}
+        </if>
+    </select>
+</mapper>

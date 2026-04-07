@@ -38,6 +38,13 @@ public class AuthorController {
         return Result.success(authorVO);
     }
 
+    @ApiOperation("获取所有作者")
+    @GetMapping("all")
+    public Result<List<AuthorVO>> getAllAuthors() {
+        List<Author> authorList = authorService.list();
+        List<AuthorVO> authorVOList = BeanUtil.copyToList(authorList, AuthorVO.class);
+        return Result.success(authorVOList);
+    }
     @ApiOperation("作者添加接口")
     @PostMapping
     public Result<Void> addAuthor(@RequestBody AuthorDTO authorDTO) {
