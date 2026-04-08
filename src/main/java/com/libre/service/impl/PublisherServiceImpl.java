@@ -9,17 +9,23 @@ import com.libre.exception.LibreException;
 import com.libre.mapper.PublisherMapper;
 import com.libre.pojo.dto.PublisherDTO;
 import com.libre.pojo.dto.PublisherPageDTO;
+import com.libre.pojo.po.Book;
 import com.libre.pojo.po.Publisher;
 import com.libre.pojo.vo.PublisherPageVO;
 import com.libre.result.PageResult;
+import com.libre.service.BookService;
 import com.libre.service.PublisherService;
 import com.libre.util.PageUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @Service
 public class PublisherServiceImpl extends ServiceImpl<PublisherMapper, Publisher> implements PublisherService {
+    private final BookService bookService;
+
     /**
      * 分页查询出版社信息
      * @param publisherPageDTO 查询参数
@@ -89,6 +95,15 @@ public class PublisherServiceImpl extends ServiceImpl<PublisherMapper, Publisher
      */
     @Override
     public void deletePublisher(Long publisherId) {
+        // 校验是否存在该出版社发布的图书
+        Long bookCount = bookService.lambdaQuery()
+                .eq(Book::getPublisherId, publisherId)
+                .count();
+
+        if(bookCount>0) {
+            throw new LibreException(ExceptionEnums.PUBLISHER_HAS_BOOK);
+        }
+
         lambdaUpdate()
                 // 使用时间戳标记逻辑删除，避免唯一键冲突
                 .set(Publisher::getIsDelete,System.currentTimeMillis())

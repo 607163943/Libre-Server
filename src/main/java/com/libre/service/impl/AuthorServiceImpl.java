@@ -10,29 +10,36 @@ import com.libre.mapper.AuthorMapper;
 import com.libre.pojo.dto.AuthorDTO;
 import com.libre.pojo.dto.AuthorPageDTO;
 import com.libre.pojo.po.Author;
+import com.libre.pojo.po.Book;
 import com.libre.pojo.vo.AuthorPageVO;
 import com.libre.result.PageResult;
 import com.libre.service.AuthorService;
+import com.libre.service.BookService;
 import com.libre.util.PageUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @Service
 public class AuthorServiceImpl extends ServiceImpl<AuthorMapper, Author> implements AuthorService {
+    private final BookService bookService;
+
     /**
      * 分页查询作者信息
+     *
      * @param authorPageDTO 查询参数
      * @return 分页结果
      */
     @Override
     public PageResult<List<AuthorPageVO>> pageQueryAuthor(AuthorPageDTO authorPageDTO) {
         // 构建分页条件
-        IPage<Author> page=PageUtil.createPage(authorPageDTO);
+        IPage<Author> page = PageUtil.createPage(authorPageDTO);
         // 查询
-        page=lambdaQuery()
+        page = lambdaQuery()
                 .like(StrUtil.isNotBlank(authorPageDTO.getAuthorName())
-                        ,Author::getAuthorName, authorPageDTO.getAuthorName())
+                        , Author::getAuthorName, authorPageDTO.getAuthorName())
                 .page(page);
         // 构建VO数据
         List<AuthorPageVO> authorPageVOS = BeanUtil.copyToList(page.getRecords(), AuthorPageVO.class);
@@ -45,6 +52,7 @@ public class AuthorServiceImpl extends ServiceImpl<AuthorMapper, Author> impleme
 
     /**
      * 添加作者信息
+     *
      * @param authorDTO 作者信息
      */
     @Override
@@ -54,18 +62,19 @@ public class AuthorServiceImpl extends ServiceImpl<AuthorMapper, Author> impleme
                 .eq(Author::getAuthorName, authorDTO.getAuthorName())
                 .count();
 
-        if(authorCount>0) {
+        if (authorCount > 0) {
             throw new AuthorException(ExceptionEnums.AUTHOR_EXIST);
         }
 
         Author author = BeanUtil.copyProperties(authorDTO, Author.class);
         // 避免前端id残留数据影响
-        if(author.getId()!=null) author.setId(null);
+        if (author.getId() != null) author.setId(null);
         save(author);
     }
 
     /**
      * 修改作者信息
+     *
      * @param authorDTO 作者信息
      */
     @Override
@@ -75,7 +84,7 @@ public class AuthorServiceImpl extends ServiceImpl<AuthorMapper, Author> impleme
                 .eq(Author::getAuthorName, authorDTO.getAuthorName())
                 .ne(Author::getId, authorDTO.getId())
                 .count();
-        if(count>0) {
+        if (count > 0) {
             throw new AuthorException(ExceptionEnums.AUTHOR_EXIST);
         }
 
@@ -85,13 +94,23 @@ public class AuthorServiceImpl extends ServiceImpl<AuthorMapper, Author> impleme
 
     /**
      * 删除作者信息
+     *
      * @param authorId 作者id
      */
     @Override
     public void deleteAuthor(Long authorId) {
+        // 判断是否存在该作者的图书
+        Long bookCount = bookService.lambdaQuery()
+                .eq(Book::getAuthorId, authorId)
+                .count();
+
+        if(bookCount>0) {
+            throw new AuthorException(ExceptionEnums.AUTHOR_HAS_BOOK);
+        }
+
         lambdaUpdate()
                 // 使用时间戳标记逻辑删除，避免唯一键冲突
-                .set(Author::getIsDelete,System.currentTimeMillis())
+                .set(Author::getIsDelete, System.currentTimeMillis())
                 .eq(Author::getId, authorId)
                 .update();
     }

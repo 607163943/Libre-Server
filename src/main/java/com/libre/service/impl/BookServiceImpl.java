@@ -21,6 +21,7 @@ import java.util.List;
 public class BookServiceImpl extends ServiceImpl<BookMapper, Book> implements BookService {
     /**
      * 分页查询图书信息
+     *
      * @param bookPageDTO 查询参数
      * @return 分页结果
      */
@@ -29,7 +30,7 @@ public class BookServiceImpl extends ServiceImpl<BookMapper, Book> implements Bo
         // 构建分页条件
         IPage<BookPageVO> page = PageUtil.createPage(bookPageDTO);
         // 查询
-        page=baseMapper.pageQueryBook(page,bookPageDTO);
+        page = baseMapper.pageQueryBook(page, bookPageDTO);
 
         return PageResult.<List<BookPageVO>>builder()
                 .total(page.getTotal())
@@ -39,6 +40,7 @@ public class BookServiceImpl extends ServiceImpl<BookMapper, Book> implements Bo
 
     /**
      * 添加图书信息
+     *
      * @param bookDTO 图书信息
      */
     @Override
@@ -72,6 +74,7 @@ public class BookServiceImpl extends ServiceImpl<BookMapper, Book> implements Bo
 
     /**
      * 修改图书信息
+     *
      * @param bookDTO 图书信息
      */
     @Override
@@ -104,6 +107,7 @@ public class BookServiceImpl extends ServiceImpl<BookMapper, Book> implements Bo
 
     /**
      * 删除图书信息
+     *
      * @param bookId 图书id
      */
     @Override
