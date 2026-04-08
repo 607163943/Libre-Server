@@ -13,7 +13,9 @@ public enum ExceptionEnums {
     BOOK_EXIST(30001, "图书已存在"),
     USER_EXIST(40001, "用户已存在"),
     ROLE_EXIST(50001, "角色已存在"),
-    USER_ROLE_EXIST(60001, "用户角色关系已存在");
+    USER_ROLE_EXIST(60001, "用户角色关系已存在"),
+    USER_NOT_EXIST(70001, "用户不存在"),
+    PASSWORD_ERROR(70002, "密码错误");
     private final Integer code;
     private final String msg;
 }
