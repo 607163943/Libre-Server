@@ -5,7 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.libre.enums.ExceptionEnums;
-import com.libre.exception.LibreException;
+import com.libre.exception.PublisherException;
 import com.libre.mapper.PublisherMapper;
 import com.libre.pojo.dto.PublisherDTO;
 import com.libre.pojo.dto.PublisherPageDTO;
@@ -61,7 +61,7 @@ public class PublisherServiceImpl extends ServiceImpl<PublisherMapper, Publisher
                 .count();
 
         if(publisherCount>0) {
-            throw new LibreException(ExceptionEnums.PUBLISHER_EXIST);
+            throw new PublisherException(ExceptionEnums.PUBLISHER_EXIST);
         }
 
         Publisher publisher = BeanUtil.copyProperties(publisherDTO, Publisher.class);
@@ -82,7 +82,7 @@ public class PublisherServiceImpl extends ServiceImpl<PublisherMapper, Publisher
                 .ne(Publisher::getId, publisherDTO.getId())
                 .count();
         if(count>0) {
-            throw new LibreException(ExceptionEnums.PUBLISHER_EXIST);
+            throw new PublisherException(ExceptionEnums.PUBLISHER_EXIST);
         }
 
         Publisher publisher = BeanUtil.copyProperties(publisherDTO, Publisher.class);
@@ -101,7 +101,7 @@ public class PublisherServiceImpl extends ServiceImpl<PublisherMapper, Publisher
                 .count();
 
         if(bookCount>0) {
-            throw new LibreException(ExceptionEnums.PUBLISHER_HAS_BOOK);
+            throw new PublisherException(ExceptionEnums.PUBLISHER_HAS_BOOK);
         }
 
         lambdaUpdate()

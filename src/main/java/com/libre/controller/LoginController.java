@@ -1,6 +1,7 @@
 package com.libre.controller;
 
 import com.libre.pojo.dto.LoginDTO;
+import com.libre.pojo.vo.LoginVO;
 import com.libre.result.Result;
 import com.libre.service.LoginService;
 import io.swagger.annotations.Api;
@@ -18,14 +19,15 @@ public class LoginController {
 
     @ApiOperation("登录接口")
     @PostMapping("/login")
-    public Result<Void> login(@RequestBody LoginDTO loginDTO) {
-        loginService.login(loginDTO);
-        return Result.success();
+    public Result<LoginVO> login(@RequestBody LoginDTO loginDTO) {
+        LoginVO loginVO = loginService.login(loginDTO);
+        return Result.success(loginVO);
     }
 
     @ApiOperation("登出接口")
     @PostMapping("/logout")
     public Result<Void> logout() {
+        loginService.logout();
         return Result.success();
     }
 }

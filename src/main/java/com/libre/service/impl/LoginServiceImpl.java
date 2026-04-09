@@ -1,9 +1,12 @@
 package com.libre.service.impl;
 
+import cn.dev33.satoken.stp.SaTokenInfo;
+import cn.dev33.satoken.stp.StpUtil;
 import com.libre.enums.ExceptionEnums;
 import com.libre.exception.LoginException;
 import com.libre.pojo.dto.LoginDTO;
 import com.libre.pojo.po.User;
+import com.libre.pojo.vo.LoginVO;
 import com.libre.service.LoginService;
 import com.libre.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +22,7 @@ public class LoginServiceImpl implements LoginService {
      * @param loginDTO 登录参数
      */
     @Override
-    public void login(LoginDTO loginDTO) {
+    public LoginVO login(LoginDTO loginDTO) {
         User user = userService.lambdaQuery()
                 .eq(User::getUsername, loginDTO.getUsername())
                 .one();
@@ -32,5 +35,23 @@ public class LoginServiceImpl implements LoginService {
         if(!user.getPassword().equals(loginDTO.getPassword())) {
             throw new LoginException(ExceptionEnums.PASSWORD_ERROR);
         }
+
+        StpUtil.login(user.getId());
+
+        SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
+
+        return LoginVO.builder()
+                .name(user.getName())
+                .tokenName(tokenInfo.getTokenName())
+                .tokenValue(tokenInfo.getTokenValue())
+                .build();
+    }
+
+    /**
+     * 登出
+     */
+    @Override
+    public void logout() {
+        StpUtil.logout();
     }
 }
