@@ -38,6 +38,14 @@ public class BookController {
         return Result.success(bookVO);
     }
 
+    @ApiOperation("获取所有图书")
+    @GetMapping("all")
+    public Result<List<BookVO>> getAllBooks() {
+        List<Book> bookList = bookService.list();
+        List<BookVO> bookVOList = BeanUtil.copyToList(bookList, BookVO.class);
+        return Result.success(bookVOList);
+    }
+
     @ApiOperation("图书添加接口")
     @PostMapping
     public Result<Void> addBook(@RequestBody BookDTO bookDTO) {

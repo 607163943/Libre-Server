@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.libre.mapper.LendMapper">
+    <!--分页查询借阅信息-->
+    <select id="pageQueryLend" resultType="com.libre.pojo.vo.LendPageVO">
+        select lend.id,
+        lend.user_id,
+        lend.book_id,
+        lend.create_time as lend_time,
+        lend.due_time,
+        lend.return_time,
+        lend.renew_count,
+        lend.state,
+        user.username,
+        book.book_name
+        from tb_lend lend
+        join tb_user user on lend.user_id = user.id
+        join tb_book book on lend.book_id = book.id
+        where lend.is_delete = 0
+        <if test="lendPageDTO.userId!=null">
+            and lend.user_id = #{lendPageDTO.userId}
+        </if>
+        <if test="lendPageDTO.bookId!=null">
+            and lend.book_id = #{lendPageDTO.bookId}
+        </if>
+        <if test="lendPageDTO.state!=null">
+            and lend.state = #{lendPageDTO.state}
+        </if>
+    </select>
+</mapper>
