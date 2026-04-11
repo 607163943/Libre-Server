@@ -112,4 +112,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 .eq(User::getId, userId)
                 .update();
     }
+
+    /**
+     * 批量删除用户信息
+     * @param ids 用户id列表
+     */
+    @Override
+    public void deleteBatchUser(List<Long> ids) {
+        lambdaUpdate()
+                // 使用时间戳标记逻辑删除，避免唯一键冲突
+                .set(User::getIsDelete, System.currentTimeMillis())
+                .in(User::getId, ids)
+                .update();
+    }
 }

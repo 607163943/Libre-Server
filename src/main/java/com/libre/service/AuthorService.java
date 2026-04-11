@@ -34,4 +34,10 @@ public interface AuthorService extends IService<Author> {
      * @param authorId 作者id
      */
     void deleteAuthor(Long authorId);
+
+    /**
+     * 批量删除作者
+     * @param ids 作者id集合
+     */
+    void deleteBatchAuthor(List<Long> ids);
 }

@@ -70,9 +70,9 @@ public class RoleController {
 
     @ApiOperation("角色批量删除接口")
     @DeleteMapping
-    public Result<Void> deleteRoles(@RequestParam List<Long> roleIds) {
-        if(CollUtil.isNotEmpty(roleIds)) {
-            roleService.removeByIds(roleIds);
+    public Result<Void> deleteBatchRole(@RequestParam List<Long> ids) {
+        if(CollUtil.isNotEmpty(ids)) {
+            roleService.deleteBatchRole(ids);
         }
         return Result.success();
     }

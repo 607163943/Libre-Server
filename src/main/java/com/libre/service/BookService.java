@@ -34,4 +34,10 @@ public interface BookService extends IService<Book> {
      * @param bookId 图书id
      */
     void deleteBook(Long bookId);
+
+    /**
+     * 批量删除图书
+     * @param ids 图书id列表
+     */
+    void deleteBatchBook(List<Long> ids);
 }

@@ -34,4 +34,10 @@ public interface UserService extends IService<User> {
      * @param userId 用户id
      */
     void deleteUser(Long userId);
+
+    /**
+     * 批量删除用户
+     * @param ids 用户id列表
+     */
+    void deleteBatchUser(List<Long> ids);
 }

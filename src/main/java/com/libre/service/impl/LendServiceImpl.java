@@ -111,6 +111,19 @@ public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements Le
     }
 
     /**
+     * 批量删除借阅记录
+     * @param ids 借阅记录id列表
+     */
+    @Override
+    public void deleteBatchLend(List<Long> ids) {
+        lambdaUpdate()
+                // 使用时间戳标记逻辑删除，避免唯一键冲突
+                .set(Lend::getIsDelete, System.currentTimeMillis())
+                .in(Lend::getId, ids)
+                .update();
+    }
+
+    /**
      * 获取最近借阅趋势
      * @return 最近借阅趋势
      */

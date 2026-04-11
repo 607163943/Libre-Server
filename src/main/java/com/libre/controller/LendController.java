@@ -70,9 +70,9 @@ public class LendController {
 
     @ApiOperation("借阅批量删除接口")
     @DeleteMapping
-    public Result<Void> deleteLends(@RequestParam List<Long> lendIds) {
-        if(CollUtil.isNotEmpty(lendIds)) {
-            lendService.removeByIds(lendIds);
+    public Result<Void> deleteBatchLend(@RequestParam List<Long> ids) {
+        if(CollUtil.isNotEmpty(ids)) {
+            lendService.deleteBatchLend(ids);
         }
         return Result.success();
     }

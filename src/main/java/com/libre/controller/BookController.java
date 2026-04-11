@@ -70,9 +70,9 @@ public class BookController {
 
     @ApiOperation("图书批量删除接口")
     @DeleteMapping
-    public Result<Void> deleteBooks(@RequestParam List<Long> bookIds) {
-        if(CollUtil.isNotEmpty(bookIds)) {
-            bookService.removeByIds(bookIds);
+    public Result<Void> deleteBatchBook(@RequestParam List<Long> ids) {
+        if(CollUtil.isNotEmpty(ids)) {
+            bookService.deleteBatchBook(ids);
         }
         return Result.success();
     }

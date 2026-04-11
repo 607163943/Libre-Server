@@ -110,4 +110,17 @@ public class PublisherServiceImpl extends ServiceImpl<PublisherMapper, Publisher
                 .eq(Publisher::getId, publisherId)
                 .update();
     }
+
+    /**
+     * 批量删除出版社信息
+     * @param ids 出版社id列表
+     */
+    @Override
+    public void deleteBatchPublisher(List<Long> ids) {
+        lambdaUpdate()
+                // 使用时间戳标记逻辑删除，避免唯一键冲突
+                .set(Publisher::getIsDelete, System.currentTimeMillis())
+                .in(Publisher::getId, ids)
+                .update();
+    }
 }

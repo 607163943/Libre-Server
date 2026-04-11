@@ -38,6 +38,12 @@ public interface LendService extends IService<Lend> {
     void deleteLend(Long lendId);
 
     /**
+     * 批量删除借阅记录
+     * @param ids 借阅记录id列表
+     */
+    void deleteBatchLend(List<Long> ids);
+
+    /**
      * 获取最近借阅趋势
      * @return 最近借阅趋势
      */

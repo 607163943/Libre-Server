@@ -98,4 +98,17 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> i
                 .eq(UserRole::getId, userRoleId)
                 .update();
     }
+
+    /**
+     * 批量删除用户角色信息
+     * @param ids 用户角色id列表
+     */
+    @Override
+    public void deleteBatchUserRole(List<Long> ids) {
+        lambdaUpdate()
+                // 使用时间戳标记逻辑删除，避免唯一键冲突
+                .set(UserRole::getIsDelete, System.currentTimeMillis())
+                .in(UserRole::getId, ids)
+                .update();
+    }
 }

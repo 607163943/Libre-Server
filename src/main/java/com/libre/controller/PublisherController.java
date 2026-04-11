@@ -69,9 +69,9 @@ public class PublisherController {
 
     @ApiOperation("出版社批量删除接口")
     @DeleteMapping
-    public Result<Void> deletePublishers(@RequestParam List<Long> publisherIds) {
-        if(CollUtil.isNotEmpty(publisherIds)) {
-            publisherService.removeByIds(publisherIds);
+    public Result<Void> deleteBatchPublisher(@RequestParam List<Long> ids) {
+        if(CollUtil.isNotEmpty(ids)) {
+            publisherService.deleteBatchPublisher(ids);
         }
         return Result.success();
     }

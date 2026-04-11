@@ -34,4 +34,10 @@ public interface RoleService extends IService<Role> {
      * @param roleId 角色id
      */
     void deleteRole(Long roleId);
+
+    /**
+     * 批量删除角色
+     * @param ids 角色id列表
+     */
+    void deleteBatchRole(List<Long> ids);
 }

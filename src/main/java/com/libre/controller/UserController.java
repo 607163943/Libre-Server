@@ -68,11 +68,11 @@ public class UserController {
         return Result.success();
     }
 
-    @ApiOperation("作者批量删除接口")
+    @ApiOperation("用户批量删除接口")
     @DeleteMapping
-    public Result<Void> deleteUsers(@RequestParam List<Long> userIds) {
-        if(CollUtil.isNotEmpty(userIds)) {
-            userService.removeByIds(userIds);
+    public Result<Void> deleteBatchUser(@RequestParam List<Long> ids) {
+        if(CollUtil.isNotEmpty(ids)) {
+            userService.deleteBatchUser(ids);
         }
         return Result.success();
     }

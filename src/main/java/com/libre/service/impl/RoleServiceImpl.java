@@ -102,4 +102,17 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
                 .eq(Role::getId, roleId)
                 .update();
     }
+
+    /**
+     * 批量删除角色信息
+     * @param ids 角色id列表
+     */
+    @Override
+    public void deleteBatchRole(List<Long> ids) {
+        lambdaUpdate()
+                // 使用时间戳标记逻辑删除，避免唯一键冲突
+                .set(Role::getIsDelete, System.currentTimeMillis())
+                .in(Role::getId, ids)
+                .update();
+    }
 }

@@ -69,9 +69,9 @@ public class AuthorController {
 
     @ApiOperation("作者批量删除接口")
     @DeleteMapping
-    public Result<Void> deleteAuthors(@RequestParam List<Long> authorIds) {
-        if(CollUtil.isNotEmpty(authorIds)) {
-            authorService.removeByIds(authorIds);
+    public Result<Void> deleteBatchAuthor(@RequestParam List<Long> ids) {
+        if(CollUtil.isNotEmpty(ids)) {
+            authorService.deleteBatchAuthor(ids);
         }
         return Result.success();
     }

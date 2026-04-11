@@ -114,4 +114,23 @@ public class AuthorServiceImpl extends ServiceImpl<AuthorMapper, Author> impleme
                 .eq(Author::getId, authorId)
                 .update();
     }
+
+    /**
+     * 批量删除作者信息
+     * @param ids 作者id集合
+     */
+    @Override
+    public void deleteBatchAuthor(List<Long> ids) {
+        Long bookCount = bookService.lambdaQuery()
+                .in(Book::getAuthorId, ids)
+                .count();
+        if(bookCount>0) {
+            throw new AuthorException(ExceptionEnums.AUTHOR_HAS_BOOK);
+        }
+
+        lambdaUpdate()
+                .set(Author::getIsDelete, System.currentTimeMillis())
+                .in(Author::getId, ids)
+                .update();
+    }
 }

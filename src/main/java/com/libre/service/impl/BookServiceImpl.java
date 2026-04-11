@@ -118,4 +118,16 @@ public class BookServiceImpl extends ServiceImpl<BookMapper, Book> implements Bo
                 .eq(Book::getId, bookId)
                 .update();
     }
+
+    /**
+     * 批量删除图书信息
+     * @param ids 图书id列表
+     */
+    @Override
+    public void deleteBatchBook(List<Long> ids) {
+        lambdaUpdate()
+                .set(Book::getIsDelete, System.currentTimeMillis())
+                .in(Book::getId, ids)
+                .update();
+    }
 }
