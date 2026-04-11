@@ -10,7 +10,9 @@ import com.libre.mapper.LendMapper;
 import com.libre.pojo.dto.LendDTO;
 import com.libre.pojo.dto.LendPageDTO;
 import com.libre.pojo.po.Lend;
+import com.libre.pojo.vo.HomeTopBookItem;
 import com.libre.pojo.vo.LendPageVO;
+import com.libre.pojo.vo.RecentLendTrendItem;
 import com.libre.result.PageResult;
 import com.libre.service.LendService;
 import com.libre.util.PageUtil;
@@ -106,5 +108,23 @@ public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements Le
                 .set(Lend::getIsDelete, System.currentTimeMillis())
                 .eq(Lend::getId, lendId)
                 .update();
+    }
+
+    /**
+     * 获取最近借阅趋势
+     * @return 最近借阅趋势
+     */
+    @Override
+    public List<RecentLendTrendItem> getRecentLendTrend() {
+        return baseMapper.getRecentLendTrend();
+    }
+
+    /**
+     * 获取首页图书排行
+     * @return 首页图书排行
+     */
+    @Override
+    public List<HomeTopBookItem> getHomeTopBook() {
+        return baseMapper.getHomeTopBook();
     }
 }

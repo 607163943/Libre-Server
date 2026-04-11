@@ -1,6 +1,7 @@
 package com.libre.controller;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import com.libre.pojo.dto.RoleDTO;
 import com.libre.pojo.dto.RolePageDTO;
 import com.libre.pojo.po.Role;
@@ -64,6 +65,15 @@ public class RoleController {
     @DeleteMapping("{roleId}")
     public Result<Void> deleteRole(@PathVariable Long roleId) {
         roleService.deleteRole(roleId);
+        return Result.success();
+    }
+
+    @ApiOperation("角色批量删除接口")
+    @DeleteMapping
+    public Result<Void> deleteRoles(@RequestParam List<Long> roleIds) {
+        if(CollUtil.isNotEmpty(roleIds)) {
+            roleService.removeByIds(roleIds);
+        }
         return Result.success();
     }
 }

@@ -1,6 +1,7 @@
 package com.libre.controller;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import com.libre.pojo.dto.UserDTO;
 import com.libre.pojo.dto.UserPageDTO;
 import com.libre.pojo.po.User;
@@ -64,6 +65,15 @@ public class UserController {
     @DeleteMapping("{userId}")
     public Result<Void> deleteUser(@PathVariable Long userId) {
         userService.deleteUser(userId);
+        return Result.success();
+    }
+
+    @ApiOperation("作者批量删除接口")
+    @DeleteMapping
+    public Result<Void> deleteUsers(@RequestParam List<Long> userIds) {
+        if(CollUtil.isNotEmpty(userIds)) {
+            userService.removeByIds(userIds);
+        }
         return Result.success();
     }
 }

@@ -1,6 +1,7 @@
 package com.libre.controller;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import com.libre.pojo.dto.LendDTO;
 import com.libre.pojo.dto.LendPageDTO;
 import com.libre.pojo.po.Lend;
@@ -64,6 +65,15 @@ public class LendController {
     @DeleteMapping("{lendId}")
     public Result<Void> deleteLend(@PathVariable Long lendId) {
         lendService.deleteLend(lendId);
+        return Result.success();
+    }
+
+    @ApiOperation("借阅批量删除接口")
+    @DeleteMapping
+    public Result<Void> deleteLends(@RequestParam List<Long> lendIds) {
+        if(CollUtil.isNotEmpty(lendIds)) {
+            lendService.removeByIds(lendIds);
+        }
         return Result.success();
     }
 }

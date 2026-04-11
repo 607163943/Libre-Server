@@ -4,8 +4,12 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.libre.pojo.dto.LendPageDTO;
 import com.libre.pojo.po.Lend;
+import com.libre.pojo.vo.HomeTopBookItem;
 import com.libre.pojo.vo.LendPageVO;
+import com.libre.pojo.vo.RecentLendTrendItem;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface LendMapper extends BaseMapper<Lend> {
     /**
@@ -15,4 +19,16 @@ public interface LendMapper extends BaseMapper<Lend> {
      * @return 分页结果
      */
     IPage<LendPageVO> pageQueryLend(@Param("page") IPage<LendPageVO> page,@Param("lendPageDTO") LendPageDTO lendPageDTO);
+
+    /**
+     * 获取最近借阅趋势
+     * @return 最近借阅趋势
+     */
+    List<RecentLendTrendItem> getRecentLendTrend();
+
+    /**
+     * 获取图书排行
+     * @return 图书排行
+     */
+    List<HomeTopBookItem> getHomeTopBook();
 }

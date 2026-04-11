@@ -29,4 +29,22 @@
             and lend.state = #{lendPageDTO.state}
         </if>
     </select>
+    <!--统计最近7天新增的借阅数量-->
+    <select id="getRecentLendTrend" resultType="com.libre.pojo.vo.RecentLendTrendItem">
+        select date(create_time) as date, count(0) as count
+        from tb_lend
+        where is_delete = 0
+          and date(create_time) >= date_sub(now(), interval 7 day)
+        group by date(create_time)
+    </select>
+    <!--获取图书排行-->
+    <select id="getHomeTopBook" resultType="com.libre.pojo.vo.HomeTopBookItem">
+        select book.book_name, count(0) as lend_count
+        from tb_lend lend
+                 join tb_book book on lend.book_id = book.id
+        where lend.is_delete = 0
+        group by lend.book_id
+        order by lend_count desc
+        limit 5
+    </select>
 </mapper>

@@ -1,6 +1,7 @@
 package com.libre.controller;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import com.libre.pojo.dto.PublisherDTO;
 import com.libre.pojo.dto.PublisherPageDTO;
 import com.libre.pojo.po.Publisher;
@@ -63,6 +64,15 @@ public class PublisherController {
     @DeleteMapping("{publisherId}")
     private Result<Void> deletePublisher(@PathVariable Long publisherId) {
         publisherService.deletePublisher(publisherId);
+        return Result.success();
+    }
+
+    @ApiOperation("出版社批量删除接口")
+    @DeleteMapping
+    public Result<Void> deletePublishers(@RequestParam List<Long> publisherIds) {
+        if(CollUtil.isNotEmpty(publisherIds)) {
+            publisherService.removeByIds(publisherIds);
+        }
         return Result.success();
     }
 }

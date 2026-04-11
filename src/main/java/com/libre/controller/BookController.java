@@ -1,6 +1,7 @@
 package com.libre.controller;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import com.libre.pojo.dto.BookDTO;
 import com.libre.pojo.dto.BookPageDTO;
 import com.libre.pojo.po.Book;
@@ -64,6 +65,15 @@ public class BookController {
     @DeleteMapping("{bookId}")
     public Result<Void> deleteBook(@PathVariable Long bookId) {
         bookService.deleteBook(bookId);
+        return Result.success();
+    }
+
+    @ApiOperation("图书批量删除接口")
+    @DeleteMapping
+    public Result<Void> deleteBooks(@RequestParam List<Long> bookIds) {
+        if(CollUtil.isNotEmpty(bookIds)) {
+            bookService.removeByIds(bookIds);
+        }
         return Result.success();
     }
 }
