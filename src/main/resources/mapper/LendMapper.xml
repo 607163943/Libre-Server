@@ -38,7 +38,7 @@
         group by date(create_time)
     </select>
     <!--获取图书排行-->
-    <select id="getHomeTopBook" resultType="com.libre.pojo.vo.HomeTopBookItem">
+    <select id="getHomeTopBook" resultType="com.libre.pojo.vo.admin.HomeTopBookItem">
         select book.book_name, count(0) as lend_count
         from tb_lend lend
                  join tb_book book on lend.book_id = book.id

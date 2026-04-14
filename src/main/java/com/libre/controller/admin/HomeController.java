@@ -1,8 +1,8 @@
-package com.libre.controller;
+package com.libre.controller.admin;
 
-import com.libre.pojo.vo.HomeRecentLendTrendVO;
-import com.libre.pojo.vo.HomeTopBookVO;
-import com.libre.pojo.vo.HomeTotalCardVO;
+import com.libre.pojo.vo.admin.HomeRecentLendTrendVO;
+import com.libre.pojo.vo.admin.HomeTopBookVO;
+import com.libre.pojo.vo.admin.HomeTotalCardVO;
 import com.libre.result.Result;
 import com.libre.service.HomeService;
 import io.swagger.annotations.Api;
@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Api(tags = "首页接口")
 @RequiredArgsConstructor
-@RequestMapping("/home")
-@RestController
+@RequestMapping("/admin/home")
+@RestController("admin-home")
 public class HomeController {
     private final HomeService homeService;
 

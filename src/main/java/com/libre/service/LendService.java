@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.libre.pojo.dto.LendDTO;
 import com.libre.pojo.dto.LendPageDTO;
 import com.libre.pojo.po.Lend;
-import com.libre.pojo.vo.HomeTopBookItem;
+import com.libre.pojo.vo.admin.HomeTopBookItem;
 import com.libre.pojo.vo.LendPageVO;
 import com.libre.pojo.vo.RecentLendTrendItem;
 import com.libre.result.PageResult;

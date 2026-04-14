@@ -1,4 +1,4 @@
-package com.libre.controller;
+package com.libre.controller.admin;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;

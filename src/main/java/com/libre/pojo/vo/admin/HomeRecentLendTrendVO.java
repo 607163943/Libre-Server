@@ -1,5 +1,6 @@
-package com.libre.pojo.vo;
+package com.libre.pojo.vo.admin;
 
+import com.libre.pojo.vo.RecentLendTrendItem;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;

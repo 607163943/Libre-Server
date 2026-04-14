@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.libre.pojo.dto.LendPageDTO;
 import com.libre.pojo.po.Lend;
-import com.libre.pojo.vo.HomeTopBookItem;
+import com.libre.pojo.vo.admin.HomeTopBookItem;
 import com.libre.pojo.vo.LendPageVO;
 import com.libre.pojo.vo.RecentLendTrendItem;
 import org.apache.ibatis.annotations.Param;

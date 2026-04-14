@@ -26,6 +26,19 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * 自定义注册模块异常处理
+     * @param e 注册模块异常
+     * @return 错误信息
+     */
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(RegisterException.class)
+    public Result<Void> handleRegisterException(RegisterException e) {
+        ExceptionEnums exceptionEnums = e.getExceptionEnums();
+        log.warn("注册模块异常：{}", exceptionEnums.getMsg());
+        return Result.of(exceptionEnums.getCode(), null, exceptionEnums.getMsg());
+    }
+
+    /**
      * 自定义出版社模块异常处理
      * @param e 出版社模块异常
      * @return 错误信息

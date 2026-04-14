@@ -20,7 +20,8 @@ public enum ExceptionEnums {
     LEND_NOT_EXIST(80001, "借阅记录不存在"),
     LEND_ALREADY_RETURNED(80002, "图书已归还"),
     LEND_OVERDUE(80003, "图书已逾期"),
-    USER_LEND_BOOK_EXIST(80004, "用户已借阅该图书且未归还");
+    USER_LEND_BOOK_EXIST(80004, "用户已借阅该图书且未归还"),
+    REGISTER_USER_EXIST(90001, "注册用户已存在");
     private final Integer code;
     private final String msg;
 }

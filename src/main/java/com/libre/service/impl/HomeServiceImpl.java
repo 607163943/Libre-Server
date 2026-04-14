@@ -1,9 +1,16 @@
 package com.libre.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
+import com.libre.constant.LendStatus;
 import com.libre.constant.Role;
 import com.libre.pojo.po.Lend;
 import com.libre.pojo.po.UserRole;
-import com.libre.pojo.vo.*;
+import com.libre.pojo.vo.RecentLendTrendItem;
+import com.libre.pojo.vo.admin.HomeRecentLendTrendVO;
+import com.libre.pojo.vo.admin.HomeTopBookItem;
+import com.libre.pojo.vo.admin.HomeTopBookVO;
+import com.libre.pojo.vo.admin.HomeTotalCardVO;
+import com.libre.pojo.vo.user.HomeUserTotalVO;
 import com.libre.service.BookService;
 import com.libre.service.HomeService;
 import com.libre.service.LendService;
@@ -70,6 +77,37 @@ public class HomeServiceImpl implements HomeService {
         List<HomeTopBookItem> homeTopBookItemList= lendService.getHomeTopBook();
         return HomeTopBookVO.builder()
                 .homeTopBookItemList(homeTopBookItemList)
+                .build();
+    }
+
+    /**
+     * 获取用户借阅数据
+     * @return 用户借阅数据
+     */
+    @Override
+    public HomeUserTotalVO getHomeUserTotal() {
+        Long userId = StpUtil.getLoginIdAsLong();
+
+        // 借阅统计
+        Long lendCount = lendService.lambdaQuery()
+                .eq(Lend::getUserId, userId)
+                .eq(Lend::getState, LendStatus.LEND)
+                .count();
+        // 即将逾期统计(3天内属于即将逾期)
+        Long soonOverdueCount = lendService.lambdaQuery()
+                .eq(Lend::getUserId, userId)
+                .eq(Lend::getState, LendStatus.LEND)
+                .ge(Lend::getReturnTime, LocalDateTime.now().plusDays(3))
+                .count();
+        // 逾期统计
+        Long overdueCount = lendService.lambdaQuery()
+                .eq(Lend::getUserId, userId)
+                .eq(Lend::getState, LendStatus.OVERDUE)
+                .count();
+        return HomeUserTotalVO.builder()
+                .lendCount(lendCount)
+                .soonOverdueCount(soonOverdueCount)
+                .overdueCount(overdueCount)
                 .build();
     }
 }
