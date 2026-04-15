@@ -48,4 +48,27 @@
         order by book.create_time desc
         limit 3
     </select>
+    <!--查询最新添加的图书-->
+    <select id="search" resultType="com.libre.pojo.vo.user.SearchBookVO">
+        select book.id,
+        book.book_name,
+        author.author_name,
+        publisher.publisher_name,
+        book.isbn,
+        book.cover_url,
+        book.publish_date
+        from tb_book book
+        join tb_author author on book.author_id = author.id
+        join tb_publisher publisher on book.publisher_id = publisher.id
+        where book.is_delete = 0
+        <if test="searchDTO.keyword!=null and searchDTO.keyword!=''">
+            and book.book_name like concat('%', #{searchDTO.keyword}, '%')
+            or author.author_name like concat('%', #{searchDTO.keyword}, '%')
+            or publisher.publisher_name like concat('%', #{searchDTO.keyword}, '%')
+            or book.isbn like concat('%', #{searchDTO.keyword}, '%')
+        </if>
+        <if test="searchDTO.isDateSort!=null">
+            order by book.publish_date desc
+        </if>
+    </select>
 </mapper>

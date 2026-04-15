@@ -3,9 +3,11 @@ package com.libre.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.libre.pojo.dto.BookPageDTO;
+import com.libre.pojo.dto.user.SearchDTO;
 import com.libre.pojo.po.Book;
 import com.libre.pojo.vo.BookPageVO;
 import com.libre.pojo.vo.user.HomeTopLatestBookItem;
+import com.libre.pojo.vo.user.SearchBookVO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -24,4 +26,11 @@ public interface BookMapper extends BaseMapper<Book> {
      * @return 用户首页最新图书
      */
     List<HomeTopLatestBookItem> getHomeTopLatestBookList();
+
+    /**
+     * 搜索图书
+     * @param searchDTO 搜索参数
+     * @return 搜索图书
+     */
+    IPage<SearchBookVO> search(@Param("page") IPage<SearchBookVO> page, @Param("searchDTO") SearchDTO searchDTO);
 }
