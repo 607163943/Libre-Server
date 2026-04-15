@@ -5,6 +5,7 @@ import com.libre.pojo.dto.BookDTO;
 import com.libre.pojo.dto.BookPageDTO;
 import com.libre.pojo.po.Book;
 import com.libre.pojo.vo.BookPageVO;
+import com.libre.pojo.vo.user.HomeTopLatestBookItem;
 import com.libre.result.PageResult;
 
 import java.util.List;
@@ -40,4 +41,10 @@ public interface BookService extends IService<Book> {
      * @param ids 图书id列表
      */
     void deleteBatchBook(List<Long> ids);
+
+    /**
+     * 获取首页最新图书
+     * @return 首页最新图书
+     */
+    List<HomeTopLatestBookItem> getHomeTopLatestBookList();
 }

@@ -39,4 +39,13 @@
             and book.language = #{bookPageDTO.language}
         </if>
     </select>
+    <!-- 查询最新添加的图书-->
+    <select id="getHomeTopLatestBookList" resultType="com.libre.pojo.vo.user.HomeTopLatestBookItem">
+        select book.id, book.book_name, author.author_name, book.cover_url, book.publish_date, book.create_time
+        from tb_book book
+                 join tb_author author on book.author_id = author.id
+        where book.is_delete = 0
+        order by book.create_time desc
+        limit 3
+    </select>
 </mapper>

@@ -1,4 +1,4 @@
-package com.libre.pojo.vo.admin;
+package com.libre.pojo.vo.user;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -10,11 +10,11 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Builder
-@ApiModel("最近借阅趋势数据")
+@ApiModel("首页借阅排行榜")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class HomeRecentLendTrendVO {
-    @ApiModelProperty("最近借阅趋势数据")
-    private List<RecentLendTrendItem> recentLendTrendItemList;
+public class HomeTopLendBookVO {
+    @ApiModelProperty("借阅排行榜")
+    private List<HomeTopLendBookItem> homeTopLendBookItemList;
 }

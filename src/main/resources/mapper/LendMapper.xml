@@ -30,7 +30,7 @@
         </if>
     </select>
     <!--统计最近7天新增的借阅数量-->
-    <select id="getRecentLendTrend" resultType="com.libre.pojo.vo.RecentLendTrendItem">
+    <select id="getRecentLendTrend" resultType="com.libre.pojo.vo.admin.RecentLendTrendItem">
         select date(create_time) as date, count(0) as count
         from tb_lend
         where is_delete = 0
@@ -46,5 +46,16 @@
         group by lend.book_id
         order by lend_count desc
         limit 5
+    </select>
+    <!-- 查询借阅数量最多的3本书-->
+    <select id="getHomeTopLendBookList" resultType="com.libre.pojo.vo.user.HomeTopLendBookItem">
+        select book.id, book.book_name, author.author_name, book.cover_url, book.publish_date, count(0) as lend_count
+        from tb_lend lend
+                 join tb_book book on lend.book_id = book.id
+                 join tb_author author on book.author_id = author.id
+        where lend.is_delete = 0
+        group by book.id
+        order by lend_count desc
+        limit 3
     </select>
 </mapper>

@@ -10,9 +10,10 @@ import com.libre.mapper.LendMapper;
 import com.libre.pojo.dto.LendDTO;
 import com.libre.pojo.dto.LendPageDTO;
 import com.libre.pojo.po.Lend;
-import com.libre.pojo.vo.admin.HomeTopBookItem;
 import com.libre.pojo.vo.LendPageVO;
-import com.libre.pojo.vo.RecentLendTrendItem;
+import com.libre.pojo.vo.admin.HomeTopBookItem;
+import com.libre.pojo.vo.admin.RecentLendTrendItem;
+import com.libre.pojo.vo.user.HomeTopLendBookItem;
 import com.libre.result.PageResult;
 import com.libre.service.LendService;
 import com.libre.util.PageUtil;
@@ -139,5 +140,10 @@ public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements Le
     @Override
     public List<HomeTopBookItem> getHomeTopBook() {
         return baseMapper.getHomeTopBook();
+    }
+
+    @Override
+    public List<HomeTopLendBookItem> getHomeTopLendBookList() {
+        return baseMapper.getHomeTopLendBookList();
     }
 }

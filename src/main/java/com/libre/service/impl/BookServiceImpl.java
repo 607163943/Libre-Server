@@ -10,6 +10,7 @@ import com.libre.pojo.dto.BookDTO;
 import com.libre.pojo.dto.BookPageDTO;
 import com.libre.pojo.po.Book;
 import com.libre.pojo.vo.BookPageVO;
+import com.libre.pojo.vo.user.HomeTopLatestBookItem;
 import com.libre.result.PageResult;
 import com.libre.service.BookService;
 import com.libre.util.PageUtil;
@@ -129,5 +130,14 @@ public class BookServiceImpl extends ServiceImpl<BookMapper, Book> implements Bo
                 .set(Book::getIsDelete, System.currentTimeMillis())
                 .in(Book::getId, ids)
                 .update();
+    }
+
+    /**
+     * 获取用户借阅最新top
+     * @return 用户借阅最新top
+     */
+    @Override
+    public List<HomeTopLatestBookItem> getHomeTopLatestBookList() {
+        return baseMapper.getHomeTopLatestBookList();
     }
 }

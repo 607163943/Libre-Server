@@ -5,12 +5,12 @@ import com.libre.constant.LendStatus;
 import com.libre.constant.Role;
 import com.libre.pojo.po.Lend;
 import com.libre.pojo.po.UserRole;
-import com.libre.pojo.vo.RecentLendTrendItem;
+import com.libre.pojo.vo.admin.RecentLendTrendItem;
 import com.libre.pojo.vo.admin.HomeRecentLendTrendVO;
 import com.libre.pojo.vo.admin.HomeTopBookItem;
 import com.libre.pojo.vo.admin.HomeTopBookVO;
 import com.libre.pojo.vo.admin.HomeTotalCardVO;
-import com.libre.pojo.vo.user.HomeUserTotalVO;
+import com.libre.pojo.vo.user.*;
 import com.libre.service.BookService;
 import com.libre.service.HomeService;
 import com.libre.service.LendService;
@@ -70,11 +70,12 @@ public class HomeServiceImpl implements HomeService {
 
     /**
      * 获取图书排行top
+     *
      * @return 图书排行top
      */
     @Override
     public HomeTopBookVO getHomeTopBook() {
-        List<HomeTopBookItem> homeTopBookItemList= lendService.getHomeTopBook();
+        List<HomeTopBookItem> homeTopBookItemList = lendService.getHomeTopBook();
         return HomeTopBookVO.builder()
                 .homeTopBookItemList(homeTopBookItemList)
                 .build();
@@ -82,6 +83,7 @@ public class HomeServiceImpl implements HomeService {
 
     /**
      * 获取用户借阅数据
+     *
      * @return 用户借阅数据
      */
     @Override
@@ -108,6 +110,32 @@ public class HomeServiceImpl implements HomeService {
                 .lendCount(lendCount)
                 .soonOverdueCount(soonOverdueCount)
                 .overdueCount(overdueCount)
+                .build();
+    }
+
+    /**
+     * 获取用户借阅排行top
+     *
+     * @return 用户借阅排行top
+     */
+    @Override
+    public HomeTopLendBookVO getHomeTopLendBook() {
+        List<HomeTopLendBookItem> homeTopLendBookItemList = lendService.getHomeTopLendBookList();
+        return HomeTopLendBookVO.builder()
+                .homeTopLendBookItemList(homeTopLendBookItemList)
+                .build();
+    }
+
+    /**
+     * 获取用户借阅最新top
+     *
+     * @return 用户借阅最新top
+     */
+    @Override
+    public HomeTopLatestBookVO getHomeTopLatestBook() {
+        List<HomeTopLatestBookItem> homeTopLatestBookItemList = bookService.getHomeTopLatestBookList();
+        return HomeTopLatestBookVO.builder()
+                .homeTopLatestBookItemList(homeTopLatestBookItemList)
                 .build();
     }
 }

@@ -4,9 +4,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.libre.pojo.dto.LendDTO;
 import com.libre.pojo.dto.LendPageDTO;
 import com.libre.pojo.po.Lend;
-import com.libre.pojo.vo.admin.HomeTopBookItem;
 import com.libre.pojo.vo.LendPageVO;
-import com.libre.pojo.vo.RecentLendTrendItem;
+import com.libre.pojo.vo.admin.HomeTopBookItem;
+import com.libre.pojo.vo.admin.RecentLendTrendItem;
+import com.libre.pojo.vo.user.HomeTopLendBookItem;
 import com.libre.result.PageResult;
 
 import java.util.List;
@@ -54,4 +55,10 @@ public interface LendService extends IService<Lend> {
      * @return 首页图书排行
      */
     List<HomeTopBookItem> getHomeTopBook();
+
+    /**
+     * 获取首页热门借阅图书
+     * @return 首页热门借阅图书
+     */
+    List<HomeTopLendBookItem> getHomeTopLendBookList();
 }

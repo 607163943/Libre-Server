@@ -4,9 +4,10 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.libre.pojo.dto.LendPageDTO;
 import com.libre.pojo.po.Lend;
-import com.libre.pojo.vo.admin.HomeTopBookItem;
 import com.libre.pojo.vo.LendPageVO;
-import com.libre.pojo.vo.RecentLendTrendItem;
+import com.libre.pojo.vo.admin.HomeTopBookItem;
+import com.libre.pojo.vo.admin.RecentLendTrendItem;
+import com.libre.pojo.vo.user.HomeTopLendBookItem;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -31,4 +32,10 @@ public interface LendMapper extends BaseMapper<Lend> {
      * @return 图书排行
      */
     List<HomeTopBookItem> getHomeTopBook();
+
+    /**
+     * 获取用户借阅排行
+     * @return 用户借阅排行
+     */
+    List<HomeTopLendBookItem> getHomeTopLendBookList();
 }
