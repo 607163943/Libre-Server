@@ -61,4 +61,22 @@ public interface LendService extends IService<Lend> {
      * @return 首页热门借阅图书
      */
     List<HomeTopLendBookItem> getHomeTopLendBookList();
+
+    /**
+     * 修改借阅状态
+     * @param lendDTO 借阅信息
+     */
+    void modifyLendStatus(LendDTO lendDTO);
+
+    /**
+     * 借阅图书
+      * @param bookId 借阅的图书id
+     */
+    void userLendBook(Long bookId);
+
+    /**
+     * 归还图书
+     * @param bookId 归还的图书id
+     */
+    void userReturnBook(Long bookId);
 }

@@ -67,7 +67,7 @@
             or publisher.publisher_name like concat('%', #{searchDTO.keyword}, '%')
             or book.isbn like concat('%', #{searchDTO.keyword}, '%')
         </if>
-        <if test="searchDTO.isDateSort!=null">
+        <if test="searchDTO.isDateSort == 1">
             order by book.publish_date desc
         </if>
     </select>

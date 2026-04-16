@@ -17,7 +17,7 @@ public class SearchDTO extends BasePageDTO {
     @ApiModelProperty("搜索关键字")
     private String keyword;
     @ApiModelProperty("是否按照日期排序")
-    private Boolean isDateSort;
+    private Integer isDateSort;
     @ApiModelProperty("图书状态")
     private Integer status;
 }

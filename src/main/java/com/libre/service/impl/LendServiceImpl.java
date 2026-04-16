@@ -1,5 +1,6 @@
 package com.libre.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -113,6 +114,7 @@ public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements Le
 
     /**
      * 批量删除借阅记录
+     *
      * @param ids 借阅记录id列表
      */
     @Override
@@ -126,6 +128,7 @@ public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements Le
 
     /**
      * 获取最近借阅趋势
+     *
      * @return 最近借阅趋势
      */
     @Override
@@ -135,6 +138,7 @@ public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements Le
 
     /**
      * 获取首页图书排行
+     *
      * @return 首页图书排行
      */
     @Override
@@ -145,5 +149,80 @@ public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements Le
     @Override
     public List<HomeTopLendBookItem> getHomeTopLendBookList() {
         return baseMapper.getHomeTopLendBookList();
+    }
+
+    /**
+     * 修改借阅状态
+     *
+     * @param lendDTO 借阅信息
+     */
+    @Override
+    public void modifyLendStatus(LendDTO lendDTO) {
+        // 验证借阅状态是否合法
+        if (lendDTO.getState() == null ||
+                (!lendDTO.getState().equals(LendStatus.LEND) &&
+                        !lendDTO.getState().equals(LendStatus.RETURN) &&
+                        !lendDTO.getState().equals(LendStatus.OVERDUE))) {
+            throw new LendException(ExceptionEnums.LEND_STATUS_ILLEGAL);
+        }
+
+        lambdaUpdate()
+                .set(Lend::getState, lendDTO.getState())
+                .eq(Lend::getBookId, lendDTO.getBookId())
+                .eq(Lend::getUserId, StpUtil.getLoginIdAsLong())
+                .update();
+    }
+
+    /**
+     * 用户借阅图书
+     *
+     * @param bookId 借阅的图书id
+     */
+    @Override
+    public void userLendBook(Long bookId) {
+        // 检查该书籍是否已借阅
+        Long lendCount = lambdaQuery()
+                .eq(Lend::getBookId, bookId)
+                .eq(Lend::getUserId, StpUtil.getLoginIdAsLong())
+                .ne(Lend::getState, LendStatus.RETURN)
+                .count();
+        if (lendCount > 0) {
+            throw new LendException(ExceptionEnums.USER_LEND_BOOK_EXIST);
+        }
+
+        Lend lend = new Lend();
+        lend.setBookId(bookId);
+        lend.setUserId(StpUtil.getLoginIdAsLong());
+        // 初始化借阅次数为0
+        lend.setRenewCount(0);
+        // 初始化为借阅状态
+        lend.setState(LendStatus.LEND);
+        // 默认借阅时间为7天
+        lend.setDueTime(LocalDateTime.now().plusDays(7));
+        save(lend);
+    }
+
+    /**
+     * 用户归还图书
+     *
+     * @param bookId 归还的图书id
+     */
+    @Override
+    public void userReturnBook(Long bookId) {
+        // 检查该书籍是否已借阅
+        Long lendCount = lambdaQuery()
+                .eq(Lend::getBookId, bookId)
+                .eq(Lend::getUserId, StpUtil.getLoginIdAsLong())
+                .in(Lend::getState, LendStatus.LEND, LendStatus.OVERDUE)
+                .count();
+        if (lendCount == 0) {
+            throw new LendException(ExceptionEnums.LEND_USER_RETURN_BOOK_NOT_EXIST);
+        }
+
+        lambdaUpdate()
+                .set(Lend::getState, LendStatus.RETURN)
+                .eq(Lend::getBookId, bookId)
+                .eq(Lend::getUserId, StpUtil.getLoginIdAsLong())
+                .update();
     }
 }
