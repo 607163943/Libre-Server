@@ -168,34 +168,46 @@ public class BookServiceImpl extends ServiceImpl<BookMapper, Book> implements Bo
         page = baseMapper.search(page, searchDTO);
 
         List<SearchBookVO> searchBookVOS = page.getRecords();
+        long total = page.getTotal();
         // 登录状态下额外提供借阅书籍标注、借阅状态查询功能
         if (StpUtil.isLogin()) {
             LambdaQueryChainWrapper<Lend> chainWrapper = lendService.lambdaQuery()
                     .eq(Lend::getUserId, StpUtil.getLoginIdAsLong());
 
-            // 借阅状态查询
+            // 借阅书籍查询
+            List<Lend> lendList;
             if (searchDTO.getStatus() != null) {
-                chainWrapper.eq(Lend::getState, searchDTO.getStatus());
+                lendList = chainWrapper
+                        .eq(Lend::getState, searchDTO.getStatus())
+                        .list();
+                // 获取借阅书籍id
+                List<Long> bookIds = lendList.stream().map(Lend::getBookId).collect(Collectors.toList());
+                searchBookVOS = searchBookVOS.stream()
+                        .filter(searchBookVO -> bookIds.contains(searchBookVO.getId()))
+                        .collect(Collectors.toList());
+                // 带状态的借阅查询下，总条数根有效借阅总数一致
+                total = lendList.size();
             } else {
-                chainWrapper.in(Lend::getState, LendStatus.LEND, LendStatus.OVERDUE);
+                // 借阅书籍标记
+                lendList = chainWrapper
+                        .in(Lend::getState, LendStatus.LEND, LendStatus.OVERDUE)
+                        .list();
+                // 借阅书籍标注
+                Map<Long, Lend> lendBookStatusMap = lendList.stream()
+                        .collect(Collectors.toMap(Lend::getBookId, lend -> lend));
+                searchBookVOS.forEach(searchBookVO -> {
+                    Lend lend = lendBookStatusMap.get(searchBookVO.getId());
+                    if (lend != null) {
+                        searchBookVO.setStatus(lend.getState());
+                        searchBookVO.setDueTime(lend.getDueTime());
+                    }
+                });
             }
-
-            List<Lend> lendList = chainWrapper.list();
-            // 借阅书籍标注
-            Map<Long, Lend> lendBookStatusMap = lendList.stream()
-                    .collect(Collectors.toMap(Lend::getBookId, lend -> lend));
-            searchBookVOS.forEach(searchBookVO -> {
-                Lend lend = lendBookStatusMap.get(searchBookVO.getId());
-                if (lend != null) {
-                    searchBookVO.setStatus(lend.getState());
-                    searchBookVO.setDueTime(lend.getDueTime());
-                }
-            });
         }
 
 
         return PageResult.<List<SearchBookVO>>builder()
-                .total(page.getTotal())
+                .total(total)
                 .data(searchBookVOS)
                 .build();
     }
