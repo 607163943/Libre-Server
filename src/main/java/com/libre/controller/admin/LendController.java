@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Api(tags = "借阅管理接口")
-@RequestMapping("/lend")
+@RequestMapping("/admin/lend")
 @RestController
 @RequiredArgsConstructor
 public class LendController {

@@ -6,6 +6,7 @@ import com.libre.pojo.dto.BookPageDTO;
 import com.libre.pojo.dto.user.SearchDTO;
 import com.libre.pojo.po.Book;
 import com.libre.pojo.vo.BookPageVO;
+import com.libre.pojo.vo.user.BookDetailVO;
 import com.libre.pojo.vo.user.HomeTopLatestBookItem;
 import com.libre.pojo.vo.user.SearchBookVO;
 import org.apache.ibatis.annotations.Param;
@@ -33,4 +34,11 @@ public interface BookMapper extends BaseMapper<Book> {
      * @return 搜索图书
      */
     IPage<SearchBookVO> search(@Param("page") IPage<SearchBookVO> page, @Param("searchDTO") SearchDTO searchDTO);
+
+    /**
+     * 获取图书详情
+     * @param bookId 图书id
+     * @return 图书详情
+     */
+    BookDetailVO getBookDetail(@Param("bookId") Long bookId);
 }

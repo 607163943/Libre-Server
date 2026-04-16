@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Api(tags = "图书管理接口")
-@RequestMapping("/book")
+@RequestMapping("/admin/book")
 @RestController
 @RequiredArgsConstructor
 public class BookController {

@@ -71,4 +71,21 @@
             order by book.publish_date desc
         </if>
     </select>
+    <!--获取图书详情-->
+    <select id="getBookDetail" resultType="com.libre.pojo.vo.user.BookDetailVO">
+        select book.id,
+               book.book_name,
+               publisher.publisher_name,
+               author.author_name,
+               book.introduction,
+               book.publish_date,
+               book.isbn,
+               book.language,
+               book.cover_url
+        from tb_book book
+                 join tb_author author on book.author_id = author.id
+                 join tb_publisher publisher on book.publisher_id = publisher.id
+        where book.id = #{bookId}
+          and book.is_delete = 0
+    </select>
 </mapper>

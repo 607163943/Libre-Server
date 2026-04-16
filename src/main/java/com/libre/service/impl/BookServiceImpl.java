@@ -176,14 +176,15 @@ public class BookServiceImpl extends ServiceImpl<BookMapper, Book> implements Bo
 
             // 借阅书籍查询
             List<Lend> lendList;
-            if (searchDTO.getStatus() != null) {
+            if (searchDTO.getState() != null) {
                 lendList = chainWrapper
-                        .eq(Lend::getState, searchDTO.getStatus())
+                        .eq(Lend::getState, searchDTO.getState())
                         .list();
                 // 获取借阅书籍id
                 List<Long> bookIds = lendList.stream().map(Lend::getBookId).collect(Collectors.toList());
                 searchBookVOS = searchBookVOS.stream()
                         .filter(searchBookVO -> bookIds.contains(searchBookVO.getId()))
+                        .peek(searchBookVO -> searchBookVO.setState(searchDTO.getState()))
                         .collect(Collectors.toList());
                 // 带状态的借阅查询下，总条数根有效借阅总数一致
                 total = lendList.size();
@@ -198,7 +199,7 @@ public class BookServiceImpl extends ServiceImpl<BookMapper, Book> implements Bo
                 searchBookVOS.forEach(searchBookVO -> {
                     Lend lend = lendBookStatusMap.get(searchBookVO.getId());
                     if (lend != null) {
-                        searchBookVO.setStatus(lend.getState());
+                        searchBookVO.setState(lend.getState());
                         searchBookVO.setDueTime(lend.getDueTime());
                     }
                 });

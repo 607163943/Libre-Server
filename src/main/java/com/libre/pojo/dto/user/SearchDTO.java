@@ -19,5 +19,5 @@ public class SearchDTO extends BasePageDTO {
     @ApiModelProperty("是否按照日期排序")
     private Integer isDateSort;
     @ApiModelProperty("图书状态")
-    private Integer status;
+    private Integer state;
 }

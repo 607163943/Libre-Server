@@ -29,7 +29,7 @@ public class SearchBookVO {
     @ApiModelProperty("出版时间")
     private LocalDate publishDate;
     @ApiModelProperty("借阅状态 1借阅 2归还 3逾期")
-    private Integer status;
+    private Integer state;
     @ApiModelProperty("归还时间")
     private LocalDateTime dueTime;
 }

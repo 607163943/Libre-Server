@@ -5,6 +5,7 @@ import com.libre.pojo.dto.LendDTO;
 import com.libre.pojo.dto.LendPageDTO;
 import com.libre.pojo.po.Lend;
 import com.libre.pojo.vo.LendPageVO;
+import com.libre.pojo.vo.user.BookDetailVO;
 import com.libre.pojo.vo.admin.HomeTopBookItem;
 import com.libre.pojo.vo.admin.RecentLendTrendItem;
 import com.libre.pojo.vo.user.HomeTopLendBookItem;
@@ -79,4 +80,11 @@ public interface LendService extends IService<Lend> {
      * @param bookId 归还的图书id
      */
     void userReturnBook(Long bookId);
+
+    /**
+     * 获取图书详情
+     * @param bookId 图书id
+     * @return 图书详情
+     */
+    BookDetailVO getBookDetail(Long bookId);
 }

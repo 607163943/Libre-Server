@@ -7,11 +7,13 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.libre.constant.LendStatus;
 import com.libre.enums.ExceptionEnums;
 import com.libre.exception.LendException;
+import com.libre.mapper.BookMapper;
 import com.libre.mapper.LendMapper;
 import com.libre.pojo.dto.LendDTO;
 import com.libre.pojo.dto.LendPageDTO;
 import com.libre.pojo.po.Lend;
 import com.libre.pojo.vo.LendPageVO;
+import com.libre.pojo.vo.user.BookDetailVO;
 import com.libre.pojo.vo.admin.HomeTopBookItem;
 import com.libre.pojo.vo.admin.RecentLendTrendItem;
 import com.libre.pojo.vo.user.HomeTopLendBookItem;
@@ -27,6 +29,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements LendService {
+    private final BookMapper bookMapper;
     /**
      * 分页查询借阅信息
      *
@@ -224,5 +227,32 @@ public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements Le
                 .eq(Lend::getBookId, bookId)
                 .eq(Lend::getUserId, StpUtil.getLoginIdAsLong())
                 .update();
+    }
+
+    /**
+     * 获取图书详情
+     *
+     * @param bookId 图书id
+     * @return 图书详情
+     */
+    @Override
+    public BookDetailVO getBookDetail(Long bookId) {
+        BookDetailVO bookDetail = bookMapper.getBookDetail(bookId);
+        if(!StpUtil.isLogin()) {
+            return bookDetail;
+        }
+
+        Lend lend = lambdaQuery()
+                .eq(Lend::getBookId, bookId)
+                .eq(Lend::getUserId, StpUtil.getLoginIdAsLong())
+                .in(Lend::getState, LendStatus.LEND, LendStatus.OVERDUE)
+                .one();
+        if(lend==null) {
+            return bookDetail;
+        }
+
+        bookDetail.setState(lend.getState());
+
+        return bookDetail;
     }
 }

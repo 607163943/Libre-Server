@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Api(tags = "出版社管理接口")
-@RequestMapping("/publisher")
+@RequestMapping("/admin/publisher")
 @RestController
 @RequiredArgsConstructor
 public class PublisherController {

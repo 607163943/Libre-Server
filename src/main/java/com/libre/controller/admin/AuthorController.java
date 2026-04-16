@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Api(tags = "作者管理接口")
-@RequestMapping("/author")
+@RequestMapping("/admin/author")
 @RestController
 @RequiredArgsConstructor
 public class AuthorController {
