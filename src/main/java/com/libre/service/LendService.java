@@ -3,9 +3,12 @@ package com.libre.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.libre.pojo.dto.LendDTO;
 import com.libre.pojo.dto.LendPageDTO;
+import com.libre.pojo.dto.user.MyLendPageDTO;
 import com.libre.pojo.po.Lend;
 import com.libre.pojo.vo.LendPageVO;
 import com.libre.pojo.vo.user.BookDetailVO;
+import com.libre.pojo.vo.user.MyLendBookVO;
+import com.libre.pojo.vo.user.MyLendDataVO;
 import com.libre.pojo.vo.admin.HomeTopBookItem;
 import com.libre.pojo.vo.admin.RecentLendTrendItem;
 import com.libre.pojo.vo.user.HomeTopLendBookItem;
@@ -87,4 +90,23 @@ public interface LendService extends IService<Lend> {
      * @return 图书详情
      */
     BookDetailVO getBookDetail(Long bookId);
+
+    /**
+     * 获取用户借阅数据统计
+     * @return 用户借阅数据统计
+     */
+    MyLendDataVO getMyLendData();
+
+    /**
+     * 分页查询用户借阅书籍
+     * @param myLendPageDTO 查询参数
+     * @return 分页结果
+     */
+    PageResult<List<MyLendBookVO>> pageQueryMyLend(MyLendPageDTO myLendPageDTO);
+
+    /**
+     * 用户续借图书
+     * @param bookId 续借的图书id
+     */
+    void userRenewBook(Long bookId);
 }

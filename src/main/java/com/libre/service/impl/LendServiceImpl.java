@@ -11,12 +11,15 @@ import com.libre.mapper.BookMapper;
 import com.libre.mapper.LendMapper;
 import com.libre.pojo.dto.LendDTO;
 import com.libre.pojo.dto.LendPageDTO;
+import com.libre.pojo.dto.user.MyLendPageDTO;
 import com.libre.pojo.po.Lend;
 import com.libre.pojo.vo.LendPageVO;
-import com.libre.pojo.vo.user.BookDetailVO;
 import com.libre.pojo.vo.admin.HomeTopBookItem;
 import com.libre.pojo.vo.admin.RecentLendTrendItem;
+import com.libre.pojo.vo.user.BookDetailVO;
 import com.libre.pojo.vo.user.HomeTopLendBookItem;
+import com.libre.pojo.vo.user.MyLendBookVO;
+import com.libre.pojo.vo.user.MyLendDataVO;
 import com.libre.result.PageResult;
 import com.libre.service.LendService;
 import com.libre.util.PageUtil;
@@ -30,6 +33,7 @@ import java.util.List;
 @Service
 public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements LendService {
     private final BookMapper bookMapper;
+
     /**
      * 分页查询借阅信息
      *
@@ -64,7 +68,7 @@ public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements Le
                 .count();
 
         if (lendCount > 0) {
-            throw new LendException(ExceptionEnums.USER_LEND_BOOK_EXIST);
+            throw new LendException(ExceptionEnums.LEND_USER_LEND_BOOK_EXIST);
         }
         Lend lend = BeanUtil.copyProperties(lendDTO, Lend.class);
         // 避免前端id残留数据影响
@@ -94,7 +98,7 @@ public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements Le
                 .count();
 
         if (lendCount > 0) {
-            throw new LendException(ExceptionEnums.USER_LEND_BOOK_EXIST);
+            throw new LendException(ExceptionEnums.LEND_USER_LEND_BOOK_EXIST);
         }
 
         Lend lend = BeanUtil.copyProperties(lendDTO, Lend.class);
@@ -190,7 +194,7 @@ public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements Le
                 .ne(Lend::getState, LendStatus.RETURN)
                 .count();
         if (lendCount > 0) {
-            throw new LendException(ExceptionEnums.USER_LEND_BOOK_EXIST);
+            throw new LendException(ExceptionEnums.LEND_USER_LEND_BOOK_EXIST);
         }
 
         Lend lend = new Lend();
@@ -238,7 +242,7 @@ public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements Le
     @Override
     public BookDetailVO getBookDetail(Long bookId) {
         BookDetailVO bookDetail = bookMapper.getBookDetail(bookId);
-        if(!StpUtil.isLogin()) {
+        if (!StpUtil.isLogin()) {
             return bookDetail;
         }
 
@@ -247,12 +251,104 @@ public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements Le
                 .eq(Lend::getUserId, StpUtil.getLoginIdAsLong())
                 .in(Lend::getState, LendStatus.LEND, LendStatus.OVERDUE)
                 .one();
-        if(lend==null) {
+        if (lend == null) {
             return bookDetail;
         }
 
         bookDetail.setState(lend.getState());
 
         return bookDetail;
+    }
+
+    /**
+     * 获取用户借阅数据统计
+     *
+     * @return 用户借阅数据统计
+     */
+    @Override
+    public MyLendDataVO getMyLendData() {
+        Long userId = StpUtil.getLoginIdAsLong();
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime threeDaysLater = now.plusDays(3);
+
+        // 统计当前借阅数(借阅状态 + 逾期状态)
+        Long currentLendCount = lambdaQuery()
+                .eq(Lend::getUserId, userId)
+                .in(Lend::getState, LendStatus.LEND, LendStatus.OVERDUE)
+                .count();
+
+        // 统计逾期借阅数
+        Long overdueLendCount = lambdaQuery()
+                .eq(Lend::getUserId, userId)
+                .eq(Lend::getState, LendStatus.OVERDUE)
+                .count();
+
+        // 统计即将逾期借阅数(3天之内，且状态为借阅中)
+        Long soonOverdueLendCount = lambdaQuery()
+                .eq(Lend::getUserId, userId)
+                .eq(Lend::getState, LendStatus.LEND)
+                .le(Lend::getDueTime, threeDaysLater)
+                .gt(Lend::getDueTime, now)
+                .count();
+
+        return new MyLendDataVO(
+                currentLendCount.intValue(),
+                overdueLendCount.intValue(),
+                soonOverdueLendCount.intValue()
+        );
+    }
+
+    /**
+     * 分页查询用户借阅书籍
+     *
+     * @param myLendPageDTO 查询参数
+     * @return 分页结果
+     */
+    @Override
+    public PageResult<List<MyLendBookVO>> pageQueryMyLend(MyLendPageDTO myLendPageDTO) {
+        // 设置当前登录用户ID
+        myLendPageDTO.setUserId(StpUtil.getLoginIdAsLong());
+
+        // 构建分页条件
+        IPage<MyLendBookVO> page = PageUtil.createPage(myLendPageDTO);
+        // 查询
+        page = baseMapper.pageQueryMyLend(page, myLendPageDTO);
+
+        return PageResult.<List<MyLendBookVO>>builder()
+                .total(page.getTotal())
+                .data(page.getRecords())
+                .build();
+    }
+
+    /**
+     * 用户续借图书
+     *
+     * @param bookId 续借的图书id
+     */
+    @Override
+    public void userRenewBook(Long bookId) {
+        Lend lend = lambdaQuery()
+                .eq(Lend::getBookId, bookId)
+                .eq(Lend::getUserId, StpUtil.getLoginIdAsLong())
+                .in(Lend::getState, LendStatus.LEND, LendStatus.OVERDUE)
+                .one();
+        if (lend == null) {
+            throw new LendException(ExceptionEnums.LEND_USER_RENEW_BOOK_NOT_EXIST);
+        }
+
+        // 逾期则在当前日期续7天
+        if(lend.getState().equals(LendStatus.OVERDUE)) {
+            lend.setDueTime(LocalDateTime.now().plusDays(7));
+        }else {
+            // 否则在当前截止日期续7天
+            lend.setDueTime(lend.getDueTime().plusDays(7));
+        }
+        lend.setRenewCount(lend.getRenewCount() + 1);
+
+        // 续借不能超过3次
+        if(lend.getRenewCount()>3) {
+            throw new LendException(ExceptionEnums.LEND_USER_RENEW_OVER_MAX_COUNT);
+        }
+        updateById(lend);
     }
 }

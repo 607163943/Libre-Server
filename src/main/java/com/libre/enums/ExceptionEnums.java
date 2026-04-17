@@ -22,7 +22,9 @@ public enum ExceptionEnums {
     LEND_OVERDUE(80003, "图书已逾期"),
     LEND_STATUS_ILLEGAL(80004, "借阅状态非法"),
     LEND_USER_RETURN_BOOK_NOT_EXIST(80005, "当前用户未借阅该图书"),
-    USER_LEND_BOOK_EXIST(80004, "用户已借阅该图书且未归还"),
+    LEND_USER_RENEW_BOOK_NOT_EXIST(80006, "当前用户未借阅该图书"),
+    LEND_USER_LEND_BOOK_EXIST(80007, "用户已借阅该图书且未归还"),
+    LEND_USER_RENEW_OVER_MAX_COUNT(80008, "用户续借次数超过最大值"),
     REGISTER_USER_EXIST(90001, "注册用户已存在");
     private final Integer code;
     private final String msg;

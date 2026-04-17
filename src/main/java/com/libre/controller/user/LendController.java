@@ -1,11 +1,17 @@
 package com.libre.controller.user;
 
+import com.libre.pojo.dto.user.MyLendPageDTO;
+import com.libre.pojo.vo.user.MyLendBookVO;
+import com.libre.pojo.vo.user.MyLendDataVO;
+import com.libre.result.PageResult;
 import com.libre.result.Result;
 import com.libre.service.LendService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * 用户端借阅管理接口
@@ -25,10 +31,31 @@ public class LendController {
         return Result.success();
     }
 
+    @ApiOperation("续借图书")
+    @PatchMapping("/renew/{bookId}")
+    public Result<Void> userRenewBook(@PathVariable Long bookId) {
+        lendService.userRenewBook(bookId);
+        return Result.success();
+    }
+
     @ApiOperation("归还图书")
     @PatchMapping("/return/{bookId}")
     public Result<Void> userReturnBook(@PathVariable Long bookId) {
         lendService.userReturnBook(bookId);
         return Result.success();
+    }
+
+    @ApiOperation("获取用户借阅数据统计")
+    @GetMapping("/my-lend/data")
+    public Result<MyLendDataVO> getMyLendData() {
+        MyLendDataVO myLendData = lendService.getMyLendData();
+        return Result.success(myLendData);
+    }
+
+    @ApiOperation("分页查询用户借阅书籍")
+    @GetMapping("/my-lend")
+    public Result<PageResult<List<MyLendBookVO>>> pageQueryMyLend(MyLendPageDTO myLendPageDTO) {
+        PageResult<List<MyLendBookVO>> pageResult = lendService.pageQueryMyLend(myLendPageDTO);
+        return Result.success(pageResult);
     }
 }
