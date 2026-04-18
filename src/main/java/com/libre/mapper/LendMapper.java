@@ -9,7 +9,9 @@ import com.libre.pojo.vo.LendPageVO;
 import com.libre.pojo.vo.admin.HomeTopBookItem;
 import com.libre.pojo.vo.admin.RecentLendTrendItem;
 import com.libre.pojo.vo.user.HomeTopLendBookItem;
+import com.libre.pojo.vo.user.MyLendBookDetailVO;
 import com.libre.pojo.vo.user.MyLendBookVO;
+import com.libre.pojo.vo.user.MyLendHistoryBookVO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -48,4 +50,27 @@ public interface LendMapper extends BaseMapper<Lend> {
      * @return 分页结果
      */
     IPage<MyLendBookVO> pageQueryMyLend(@Param("page") IPage<MyLendBookVO> page, @Param("myLendPageDTO") MyLendPageDTO myLendPageDTO);
+
+    /**
+     * 获取用户借阅书籍数量
+     * @param userId 用户id
+     * @return 借阅书籍数量
+     */
+    Long countOverdueLend(long userId);
+
+    /**
+     * 分页查询用户历史借阅书籍
+     * @param page 分页条件
+     * @param myLendPageDTO 查询参数
+     * @return 分页结果
+     */
+    IPage<MyLendHistoryBookVO> pageQueryMyLendHistory(@Param("page") IPage<MyLendHistoryBookVO> page, @Param("myLendPageDTO") MyLendPageDTO myLendPageDTO);
+
+    /**
+     * 分页查询用户借阅书籍详情
+     * @param page 分页条件
+     * @param userId 用户id
+     * @return 分页结果
+     */
+    IPage<MyLendBookDetailVO> pageQueryMyLendDetail(@Param("page") IPage<MyLendBookDetailVO> page, @Param("userId") Long userId);
 }

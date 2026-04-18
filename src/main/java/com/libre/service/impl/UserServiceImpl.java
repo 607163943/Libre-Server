@@ -1,5 +1,6 @@
 package com.libre.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -9,8 +10,11 @@ import com.libre.exception.UserException;
 import com.libre.mapper.UserMapper;
 import com.libre.pojo.dto.UserDTO;
 import com.libre.pojo.dto.UserPageDTO;
+import com.libre.pojo.dto.user.UserPasswordDTO;
+import com.libre.pojo.dto.user.UserProfileDTO;
 import com.libre.pojo.po.User;
 import com.libre.pojo.vo.UserPageVO;
+import com.libre.pojo.vo.user.UserProfileVO;
 import com.libre.result.PageResult;
 import com.libre.service.UserService;
 import com.libre.util.PageUtil;
@@ -124,5 +128,60 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 .set(User::getIsDelete, System.currentTimeMillis())
                 .in(User::getId, ids)
                 .update();
+    }
+
+    /**
+     * 获取当前用户个人信息
+     *
+     * @param userId 用户id
+     * @return 用户个人信息
+     */
+    @Override
+    public UserProfileVO getUserProfile(Long userId) {
+        User user = getById(userId);
+        if (user == null) {
+            throw new UserException(ExceptionEnums.USER_NOT_EXIST);
+        }
+        return BeanUtil.copyProperties(user, UserProfileVO.class);
+    }
+
+    /**
+     * 修改当前用户个人信息
+     * @param userProfileDTO 用户个人信息
+     */
+    @Override
+    public void modifyUserProfile(UserProfileDTO userProfileDTO) {
+        User user = getById(StpUtil.getLoginIdAsLong());
+        if (user == null) {
+            throw new UserException(ExceptionEnums.USER_NOT_EXIST);
+        }
+
+        // 更新姓名
+        if (StrUtil.isNotBlank(userProfileDTO.getName())) {
+            user.setName(userProfileDTO.getName());
+        }
+        updateById(user);
+    }
+
+    /**
+     * 修改当前用户密码
+     * @param userPasswordDTO 用户密码信息
+     */
+    @Override
+    public void modifyUserPassword(UserPasswordDTO userPasswordDTO) {
+        Long userId = StpUtil.getLoginIdAsLong();
+        User user = getById(userId);
+        if (user == null) {
+            throw new UserException(ExceptionEnums.USER_NOT_EXIST);
+        }
+
+        // 校验旧密码
+        if (!user.getPassword().equals(userPasswordDTO.getOldPassword())) {
+            throw new UserException(ExceptionEnums.PASSWORD_ERROR);
+        }
+
+        // 更新新密码
+        user.setPassword(userPasswordDTO.getNewPassword());
+        updateById(user);
     }
 }

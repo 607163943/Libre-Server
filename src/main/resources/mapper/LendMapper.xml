@@ -66,7 +66,6 @@
         author.author_name,
         publisher.publisher_name,
         book.isbn,
-        lend.state,
         lend.create_time as lendTime,
         lend.due_time as dueTime
         from tb_lend lend
@@ -90,6 +89,64 @@
         <if test="myLendPageDTO.endDate != null">
             and lend.create_time &lt;= #{myLendPageDTO.endDate}
         </if>
+        order by lend.create_time desc
+    </select>
+    <select id="countOverdueLend" resultType="java.lang.Long">
+        select count(0)
+        from tb_lend
+        where is_delete = 0
+        and state = 2
+        and due_time &lt; now()
+    </select>
+    <!--分页查询用户历史借阅书籍-->
+    <select id="pageQueryMyLendHistory" resultType="com.libre.pojo.vo.user.MyLendHistoryBookVO">
+        select book.id,
+        book.book_name,
+        author.author_name,
+        publisher.publisher_name,
+        book.isbn,
+        lend.state,
+        book.cover_url,
+        lend.create_time as lendTime,
+        lend.return_time as returnTime
+        from tb_lend lend
+        join tb_book book on lend.book_id = book.id
+        join tb_author author on book.author_id = author.id
+        join tb_publisher publisher on book.publisher_id = publisher.id
+        where lend.is_delete = 0
+        and lend.user_id = #{myLendPageDTO.userId}
+        <if test="myLendPageDTO.keyword != null and myLendPageDTO.keyword != ''">
+            and (
+            book.book_name like concat('%', #{myLendPageDTO.keyword}, '%')
+            or author.author_name like concat('%', #{myLendPageDTO.keyword}, '%')
+            or publisher.publisher_name like concat('%', #{myLendPageDTO.keyword}, '%')
+            or book.isbn like concat('%', #{myLendPageDTO.keyword}, '%')
+            )
+        </if>
+        <if test="myLendPageDTO.startDate != null">
+            and lend.create_time &gt;= #{myLendPageDTO.startDate}
+        </if>
+        <if test="myLendPageDTO.endDate != null">
+            and lend.create_time &lt;= #{myLendPageDTO.endDate}
+        </if>
+        order by lend.create_time desc
+    </select>
+    <!--分页查询用户借阅书籍详情-->
+    <select id="pageQueryMyLendDetail" resultType="com.libre.pojo.vo.user.MyLendBookDetailVO">
+        select book.id,
+        book.book_name,
+        book.cover_url,
+        author.author_name,
+        publisher.publisher_name,
+        lend.due_time as dueTime,
+        lend.state
+        from tb_lend lend
+        join tb_book book on lend.book_id = book.id
+        join tb_author author on book.author_id = author.id
+        join tb_publisher publisher on book.publisher_id = publisher.id
+        where lend.is_delete = 0
+        and lend.user_id = #{userId}
+        and (lend.state=1 or lend.state=3)
         order by lend.create_time desc
     </select>
 </mapper>

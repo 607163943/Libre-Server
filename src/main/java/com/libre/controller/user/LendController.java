@@ -3,6 +3,8 @@ package com.libre.controller.user;
 import com.libre.pojo.dto.user.MyLendPageDTO;
 import com.libre.pojo.vo.user.MyLendBookVO;
 import com.libre.pojo.vo.user.MyLendDataVO;
+import com.libre.pojo.vo.user.MyLendHistoryBookVO;
+import com.libre.pojo.vo.user.MyLendHistoryDataVO;
 import com.libre.result.PageResult;
 import com.libre.result.Result;
 import com.libre.service.LendService;
@@ -52,10 +54,24 @@ public class LendController {
         return Result.success(myLendData);
     }
 
+    @ApiOperation("获取用户历史借阅数据统计")
+    @GetMapping("/my-lend/history/data")
+    public Result<MyLendHistoryDataVO> getMyLendHistoryData() {
+        MyLendHistoryDataVO myLendHistoryData = lendService.getMyLendHistoryData();
+        return Result.success(myLendHistoryData);
+    }
+
     @ApiOperation("分页查询用户借阅书籍")
     @GetMapping("/my-lend")
     public Result<PageResult<List<MyLendBookVO>>> pageQueryMyLend(MyLendPageDTO myLendPageDTO) {
         PageResult<List<MyLendBookVO>> pageResult = lendService.pageQueryMyLend(myLendPageDTO);
+        return Result.success(pageResult);
+    }
+
+    @ApiOperation("分页查询用户历史借阅书籍")
+    @GetMapping("/my-lend/history")
+    public Result<PageResult<List<MyLendHistoryBookVO>>> pageQueryMyLendHistory(MyLendPageDTO myLendPageDTO) {
+        PageResult<List<MyLendHistoryBookVO>> pageResult = lendService.pageQueryMyLendHistory(myLendPageDTO);
         return Result.success(pageResult);
     }
 }

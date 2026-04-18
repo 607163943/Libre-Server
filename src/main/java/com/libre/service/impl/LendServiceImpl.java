@@ -9,6 +9,7 @@ import com.libre.enums.ExceptionEnums;
 import com.libre.exception.LendException;
 import com.libre.mapper.BookMapper;
 import com.libre.mapper.LendMapper;
+import com.libre.pojo.dto.BasePageDTO;
 import com.libre.pojo.dto.LendDTO;
 import com.libre.pojo.dto.LendPageDTO;
 import com.libre.pojo.dto.user.MyLendPageDTO;
@@ -16,10 +17,7 @@ import com.libre.pojo.po.Lend;
 import com.libre.pojo.vo.LendPageVO;
 import com.libre.pojo.vo.admin.HomeTopBookItem;
 import com.libre.pojo.vo.admin.RecentLendTrendItem;
-import com.libre.pojo.vo.user.BookDetailVO;
-import com.libre.pojo.vo.user.HomeTopLendBookItem;
-import com.libre.pojo.vo.user.MyLendBookVO;
-import com.libre.pojo.vo.user.MyLendDataVO;
+import com.libre.pojo.vo.user.*;
 import com.libre.result.PageResult;
 import com.libre.service.LendService;
 import com.libre.util.PageUtil;
@@ -228,6 +226,7 @@ public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements Le
 
         lambdaUpdate()
                 .set(Lend::getState, LendStatus.RETURN)
+                .set(Lend::getReturnTime, LocalDateTime.now())
                 .eq(Lend::getBookId, bookId)
                 .eq(Lend::getUserId, StpUtil.getLoginIdAsLong())
                 .update();
@@ -350,5 +349,65 @@ public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements Le
             throw new LendException(ExceptionEnums.LEND_USER_RENEW_OVER_MAX_COUNT);
         }
         updateById(lend);
+    }
+
+    /**
+     * 获取用户借阅历史数据统计
+     * @return 用户借阅历史数据统计
+     */
+    @Override
+    public MyLendHistoryDataVO getMyLendHistoryData() {
+        // 历史借阅
+        Long lendCount = lambdaQuery()
+                .eq(Lend::getUserId, StpUtil.getLoginIdAsLong())
+                .count();
+
+        // 统计归还时间大于逾期时间的书籍数
+        Long overdueLendCount = baseMapper.countOverdueLend(StpUtil.getLoginIdAsLong());
+        return MyLendHistoryDataVO.builder()
+                .lendCount(lendCount)
+                .overdueLendCount(overdueLendCount)
+                .build();
+    }
+
+    /**
+     * 分页查询用户历史借阅书籍
+     *
+     * @param myLendPageDTO 查询参数
+     * @return 分页结果
+     */
+    @Override
+    public PageResult<List<MyLendHistoryBookVO>> pageQueryMyLendHistory(MyLendPageDTO myLendPageDTO) {
+        // 设置当前登录用户ID
+        myLendPageDTO.setUserId(StpUtil.getLoginIdAsLong());
+
+        // 构建分页条件
+        IPage<MyLendHistoryBookVO> page = PageUtil.createPage(myLendPageDTO);
+        // 查询
+        page = baseMapper.pageQueryMyLendHistory(page, myLendPageDTO);
+
+        return PageResult.<List<MyLendHistoryBookVO>>builder()
+                .total(page.getTotal())
+                .data(page.getRecords())
+                .build();
+    }
+
+    /**
+     * 分页查询用户借阅书籍详情
+     * @param basePageDTO 分页参数
+     * @return 分页结果
+     */
+    @Override
+    public PageResult<List<MyLendBookDetailVO>> pageQueryMyLendDetail(BasePageDTO basePageDTO) {
+        IPage<MyLendBookDetailVO> myLendPage = PageUtil.createPage(basePageDTO);
+
+        Long userId = StpUtil.getLoginIdAsLong();
+        // 查询
+        myLendPage = baseMapper.pageQueryMyLendDetail(myLendPage, userId);
+
+        return PageResult.<List<MyLendBookDetailVO>>builder()
+                .total(myLendPage.getTotal())
+                .data(myLendPage.getRecords())
+                .build();
     }
 }

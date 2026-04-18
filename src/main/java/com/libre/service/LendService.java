@@ -1,17 +1,15 @@
 package com.libre.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.libre.pojo.dto.BasePageDTO;
 import com.libre.pojo.dto.LendDTO;
 import com.libre.pojo.dto.LendPageDTO;
 import com.libre.pojo.dto.user.MyLendPageDTO;
 import com.libre.pojo.po.Lend;
 import com.libre.pojo.vo.LendPageVO;
-import com.libre.pojo.vo.user.BookDetailVO;
-import com.libre.pojo.vo.user.MyLendBookVO;
-import com.libre.pojo.vo.user.MyLendDataVO;
+import com.libre.pojo.vo.user.*;
 import com.libre.pojo.vo.admin.HomeTopBookItem;
 import com.libre.pojo.vo.admin.RecentLendTrendItem;
-import com.libre.pojo.vo.user.HomeTopLendBookItem;
 import com.libre.result.PageResult;
 
 import java.util.List;
@@ -109,4 +107,24 @@ public interface LendService extends IService<Lend> {
      * @param bookId 续借的图书id
      */
     void userRenewBook(Long bookId);
+
+    /**
+     * 获取用户借阅历史数据统计
+     * @return 用户借阅历史数据统计
+     */
+    MyLendHistoryDataVO getMyLendHistoryData();
+
+    /**
+     * 分页查询用户历史借阅书籍
+     * @param myLendPageDTO 查询参数
+     * @return 分页结果
+     */
+    PageResult<List<MyLendHistoryBookVO>> pageQueryMyLendHistory(MyLendPageDTO myLendPageDTO);
+
+    /**
+     * 分页查询用户借阅书籍详情
+     * @param basePageDTO 分页参数
+     * @return 分页结果
+     */
+    PageResult<List<MyLendBookDetailVO>> pageQueryMyLendDetail(BasePageDTO basePageDTO);
 }

@@ -8,25 +8,23 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@ApiModel("用户借阅书籍VO")
+@ApiModel("用户借阅书籍详情VO")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class MyLendBookVO {
-    @ApiModelProperty("书籍id")
+public class MyLendBookDetailVO {
+    @ApiModelProperty("图书id")
     private Long id;
-    @ApiModelProperty("书籍名")
+    @ApiModelProperty("图书名")
     private String bookName;
-    @ApiModelProperty("封面")
+    @ApiModelProperty("图书封面")
     private String coverUrl;
-    @ApiModelProperty("作者")
+    @ApiModelProperty("作者名")
     private String authorName;
-    @ApiModelProperty("出版社")
+    @ApiModelProperty("出版社名")
     private String publisherName;
-    @ApiModelProperty("ISBN")
-    private String isbn;
-    @ApiModelProperty("借阅时间")
-    private LocalDateTime lendTime;
-    @ApiModelProperty("应归还时间")
+    @ApiModelProperty("借阅截止日期")
     private LocalDateTime dueTime;
+    @ApiModelProperty("借阅状态")
+    private Integer state;
 }
