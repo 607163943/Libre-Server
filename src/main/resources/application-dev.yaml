@@ -12,3 +12,7 @@ redis:
   port: 6379
   database: 0
   password: 123456
+
+# security
+security:
+  pepper: 8a77fd7f7ee9b36a965e0c6fc56f3230

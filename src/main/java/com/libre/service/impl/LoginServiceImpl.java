@@ -2,7 +2,6 @@ package com.libre.service.impl;
 
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
-import cn.hutool.crypto.digest.BCrypt;
 import com.libre.enums.ExceptionEnums;
 import com.libre.exception.LoginException;
 import com.libre.pojo.dto.LoginDTO;
@@ -10,6 +9,7 @@ import com.libre.pojo.po.User;
 import com.libre.pojo.vo.LoginVO;
 import com.libre.service.LoginService;
 import com.libre.service.UserService;
+import com.libre.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class LoginServiceImpl implements LoginService {
     private final UserService userService;
+
+    private final SecurityUtil securityUtil;
 
     /**
      * 登录
@@ -33,7 +35,7 @@ public class LoginServiceImpl implements LoginService {
         }
 
         // 检查密码是否正确
-        if(!BCrypt.checkpw(loginDTO.getPassword(), user.getPassword())) {
+        if(!securityUtil.checkPassword(loginDTO.getPassword(), user.getPassword())) {
             throw new LoginException(ExceptionEnums.USER_PASSWORD_ERROR);
         }
 

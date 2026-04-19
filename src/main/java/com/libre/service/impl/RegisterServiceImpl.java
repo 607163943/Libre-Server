@@ -8,6 +8,7 @@ import com.libre.pojo.dto.RegisterDTO;
 import com.libre.pojo.po.User;
 import com.libre.service.RegisterService;
 import com.libre.service.UserService;
+import com.libre.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class RegisterServiceImpl implements RegisterService {
     private final UserService userService;
+    private final SecurityUtil securityUtil;
 
     /**
      *  用户注册
@@ -31,7 +33,7 @@ public class RegisterServiceImpl implements RegisterService {
 
         User user = BeanUtil.copyProperties(registerDTO, User.class);
         // 密码加密
-        user.setPassword(BCrypt.hashpw(registerDTO.getPassword()));
+        user.setPassword(securityUtil.generatePassword(registerDTO.getPassword()));
         // 首次注册使用用户名代替姓名
         user.setName(registerDTO.getUsername());
         userService.save(user);

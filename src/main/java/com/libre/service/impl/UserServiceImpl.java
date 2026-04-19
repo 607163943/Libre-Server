@@ -19,6 +19,7 @@ import com.libre.pojo.vo.user.UserProfileVO;
 import com.libre.result.PageResult;
 import com.libre.service.UserService;
 import com.libre.util.PageUtil;
+import com.libre.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +28,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
+
+    private final SecurityUtil securityUtil;
 
     /**
      * 分页查询用户信息
@@ -177,12 +180,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
 
         // 校验旧密码
-        if (!BCrypt.checkpw(userPasswordDTO.getOldPassword(), user.getPassword())) {
+        if (!securityUtil.checkPassword(userPasswordDTO.getOldPassword(), user.getPassword())) {
             throw new UserException(ExceptionEnums.USER_PASSWORD_ERROR);
         }
 
         // 更新新密码
-        user.setPassword(BCrypt.hashpw(userPasswordDTO.getNewPassword()));
+        user.setPassword(securityUtil.generatePassword(userPasswordDTO.getNewPassword()));
         updateById(user);
     }
 }
