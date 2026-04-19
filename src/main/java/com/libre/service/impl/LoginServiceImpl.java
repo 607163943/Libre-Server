@@ -2,6 +2,7 @@ package com.libre.service.impl;
 
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.crypto.digest.BCrypt;
 import com.libre.enums.ExceptionEnums;
 import com.libre.exception.LoginException;
 import com.libre.pojo.dto.LoginDTO;
@@ -32,8 +33,8 @@ public class LoginServiceImpl implements LoginService {
         }
 
         // 检查密码是否正确
-        if(!user.getPassword().equals(loginDTO.getPassword())) {
-            throw new LoginException(ExceptionEnums.PASSWORD_ERROR);
+        if(!BCrypt.checkpw(loginDTO.getPassword(), user.getPassword())) {
+            throw new LoginException(ExceptionEnums.USER_PASSWORD_ERROR);
         }
 
         StpUtil.login(user.getId());

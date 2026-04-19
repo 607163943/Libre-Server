@@ -16,6 +16,12 @@ spring:
     url: jdbc:mysql://${mysql.host}:${mysql.port}/${mysql.database}?serverTimezone=UTC&useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2b8
     username: ${mysql.username}
     password: ${mysql.password}
+  # redis配置
+  redis:
+    database: ${redis.database}
+    host: ${redis.host}
+    port: ${redis.port}
+    password: ${redis.password}
 # 日志配置
 logging:
   file:

@@ -1,6 +1,7 @@
 package com.libre.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.crypto.digest.BCrypt;
 import com.libre.enums.ExceptionEnums;
 import com.libre.exception.RegisterException;
 import com.libre.pojo.dto.RegisterDTO;
@@ -29,6 +30,8 @@ public class RegisterServiceImpl implements RegisterService {
         }
 
         User user = BeanUtil.copyProperties(registerDTO, User.class);
+        // 密码加密
+        user.setPassword(BCrypt.hashpw(registerDTO.getPassword()));
         // 首次注册使用用户名代替姓名
         user.setName(registerDTO.getUsername());
         userService.save(user);

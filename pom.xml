@@ -73,6 +73,11 @@
             <artifactId>sa-token-jwt</artifactId>
             <version>1.45.0</version>
         </dependency>
+        <!--SpringData-Redis-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
 
     </dependencies>
     <dependencyManagement>

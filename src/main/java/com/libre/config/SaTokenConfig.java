@@ -39,7 +39,7 @@ public class SaTokenConfig implements WebMvcConfigurer {
                         try {
                             StpUtil.checkLogin();
                         } catch (Exception e) {
-                            throw new LoginException(ExceptionEnums.NOT_LOGIN);
+                            throw new LoginException(ExceptionEnums.USER_NOT_LOGIN);
                         }
                     });        // 要执行的校验动作，可以写完整的 lambda 表达式
         })).addPathPatterns("/**");

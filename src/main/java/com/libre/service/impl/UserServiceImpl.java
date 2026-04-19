@@ -3,6 +3,7 @@ package com.libre.service.impl;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.crypto.digest.BCrypt;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.libre.enums.ExceptionEnums;
@@ -176,12 +177,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
 
         // 校验旧密码
-        if (!user.getPassword().equals(userPasswordDTO.getOldPassword())) {
-            throw new UserException(ExceptionEnums.PASSWORD_ERROR);
+        if (!BCrypt.checkpw(userPasswordDTO.getOldPassword(), user.getPassword())) {
+            throw new UserException(ExceptionEnums.USER_PASSWORD_ERROR);
         }
 
         // 更新新密码
-        user.setPassword(userPasswordDTO.getNewPassword());
+        user.setPassword(BCrypt.hashpw(userPasswordDTO.getNewPassword()));
         updateById(user);
     }
 }

@@ -21,9 +21,9 @@ public enum ExceptionEnums {
     USER_ROLE_EXIST(60001, "用户角色关系已存在"),
     USER_NOT_EXIST(70001, "用户不存在"),
 
-    PASSWORD_ERROR(70002, "密码错误"),
+    USER_PASSWORD_ERROR(70002, "密码错误"),
 
-    NOT_LOGIN(70003, "用户未登录"),
+    USER_NOT_LOGIN(70003, "用户未登录"),
 
     LEND_NOT_EXIST(80001, "借阅记录不存在"),
     LEND_ALREADY_RETURNED(80002, "图书已归还"),

@@ -5,3 +5,10 @@ mysql:
   database: libre
   username: root
   password: 123456
+
+# redis
+redis:
+  host: 192.168.150.101
+  port: 6379
+  database: 0
+  password: 123456
