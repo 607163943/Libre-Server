@@ -22,6 +22,7 @@ import com.libre.result.PageResult;
 import com.libre.service.LendService;
 import com.libre.util.PageUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -31,6 +32,9 @@ import java.util.List;
 @Service
 public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements LendService {
     private final BookMapper bookMapper;
+
+    @Value("${business.lend.max-lend-count}")
+    private Integer maxRenewCount;
 
     /**
      * 分页查询借阅信息
@@ -100,6 +104,9 @@ public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements Le
         }
 
         Lend lend = BeanUtil.copyProperties(lendDTO, Lend.class);
+        if(lend.getRenewCount()>maxRenewCount) {
+            throw new LendException(ExceptionEnums.LEND_RENEW_OVER_MAX_COUNT);
+        }
         updateById(lend);
     }
 
@@ -156,27 +163,6 @@ public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements Le
         return baseMapper.getHomeTopLendBookList();
     }
 
-    /**
-     * 修改借阅状态
-     *
-     * @param lendDTO 借阅信息
-     */
-    @Override
-    public void modifyLendStatus(LendDTO lendDTO) {
-        // 验证借阅状态是否合法
-        if (lendDTO.getState() == null ||
-                (!lendDTO.getState().equals(LendStatus.LEND) &&
-                        !lendDTO.getState().equals(LendStatus.RETURN) &&
-                        !lendDTO.getState().equals(LendStatus.OVERDUE))) {
-            throw new LendException(ExceptionEnums.LEND_STATUS_ILLEGAL);
-        }
-
-        lambdaUpdate()
-                .set(Lend::getState, lendDTO.getState())
-                .eq(Lend::getBookId, lendDTO.getBookId())
-                .eq(Lend::getUserId, StpUtil.getLoginIdAsLong())
-                .update();
-    }
 
     /**
      * 用户借阅图书
@@ -221,7 +207,7 @@ public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements Le
                 .in(Lend::getState, LendStatus.LEND, LendStatus.OVERDUE)
                 .count();
         if (lendCount == 0) {
-            throw new LendException(ExceptionEnums.LEND_USER_RETURN_BOOK_NOT_EXIST);
+            throw new LendException(ExceptionEnums.LEND_USER_NOT_LEND);
         }
 
         lambdaUpdate()
@@ -332,27 +318,28 @@ public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements Le
                 .in(Lend::getState, LendStatus.LEND, LendStatus.OVERDUE)
                 .one();
         if (lend == null) {
-            throw new LendException(ExceptionEnums.LEND_USER_RENEW_BOOK_NOT_EXIST);
+            throw new LendException(ExceptionEnums.LEND_USER_NOT_LEND);
         }
 
         // 逾期则在当前日期续7天
-        if(lend.getState().equals(LendStatus.OVERDUE)) {
+        if (lend.getState().equals(LendStatus.OVERDUE)) {
             lend.setDueTime(LocalDateTime.now().plusDays(7));
-        }else {
+        } else {
             // 否则在当前截止日期续7天
             lend.setDueTime(lend.getDueTime().plusDays(7));
         }
         lend.setRenewCount(lend.getRenewCount() + 1);
 
         // 续借不能超过3次
-        if(lend.getRenewCount()>3) {
-            throw new LendException(ExceptionEnums.LEND_USER_RENEW_OVER_MAX_COUNT);
+        if (lend.getRenewCount() > maxRenewCount) {
+            throw new LendException(ExceptionEnums.LEND_RENEW_OVER_MAX_COUNT);
         }
         updateById(lend);
     }
 
     /**
      * 获取用户借阅历史数据统计
+     *
      * @return 用户借阅历史数据统计
      */
     @Override
@@ -394,6 +381,7 @@ public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements Le
 
     /**
      * 分页查询用户借阅书籍详情
+     *
      * @param basePageDTO 分页参数
      * @return 分页结果
      */

@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = "登录接口")
 @RequestMapping("/admin")
 @RequiredArgsConstructor
-@RestController("admin-login")
+@RestController("admin-login-controller")
 public class LoginController {
     private final LoginService loginService;
 

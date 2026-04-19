@@ -16,3 +16,8 @@ redis:
 # security
 security:
   pepper: 8a77fd7f7ee9b36a965e0c6fc56f3230
+
+# 业务配置
+business:
+  lend:
+    max-lend-count: 3
