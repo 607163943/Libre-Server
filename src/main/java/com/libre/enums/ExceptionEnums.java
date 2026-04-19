@@ -19,9 +19,6 @@ public enum ExceptionEnums {
     ROLE_EXIST(50001, "角色已存在"),
 
     USER_ROLE_EXIST(60001, "用户角色关系已存在"),
-    USER_NOT_EXIST(70001, "用户不存在"),
-
-    USER_PASSWORD_ERROR(70002, "密码错误"),
 
     USER_NOT_LOGIN(70003, "用户未登录"),
 
@@ -34,7 +31,9 @@ public enum ExceptionEnums {
     LEND_USER_LEND_BOOK_EXIST(80007, "用户已借阅该图书且未归还"),
     LEND_USER_RENEW_OVER_MAX_COUNT(80008, "用户续借次数超过最大值"),
 
-    REGISTER_USER_EXIST(90001, "注册用户已存在");
+    LOGIN_USER_NOT_EXIST(90001, "用户不存在"),
+    LOGIN_PASSWORD_ERROR(90002, "密码错误"),
+    LOGIN_REGISTER_USER_EXIST(90003, "注册用户已存在");
     private final Integer code;
     private final String msg;
 }

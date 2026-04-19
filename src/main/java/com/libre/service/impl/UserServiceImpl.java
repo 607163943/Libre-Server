@@ -3,7 +3,6 @@ package com.libre.service.impl;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.crypto.digest.BCrypt;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.libre.enums.ExceptionEnums;
@@ -144,7 +143,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public UserProfileVO getUserProfile(Long userId) {
         User user = getById(userId);
         if (user == null) {
-            throw new UserException(ExceptionEnums.USER_NOT_EXIST);
+            throw new UserException(ExceptionEnums.LOGIN_USER_NOT_EXIST);
         }
         return BeanUtil.copyProperties(user, UserProfileVO.class);
     }
@@ -157,7 +156,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public void modifyUserProfile(UserProfileDTO userProfileDTO) {
         User user = getById(StpUtil.getLoginIdAsLong());
         if (user == null) {
-            throw new UserException(ExceptionEnums.USER_NOT_EXIST);
+            throw new UserException(ExceptionEnums.LOGIN_USER_NOT_EXIST);
         }
 
         // 更新姓名
@@ -176,12 +175,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         Long userId = StpUtil.getLoginIdAsLong();
         User user = getById(userId);
         if (user == null) {
-            throw new UserException(ExceptionEnums.USER_NOT_EXIST);
+            throw new UserException(ExceptionEnums.LOGIN_USER_NOT_EXIST);
         }
 
         // 校验旧密码
         if (!securityUtil.checkPassword(userPasswordDTO.getOldPassword(), user.getPassword())) {
-            throw new UserException(ExceptionEnums.USER_PASSWORD_ERROR);
+            throw new UserException(ExceptionEnums.LOGIN_PASSWORD_ERROR);
         }
 
         // 更新新密码

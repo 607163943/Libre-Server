@@ -1,6 +1,7 @@
 package com.libre.controller.user;
 
 import com.libre.pojo.dto.LoginDTO;
+import com.libre.pojo.dto.RegisterDTO;
 import com.libre.pojo.vo.LoginVO;
 import com.libre.result.Result;
 import com.libre.service.LoginService;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Api(tags = "用户端登录接口")
 @RequiredArgsConstructor
-@RestController("user-login")
+@RestController("user-login-controller")
 public class LoginController {
     private final LoginService loginService;
 
@@ -22,6 +23,13 @@ public class LoginController {
     public Result<LoginVO> login(@RequestBody LoginDTO loginDTO) {
         LoginVO loginVO = loginService.login(loginDTO);
         return Result.success(loginVO);
+    }
+
+    @ApiOperation("用户注册")
+    @PostMapping("/register")
+    public Result<Void> register(@RequestBody RegisterDTO registerDTO) {
+        loginService.register(registerDTO);
+        return Result.success();
     }
 
     @ApiOperation("用户登出")
