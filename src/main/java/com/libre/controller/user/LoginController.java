@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @Api(tags = "用户端登录接口")
 @RequiredArgsConstructor
 @RestController("user-login-controller")
@@ -20,14 +22,14 @@ public class LoginController {
 
     @ApiOperation("用户登录")
     @PostMapping("/login")
-    public Result<LoginVO> login(@RequestBody LoginDTO loginDTO) {
+    public Result<LoginVO> login(@RequestBody @Valid LoginDTO loginDTO) {
         LoginVO loginVO = loginService.login(loginDTO);
         return Result.success(loginVO);
     }
 
     @ApiOperation("用户注册")
     @PostMapping("/register")
-    public Result<Void> register(@RequestBody RegisterDTO registerDTO) {
+    public Result<Void> register(@RequestBody @Valid RegisterDTO registerDTO) {
         loginService.register(registerDTO);
         return Result.success();
     }

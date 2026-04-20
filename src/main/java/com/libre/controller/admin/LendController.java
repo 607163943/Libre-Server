@@ -15,11 +15,12 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Api(tags = "借阅管理接口")
 @RequestMapping("/admin/lend")
-@RestController
+@RestController("admin-lend-controller")
 @RequiredArgsConstructor
 public class LendController {
     private final LendService lendService;
@@ -49,14 +50,14 @@ public class LendController {
 
     @ApiOperation("借阅添加接口")
     @PostMapping
-    public Result<Void> addLend(@RequestBody LendDTO lendDTO) {
+    public Result<Void> addLend(@RequestBody @Valid LendDTO lendDTO) {
         lendService.addLend(lendDTO);
         return Result.success();
     }
 
     @ApiOperation("借阅修改接口")
     @PutMapping
-    public Result<Void> modifyLend(@RequestBody LendDTO lendDTO) {
+    public Result<Void> modifyLend(@RequestBody @Valid LendDTO lendDTO) {
         lendService.modifyLend(lendDTO);
         return Result.success();
     }

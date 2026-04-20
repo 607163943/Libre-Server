@@ -6,6 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum ExceptionEnums {
+
     AUTHOR_EXIST(110001, "作者已存在"),
     AUTHOR_HAS_BOOK(110002, "存在该作者的图书，无法删除"),
 
@@ -27,7 +28,9 @@ public enum ExceptionEnums {
 
     LEND_USER_LEND_BOOK_EXIST(380001, "用户已借阅该图书且未归还"),
     LEND_RENEW_OVER_MAX_COUNT(380002, "续借次数超过最大值"),
-    LEND_USER_NOT_LEND(280003, "用户未借阅该图书");
+    LEND_USER_NOT_LEND(280003, "用户未借阅该图书"),
+
+    UTIL_PASSWORD_MD5_ERROR(490001, "密码MD5值异常");
 
     // 首位1表示管理端 2表示用户端 3表示双端共用 4表示非Service层代码异常
     // 次位均表示模块异常

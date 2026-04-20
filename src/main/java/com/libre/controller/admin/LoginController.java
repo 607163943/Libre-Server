@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @Api(tags = "登录接口")
 @RequestMapping("/admin")
 @RequiredArgsConstructor
@@ -21,7 +23,7 @@ public class LoginController {
 
     @ApiOperation("登录接口")
     @PostMapping("/login")
-    public Result<LoginVO> login(@RequestBody LoginDTO loginDTO) {
+    public Result<LoginVO> login(@RequestBody @Valid LoginDTO loginDTO) {
         LoginVO loginVO = loginService.login(loginDTO);
         return Result.success(loginVO);
     }

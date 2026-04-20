@@ -1,6 +1,8 @@
 package com.libre.util;
 
 import cn.hutool.crypto.digest.BCrypt;
+import com.libre.enums.ExceptionEnums;
+import com.libre.exception.UtilException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -18,8 +20,10 @@ public class SecurityUtil {
      * 自定义混淆拼接逻辑
      */
     public String mix(String frontendPasswordMd5, String pepper) {
-        // 健壮性检查
-        if (frontendPasswordMd5.length() < 32) return frontendPasswordMd5 + pepper;
+        // 低于32位说明md5值异常
+        if (frontendPasswordMd5.length() < 32) {
+            throw new UtilException(ExceptionEnums.UTIL_PASSWORD_MD5_ERROR);
+        }
 
         // 交叉混淆
         // 取前端MD5的前8位 + Pepper的后8位 + 前端MD5的剩余部分 + Pepper的剩余部分

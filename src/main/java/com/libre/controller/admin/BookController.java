@@ -15,11 +15,12 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Api(tags = "图书管理接口")
 @RequestMapping("/admin/book")
-@RestController
+@RestController("admin-book-controller")
 @RequiredArgsConstructor
 public class BookController {
     private final BookService bookService;
@@ -49,14 +50,14 @@ public class BookController {
 
     @ApiOperation("图书添加接口")
     @PostMapping
-    public Result<Void> addBook(@RequestBody BookDTO bookDTO) {
+    public Result<Void> addBook(@RequestBody @Valid BookDTO bookDTO) {
         bookService.addBook(bookDTO);
         return Result.success();
     }
 
     @ApiOperation("图书修改接口")
     @PutMapping
-    public Result<Void> modifyBook(@RequestBody BookDTO bookDTO) {
+    public Result<Void> modifyBook(@RequestBody @Valid BookDTO bookDTO) {
         bookService.modifyBook(bookDTO);
         return Result.success();
     }

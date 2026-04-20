@@ -15,18 +15,19 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Api(tags = "作者管理接口")
 @RequestMapping("/admin/author")
-@RestController
+@RestController("admin-author-controller")
 @RequiredArgsConstructor
 public class AuthorController {
     private final AuthorService authorService;
 
     @ApiOperation("作者分页查询接口")
     @GetMapping
-    public Result<PageResult<List<AuthorPageVO>>> pageQueryAuthor(AuthorPageDTO authorPageDTO) {
+    public Result<PageResult<List<AuthorPageVO>>> pageQueryAuthor(@Valid AuthorPageDTO authorPageDTO) {
         PageResult<List<AuthorPageVO>> pageResult = authorService.pageQueryAuthor(authorPageDTO);
         return Result.success(pageResult);
     }
@@ -48,14 +49,14 @@ public class AuthorController {
     }
     @ApiOperation("作者添加接口")
     @PostMapping
-    public Result<Void> addAuthor(@RequestBody AuthorDTO authorDTO) {
+    public Result<Void> addAuthor(@RequestBody @Valid AuthorDTO authorDTO) {
         authorService.addAuthor(authorDTO);
         return Result.success();
     }
 
     @ApiOperation("作者修改接口")
     @PutMapping
-    public Result<Void> modifyAuthor(@RequestBody AuthorDTO authorDTO) {
+    public Result<Void> modifyAuthor(@RequestBody @Valid AuthorDTO authorDTO) {
         authorService.modifyAuthor(authorDTO);
         return Result.success();
     }

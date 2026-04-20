@@ -15,11 +15,12 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Api(tags = "出版社管理接口")
 @RequestMapping("/admin/publisher")
-@RestController
+@RestController("admin-publisher-controller")
 @RequiredArgsConstructor
 public class PublisherController {
     private final PublisherService publisherService;
@@ -48,14 +49,14 @@ public class PublisherController {
     }
     @ApiOperation("出版社添加接口")
     @PostMapping
-    public Result<Void> addPublisher(@RequestBody PublisherDTO publisherDTO) {
+    public Result<Void> addPublisher(@RequestBody @Valid PublisherDTO publisherDTO) {
         publisherService.addPublisher(publisherDTO);
         return Result.success();
     }
 
     @ApiOperation("出版社修改接口")
     @PutMapping
-    public Result<Void> modifyPublisher(@RequestBody PublisherDTO publisherDTO) {
+    public Result<Void> modifyPublisher(@RequestBody @Valid PublisherDTO publisherDTO) {
         publisherService.modifyPublisher(publisherDTO);
         return Result.success();
     }

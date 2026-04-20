@@ -17,7 +17,7 @@ import java.util.List;
 @Api(tags = "用户端搜索接口")
 @RequiredArgsConstructor
 @RequestMapping("/search")
-@RestController
+@RestController("user-search-controller")
 class SearchController {
     private final SearchService searchService;
 

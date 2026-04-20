@@ -15,11 +15,12 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Api(tags = "用户管理接口")
 @RequestMapping("/admin/user")
-@RestController
+@RestController("admin-user-controller")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
@@ -49,14 +50,14 @@ public class UserController {
 
     @ApiOperation("用户添加接口")
     @PostMapping
-    public Result<Void> addUser(@RequestBody UserDTO userDTO) {
+    public Result<Void> addUser(@RequestBody @Valid UserDTO userDTO) {
         userService.addUser(userDTO);
         return Result.success();
     }
 
     @ApiOperation("用户修改接口")
     @PutMapping
-    public Result<Void> modifyUser(@RequestBody UserDTO userDTO) {
+    public Result<Void> modifyUser(@RequestBody @Valid UserDTO userDTO) {
         userService.modifyUser(userDTO);
         return Result.success();
     }

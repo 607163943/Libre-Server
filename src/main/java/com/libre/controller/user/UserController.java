@@ -17,6 +17,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Api(tags = "用户端用户接口")
@@ -37,14 +38,14 @@ public class UserController {
 
     @ApiOperation("修改当前用户个人信息")
     @PutMapping("/profile")
-    public Result<Void> modifyUserProfile(@RequestBody UserProfileDTO userProfileDTO) {
+    public Result<Void> modifyUserProfile(@RequestBody @Valid UserProfileDTO userProfileDTO) {
         userService.modifyUserProfile(userProfileDTO);
         return Result.success();
     }
 
     @ApiOperation("修改当前用户密码")
     @PatchMapping("/profile/password")
-    public Result<Void> modifyUserPassword(@RequestBody UserPasswordDTO userPasswordDTO) {
+    public Result<Void> modifyUserPassword(@RequestBody @Valid UserPasswordDTO userPasswordDTO) {
         userService.modifyUserPassword(userPasswordDTO);
         return Result.success();
     }

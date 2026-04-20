@@ -15,11 +15,12 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Api(tags = "角色管理接口")
 @RequestMapping("/admin/role")
-@RestController
+@RestController("admin-role-controller")
 @RequiredArgsConstructor
 public class RoleController {
     private final RoleService roleService;
@@ -49,14 +50,14 @@ public class RoleController {
 
     @ApiOperation("角色添加接口")
     @PostMapping
-    public Result<Void> addRole(@RequestBody RoleDTO roleDTO) {
+    public Result<Void> addRole(@RequestBody @Valid RoleDTO roleDTO) {
         roleService.addRole(roleDTO);
         return Result.success();
     }
 
     @ApiOperation("角色修改接口")
     @PutMapping
-    public Result<Void> modifyRole(@RequestBody RoleDTO roleDTO) {
+    public Result<Void> modifyRole(@RequestBody @Valid RoleDTO roleDTO) {
         roleService.modifyRole(roleDTO);
         return Result.success();
     }
