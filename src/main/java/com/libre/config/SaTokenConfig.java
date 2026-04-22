@@ -22,31 +22,36 @@ public class SaTokenConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        // 注册 Sa-Token 拦截器，定义详细认证规则
         registry.addInterceptor(new SaInterceptor(handler -> {
-            // 指定一条 match 规则
-            SaRouter
-                    .match("/**")    // 拦截的 path 列表，可以写多个 */
+            // 白名单
+            SaRouter.match(
                     // 管理端
-                    .notMatch("/admin/login", "/admin/login/**")
+                    "/admin/login/**",
                     // 用户端
-                    .notMatch("/login", "/login/**")
-                    .notMatch("/register", "/register/**")// 排除掉的 path 列表，可以写多个
-                    .notMatch("/search", "/search/**")
-                    .notMatch("/book", "/book/**")
-                    // 放行Knife4j文档
-                    .notMatch("/doc.html", "/webjars/**", "/favicon.ico", "/swagger-resources/**", "/v2/api-docs/**")
-                    // 放行浏览器插件请求
-                    .notMatch("/.well-known/**")
-                    // 放行用户端首页接口
-                    .notMatch("/home/top/lend/book", "/home/top/latest/book")
-                    .check(r -> {
-                        try {
-                            StpUtil.checkLogin();
-                        } catch (Exception e) {
-                            throw new LoginException(ExceptionEnums.LOGIN_USER_NOT_LOGIN);
-                        }
-                    });        // 要执行的校验动作，可以写完整的 lambda 表达式
+                    "/user/login/**",
+                    "/user/register/**",
+                    "/user/search/**",
+                    "/user/book/**",
+                    "/user/home/top/lend/book",
+                    "/user/home/top/latest/book",
+                    // Knife4j文档
+                    "/doc.html", "/webjars/**", "/favicon.ico", "/swagger-resources/**", "/v2/api-docs/**",
+                    // 浏览器插件
+                    "/.well-known/**"
+            ).stop();
+
+            // 认证
+            SaRouter.match("/**").check(r -> {
+                try {
+                    StpUtil.checkLogin();
+                } catch (Exception e) {
+                    throw new LoginException(ExceptionEnums.LOGIN_USER_NOT_LOGIN);
+                }
+            });
+
+            // 鉴权
+            SaRouter.match("/user/**", r -> StpUtil.checkRoleOr("读者", "超级管理员"));
+            SaRouter.match("/admin/**", r -> StpUtil.checkRoleOr("管理员", "超级管理员"));
         })).addPathPatterns("/**");
     }
 }

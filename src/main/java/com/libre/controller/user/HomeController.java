@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Api(tags = "用户端首页接口")
 @RequiredArgsConstructor
-@RequestMapping("/home")
+@RequestMapping("/user/home")
 @RestController("user-home-controller")
 public class HomeController {
     private final HomeService homeService;
