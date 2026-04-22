@@ -27,6 +27,9 @@ public class SaTokenConfig implements WebMvcConfigurer {
             // 指定一条 match 规则
             SaRouter
                     .match("/**")    // 拦截的 path 列表，可以写多个 */
+                    // 管理端
+                    .notMatch("/admin/login", "/admin/login/**")
+                    // 用户端
                     .notMatch("/login", "/login/**")
                     .notMatch("/register", "/register/**")// 排除掉的 path 列表，可以写多个
                     .notMatch("/search", "/search/**")
@@ -35,6 +38,8 @@ public class SaTokenConfig implements WebMvcConfigurer {
                     .notMatch("/doc.html", "/webjars/**", "/favicon.ico", "/swagger-resources/**", "/v2/api-docs/**")
                     // 放行浏览器插件请求
                     .notMatch("/.well-known/**")
+                    // 放行用户端首页接口
+                    .notMatch("/home/top/lend/book", "/home/top/latest/book")
                     .check(r -> {
                         try {
                             StpUtil.checkLogin();

@@ -40,4 +40,10 @@ public interface AuthorService extends IService<Author> {
      * @param ids 作者id集合
      */
     void deleteBatchAuthor(List<Long> ids);
+
+    /**
+     * 获取所有作者列表（带缓存）
+     * @return 作者列表
+     */
+    List<Author> getAllAuthor();
 }

@@ -2,6 +2,7 @@ package com.libre.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.libre.enums.ExceptionEnums;
@@ -17,14 +18,18 @@ import com.libre.service.BookService;
 import com.libre.service.PublisherService;
 import com.libre.util.PageUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
 @Service
 public class PublisherServiceImpl extends ServiceImpl<PublisherMapper, Publisher> implements PublisherService {
     private final BookService bookService;
+
+    private final StringRedisTemplate stringRedisTemplate;
 
     /**
      * 分页查询出版社信息
@@ -68,6 +73,9 @@ public class PublisherServiceImpl extends ServiceImpl<PublisherMapper, Publisher
         // 避免前端id残留数据影响
         if(publisher.getId()!=null) publisher.setId(null);
         save(publisher);
+        
+        // 清除缓存
+        stringRedisTemplate.delete("admin:publisher:all");
     }
 
     /**
@@ -87,6 +95,9 @@ public class PublisherServiceImpl extends ServiceImpl<PublisherMapper, Publisher
 
         Publisher publisher = BeanUtil.copyProperties(publisherDTO, Publisher.class);
         updateById(publisher);
+        
+        // 清除缓存
+        stringRedisTemplate.delete("admin:publisher:all");
     }
 
     /**
@@ -109,6 +120,9 @@ public class PublisherServiceImpl extends ServiceImpl<PublisherMapper, Publisher
                 .set(Publisher::getIsDelete,System.currentTimeMillis())
                 .eq(Publisher::getId, publisherId)
                 .update();
+        
+        // 清除缓存
+        stringRedisTemplate.delete("admin:publisher:all");
     }
 
     /**
@@ -122,5 +136,31 @@ public class PublisherServiceImpl extends ServiceImpl<PublisherMapper, Publisher
                 .set(Publisher::getIsDelete, System.currentTimeMillis())
                 .in(Publisher::getId, ids)
                 .update();
+        
+        // 清除缓存
+        stringRedisTemplate.delete("admin:publisher:all");
+    }
+
+    /**
+     * 获取所有出版社列表（带缓存）
+     * @return 出版社列表
+     */
+    @Override
+    public List<Publisher> getAllPublisher() {
+        String cacheKey = "admin:publisher:all";
+        
+        // 尝试从缓存中获取
+        String cachedData = stringRedisTemplate.opsForValue().get(cacheKey);
+        if (cachedData != null) {
+            return JSONUtil.toList(cachedData, Publisher.class);
+        }
+        
+        // 缓存未命中，查询数据库
+        List<Publisher> publisherList = list();
+        
+        // 存入缓存，过期时间30分钟
+        stringRedisTemplate.opsForValue().set(cacheKey, JSONUtil.toJsonStr(publisherList), 30, TimeUnit.MINUTES);
+        
+        return publisherList;
     }
 }

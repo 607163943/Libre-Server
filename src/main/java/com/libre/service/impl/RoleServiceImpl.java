@@ -2,6 +2,7 @@ package com.libre.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.libre.enums.ExceptionEnums;
@@ -15,13 +16,17 @@ import com.libre.result.PageResult;
 import com.libre.service.RoleService;
 import com.libre.util.PageUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
 @Service
 public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements RoleService {
+
+    private final StringRedisTemplate stringRedisTemplate;
 
     /**
      * 分页查询角色信息
@@ -67,6 +72,9 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         // 避免前端id残留数据影响
         if (role.getId() != null) role.setId(null);
         save(role);
+        
+        // 清除缓存
+        stringRedisTemplate.delete("admin:role:all");
     }
 
     /**
@@ -87,6 +95,9 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
 
         Role role = BeanUtil.copyProperties(roleDTO, Role.class);
         updateById(role);
+        
+        // 清除缓存
+        stringRedisTemplate.delete("admin:role:all");
     }
 
     /**
@@ -101,6 +112,9 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
                 .set(Role::getIsDelete, System.currentTimeMillis())
                 .eq(Role::getId, roleId)
                 .update();
+        
+        // 清除缓存
+        stringRedisTemplate.delete("admin:role:all");
     }
 
     /**
@@ -114,5 +128,31 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
                 .set(Role::getIsDelete, System.currentTimeMillis())
                 .in(Role::getId, ids)
                 .update();
+        
+        // 清除缓存
+        stringRedisTemplate.delete("admin:role:all");
+    }
+
+    /**
+     * 获取所有角色列表（带缓存）
+     * @return 角色列表
+     */
+    @Override
+    public List<Role> getAllRole() {
+        String cacheKey = "admin:role:all";
+        
+        // 尝试从缓存中获取
+        String cachedData = stringRedisTemplate.opsForValue().get(cacheKey);
+        if (cachedData != null) {
+            return JSONUtil.toList(cachedData, Role.class);
+        }
+        
+        // 缓存未命中，查询数据库
+        List<Role> roleList = list();
+        
+        // 存入缓存，过期时间30分钟
+        stringRedisTemplate.opsForValue().set(cacheKey, JSONUtil.toJsonStr(roleList), 30, TimeUnit.MINUTES);
+        
+        return roleList;
     }
 }

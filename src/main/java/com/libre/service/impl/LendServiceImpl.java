@@ -2,6 +2,7 @@ package com.libre.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.libre.constant.LendStatus;
@@ -23,15 +24,19 @@ import com.libre.service.LendService;
 import com.libre.util.PageUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
 @Service
 public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements LendService {
     private final BookMapper bookMapper;
+
+    private final StringRedisTemplate stringRedisTemplate;
 
     @Value("${business.lend.max-lend-count}")
     private Integer maxRenewCount;
@@ -82,6 +87,9 @@ public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements Le
         // 默认借阅时间为7天
         lend.setDueTime(LocalDateTime.now().plusDays(7));
         save(lend);
+        
+        // 清除首页缓存
+        clearHomeCache();
     }
 
     /**
@@ -104,10 +112,13 @@ public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements Le
         }
 
         Lend lend = BeanUtil.copyProperties(lendDTO, Lend.class);
-        if(lend.getRenewCount()>maxRenewCount) {
+        if (lend.getRenewCount() > maxRenewCount) {
             throw new LendException(ExceptionEnums.LEND_RENEW_OVER_MAX_COUNT);
         }
         updateById(lend);
+        
+        // 清除首页缓存
+        clearHomeCache();
     }
 
     /**
@@ -122,6 +133,9 @@ public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements Le
                 .set(Lend::getIsDelete, System.currentTimeMillis())
                 .eq(Lend::getId, lendId)
                 .update();
+        
+        // 清除首页缓存
+        clearHomeCache();
     }
 
     /**
@@ -136,6 +150,18 @@ public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements Le
                 .set(Lend::getIsDelete, System.currentTimeMillis())
                 .in(Lend::getId, ids)
                 .update();
+        
+        // 清除首页缓存
+        clearHomeCache();
+    }
+
+    /**
+     * 清除首页缓存
+     */
+    private void clearHomeCache() {
+        stringRedisTemplate.delete("admin:home:total-card");
+        stringRedisTemplate.delete("admin:home:recent-lend-trend");
+        stringRedisTemplate.delete("admin:home:top-book");
     }
 
     /**
@@ -226,8 +252,22 @@ public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements Le
      */
     @Override
     public BookDetailVO getBookDetail(Long bookId) {
-        BookDetailVO bookDetail = bookMapper.getBookDetail(bookId);
-        if (!StpUtil.isLogin()) {
+        String cacheKey = "user:book:detail:" + bookId;
+
+        // 尝试从缓存中获取
+        String cachedData = stringRedisTemplate.opsForValue().get(cacheKey);
+
+        BookDetailVO bookDetail;
+        if(cachedData!=null) {
+            // 已登录状态，查询数据库获取实时信息
+            bookDetail = JSONUtil.toBean(cachedData, BookDetailVO.class);
+        }else {
+            // 查询数据库，建立缓存
+            bookDetail = bookMapper.getBookDetail(bookId);
+            stringRedisTemplate.opsForValue().set(cacheKey, JSONUtil.toJsonStr(bookDetail),1, TimeUnit.HOURS);
+        }
+
+        if(!StpUtil.isLogin()) {
             return bookDetail;
         }
 
@@ -236,12 +276,14 @@ public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements Le
                 .eq(Lend::getUserId, StpUtil.getLoginIdAsLong())
                 .in(Lend::getState, LendStatus.LEND, LendStatus.OVERDUE)
                 .one();
+
         if (lend == null) {
             return bookDetail;
         }
 
         bookDetail.setState(lend.getState());
 
+        // 已登录且有借阅记录，不缓存个性化数据（因为每个用户的借阅状态不同）
         return bookDetail;
     }
 

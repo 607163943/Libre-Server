@@ -40,4 +40,10 @@ public interface RoleService extends IService<Role> {
      * @param ids 角色id列表
      */
     void deleteBatchRole(List<Long> ids);
+
+    /**
+     * 获取所有角色列表（带缓存）
+     * @return 角色列表
+     */
+    List<Role> getAllRole();
 }

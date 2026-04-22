@@ -40,4 +40,10 @@ public interface PublisherService extends IService<Publisher> {
      * @param ids 出版社id列表
      */
     void deleteBatchPublisher(List<Long> ids);
+
+    /**
+     * 获取所有出版社列表（带缓存）
+     * @return 出版社列表
+     */
+    List<Publisher> getAllPublisher();
 }

@@ -43,7 +43,7 @@ public class PublisherController {
     @ApiOperation("获取所有出版社")
     @GetMapping("all")
     public Result<List<PublisherVO>> getAllPublishers() {
-        List<Publisher> publisherList = publisherService.list();
+        List<Publisher> publisherList = publisherService.getAllPublisher();
         List<PublisherVO> publisherVOList = BeanUtil.copyToList(publisherList, PublisherVO.class);
         return Result.success(publisherVOList);
     }

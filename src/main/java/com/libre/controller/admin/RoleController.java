@@ -43,7 +43,7 @@ public class RoleController {
     @ApiOperation("获取所有角色")
     @GetMapping("all")
     public Result<List<RoleVO>> getAllRoles() {
-        List<Role> roleList = roleService.list();
+        List<Role> roleList = roleService.getAllRole();
         List<RoleVO> roleVOList = BeanUtil.copyToList(roleList, RoleVO.class);
         return Result.success(roleVOList);
     }

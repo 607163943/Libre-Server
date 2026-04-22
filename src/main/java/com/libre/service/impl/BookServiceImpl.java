@@ -22,6 +22,7 @@ import com.libre.service.BookService;
 import com.libre.service.LendService;
 import com.libre.util.PageUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,6 +33,8 @@ import java.util.stream.Collectors;
 @Service
 public class BookServiceImpl extends ServiceImpl<BookMapper, Book> implements BookService {
     private final LendService lendService;
+
+    private final StringRedisTemplate stringRedisTemplate;
 
     /**
      * 分页查询图书信息
@@ -84,6 +87,9 @@ public class BookServiceImpl extends ServiceImpl<BookMapper, Book> implements Bo
         // 避免前端id残留数据影响
         if (book.getId() != null) book.setId(null);
         save(book);
+        
+        // 清除首页缓存
+        clearHomeCache();
     }
 
     /**
@@ -117,6 +123,9 @@ public class BookServiceImpl extends ServiceImpl<BookMapper, Book> implements Bo
 
         Book book = BeanUtil.copyProperties(bookDTO, Book.class);
         updateById(book);
+        
+        // 清除首页缓存
+        clearHomeCache();
     }
 
     /**
@@ -131,6 +140,9 @@ public class BookServiceImpl extends ServiceImpl<BookMapper, Book> implements Bo
                 .set(Book::getIsDelete, System.currentTimeMillis())
                 .eq(Book::getId, bookId)
                 .update();
+        
+        // 清除首页缓存
+        clearHomeCache();
     }
 
     /**
@@ -144,6 +156,18 @@ public class BookServiceImpl extends ServiceImpl<BookMapper, Book> implements Bo
                 .set(Book::getIsDelete, System.currentTimeMillis())
                 .in(Book::getId, ids)
                 .update();
+        
+        // 清除首页缓存
+        clearHomeCache();
+    }
+
+    /**
+     * 清除首页缓存
+     */
+    private void clearHomeCache() {
+        stringRedisTemplate.delete("admin:home:total-card");
+        stringRedisTemplate.delete("admin:home:recent-lend-trend");
+        stringRedisTemplate.delete("admin:home:top-book");
     }
 
     /**

@@ -43,7 +43,7 @@ public class AuthorController {
     @ApiOperation("获取所有作者")
     @GetMapping("all")
     public Result<List<AuthorVO>> getAllAuthors() {
-        List<Author> authorList = authorService.list();
+        List<Author> authorList = authorService.getAllAuthor();
         List<AuthorVO> authorVOList = BeanUtil.copyToList(authorList, AuthorVO.class);
         return Result.success(authorVOList);
     }

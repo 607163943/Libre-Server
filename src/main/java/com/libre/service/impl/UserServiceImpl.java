@@ -3,6 +3,7 @@ package com.libre.service.impl;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.libre.enums.ExceptionEnums;
@@ -20,15 +21,19 @@ import com.libre.service.UserService;
 import com.libre.util.PageUtil;
 import com.libre.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
     private final SecurityUtil securityUtil;
+
+    private final StringRedisTemplate stringRedisTemplate;
 
     /**
      * 分页查询用户信息
@@ -141,11 +146,25 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      */
     @Override
     public UserProfileVO getUserProfile(Long userId) {
+        String cacheKey = "user:profile:" + userId;
+        
+        // 尝试从缓存中获取
+        String cachedData = stringRedisTemplate.opsForValue().get(cacheKey);
+        if (cachedData != null) {
+            return JSONUtil.toBean(cachedData, UserProfileVO.class);
+        }
+        
+        // 缓存未命中，查询数据库
         User user = getById(userId);
         if (user == null) {
             throw new UserException(ExceptionEnums.LOGIN_USER_NOT_EXIST);
         }
-        return BeanUtil.copyProperties(user, UserProfileVO.class);
+        UserProfileVO result = BeanUtil.copyProperties(user, UserProfileVO.class);
+        
+        // 存入缓存，过期时间30分钟
+        stringRedisTemplate.opsForValue().set(cacheKey, JSONUtil.toJsonStr(result), 30, TimeUnit.MINUTES);
+        
+        return result;
     }
 
     /**
@@ -154,7 +173,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      */
     @Override
     public void modifyUserProfile(UserProfileDTO userProfileDTO) {
-        User user = getById(StpUtil.getLoginIdAsLong());
+        Long userId = StpUtil.getLoginIdAsLong();
+        User user = getById(userId);
         if (user == null) {
             throw new UserException(ExceptionEnums.LOGIN_USER_NOT_EXIST);
         }
@@ -164,6 +184,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             user.setName(userProfileDTO.getName());
         }
         updateById(user);
+        
+        // 清除缓存
+        String cacheKey = "user:profile:" + userId;
+        stringRedisTemplate.delete(cacheKey);
     }
 
     /**

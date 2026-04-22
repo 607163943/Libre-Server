@@ -2,6 +2,7 @@ package com.libre.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.libre.enums.ExceptionEnums;
@@ -17,14 +18,18 @@ import com.libre.service.AuthorService;
 import com.libre.service.BookService;
 import com.libre.util.PageUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
 @Service
 public class AuthorServiceImpl extends ServiceImpl<AuthorMapper, Author> implements AuthorService {
     private final BookService bookService;
+
+    private final StringRedisTemplate stringRedisTemplate;
 
     /**
      * 分页查询作者信息
@@ -70,6 +75,9 @@ public class AuthorServiceImpl extends ServiceImpl<AuthorMapper, Author> impleme
         // 避免前端id残留数据影响
         if (author.getId() != null) author.setId(null);
         save(author);
+        
+        // 清除缓存
+        stringRedisTemplate.delete("admin:author:all");
     }
 
     /**
@@ -90,6 +98,9 @@ public class AuthorServiceImpl extends ServiceImpl<AuthorMapper, Author> impleme
 
         Author author = BeanUtil.copyProperties(authorDTO, Author.class);
         updateById(author);
+        
+        // 清除缓存
+        stringRedisTemplate.delete("admin:author:all");
     }
 
     /**
@@ -113,6 +124,9 @@ public class AuthorServiceImpl extends ServiceImpl<AuthorMapper, Author> impleme
                 .set(Author::getIsDelete, System.currentTimeMillis())
                 .eq(Author::getId, authorId)
                 .update();
+        
+        // 清除缓存
+        stringRedisTemplate.delete("admin:author:all");
     }
 
     /**
@@ -132,5 +146,31 @@ public class AuthorServiceImpl extends ServiceImpl<AuthorMapper, Author> impleme
                 .set(Author::getIsDelete, System.currentTimeMillis())
                 .in(Author::getId, ids)
                 .update();
+        
+        // 清除缓存
+        stringRedisTemplate.delete("admin:author:all");
+    }
+
+    /**
+     * 获取所有作者列表（带缓存）
+     * @return 作者列表
+     */
+    @Override
+    public List<Author> getAllAuthor() {
+        String cacheKey = "admin:author:all";
+        
+        // 尝试从缓存中获取
+        String cachedData = stringRedisTemplate.opsForValue().get(cacheKey);
+        if (cachedData != null) {
+            return JSONUtil.toList(cachedData, Author.class);
+        }
+        
+        // 缓存未命中，查询数据库
+        List<Author> authorList = list();
+        
+        // 存入缓存，过期时间30分钟
+        stringRedisTemplate.opsForValue().set(cacheKey, JSONUtil.toJsonStr(authorList), 30, TimeUnit.MINUTES);
+        
+        return authorList;
     }
 }
