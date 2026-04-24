@@ -82,8 +82,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if(StrUtil.isBlank(user.getName())) {
             user.setName(user.getUsername());
         }
-        // 避免前端id残留数据影响
-        if (user.getId() != null) user.setId(null);
+
+        user.setPassword(securityUtil.generatePassword(user.getPassword()));
         save(user);
     }
 
@@ -108,6 +108,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if(StrUtil.isBlank(user.getName())) {
             user.setName(user.getUsername());
         }
+        user.setPassword(securityUtil.generatePassword(user.getPassword()));
         updateById(user);
     }
 

@@ -21,6 +21,9 @@ public enum ExceptionEnums {
 
     USER_ROLE_EXIST(160001, "用户角色关系已存在"),
 
+    PERMISSION_EXIST(170001, "权限已存在"),
+    PERMISSION_HAS_ROLE(170002, "存在该权限的角色关联，无法删除"),
+
     LOGIN_USER_NOT_EXIST(370001, "用户不存在"),
     LOGIN_PASSWORD_ERROR(370002, "密码错误"),
     LOGIN_USER_NOT_LOGIN(470003, "用户未登录"),
