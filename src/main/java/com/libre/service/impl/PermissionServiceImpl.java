@@ -11,9 +11,11 @@ import com.libre.mapper.PermissionMapper;
 import com.libre.pojo.dto.PermissionDTO;
 import com.libre.pojo.dto.PermissionPageDTO;
 import com.libre.pojo.po.Permission;
+import com.libre.pojo.po.RolePermission;
 import com.libre.pojo.vo.PermissionPageVO;
 import com.libre.result.PageResult;
 import com.libre.service.PermissionService;
+import com.libre.service.RolePermissionService;
 import com.libre.util.PageUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -26,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permission> implements PermissionService {
     private final StringRedisTemplate stringRedisTemplate;
+    private final RolePermissionService rolePermissionService;
 
     /**
      * 分页查询权限信息
@@ -108,8 +111,13 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
      */
     @Override
     public void deletePermission(Long permissionId) {
-        // TODO: 需要检查是否存在该权限的角色关联
+        Long rolePermissionCount = rolePermissionService.lambdaQuery()
+                .eq(RolePermission::getPermissionId, permissionId)
+                .count();
         // 这里假设有一个角色权限关联表，需要根据实际业务逻辑实现
+        if(rolePermissionCount>0) {
+            throw new PermissionException(ExceptionEnums.PERMISSION_HAS_ROLE);
+        }
         
         lambdaUpdate()
                 // 使用时间戳标记逻辑删除，避免唯一键冲突
@@ -127,7 +135,13 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
      */
     @Override
     public void deleteBatchPermission(List<Long> ids) {
-        // TODO: 需要检查是否存在这些权限的角色关联
+        Long rolePermissionCount = rolePermissionService.lambdaQuery()
+                .in(RolePermission::getPermissionId, ids)
+                .count();
+        // 这里假设有一个角色权限关联表，需要根据实际业务逻辑实现
+        if(rolePermissionCount>0) {
+            throw new PermissionException(ExceptionEnums.PERMISSION_HAS_ROLE);
+        }
         // 这里假设有一个角色权限关联表，需要根据实际业务逻辑实现
 
         lambdaUpdate()
