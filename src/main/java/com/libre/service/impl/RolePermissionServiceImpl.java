@@ -29,20 +29,12 @@ public class RolePermissionServiceImpl extends ServiceImpl<RolePermissionMapper,
     @Override
     public PageResult<List<RolePermissionPageVO>> pageQueryRolePermission(RolePermissionPageDTO rolePermissionPageDTO) {
         // 构建分页条件
-        IPage<RolePermission> page = PageUtil.createPage(rolePermissionPageDTO);
+        IPage<RolePermissionPageVO> page = PageUtil.createPage(rolePermissionPageDTO);
         // 查询
-        page = lambdaQuery()
-                .eq(rolePermissionPageDTO.getRoleId() != null
-                        , RolePermission::getRoleId, rolePermissionPageDTO.getRoleId())
-                .eq(rolePermissionPageDTO.getPermissionId() != null
-                        , RolePermission::getPermissionId, rolePermissionPageDTO.getPermissionId())
-                .page(page);
-        // 构建VO数据
-        List<RolePermissionPageVO> rolePermissionPageVOS = BeanUtil.copyToList(page.getRecords(), RolePermissionPageVO.class);
-
+        page = baseMapper.pageQueryRolePermission(page, rolePermissionPageDTO);
         return PageResult.<List<RolePermissionPageVO>>builder()
                 .total(page.getTotal())
-                .data(rolePermissionPageVOS)
+                .data(page.getRecords())
                 .build();
     }
 

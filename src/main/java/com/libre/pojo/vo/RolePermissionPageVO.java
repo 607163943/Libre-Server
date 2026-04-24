@@ -11,12 +11,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RolePermissionPageVO {
-    @ApiModelProperty("记录ID")
+    @ApiModelProperty("角色权限ID")
     private Long id;
 
-    @ApiModelProperty("角色ID")
-    private Long roleId;
+    @ApiModelProperty("角色名")
+    private String roleName;
 
-    @ApiModelProperty("权限ID")
-    private Long permissionId;
+    @ApiModelProperty("权限码")
+    private String permissionCode;
+
+    @ApiModelProperty("权限描述")
+    private String permissionDesc;
 }
