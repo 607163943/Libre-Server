@@ -34,7 +34,7 @@ public class Book extends BasePO {
     // 价格
     private Long price;
     // 数量
-    private Integer number;
+    private Long number;
     // 修改时间
     private LocalDateTime updateTime;
 }

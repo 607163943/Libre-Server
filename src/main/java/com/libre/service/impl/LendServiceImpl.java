@@ -5,6 +5,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.extension.toolkit.Db;
 import com.libre.constant.LendStatus;
 import com.libre.enums.ExceptionEnums;
 import com.libre.exception.LendException;
@@ -14,6 +15,7 @@ import com.libre.pojo.dto.BasePageDTO;
 import com.libre.pojo.dto.LendDTO;
 import com.libre.pojo.dto.LendPageDTO;
 import com.libre.pojo.dto.user.MyLendPageDTO;
+import com.libre.pojo.po.Book;
 import com.libre.pojo.po.Lend;
 import com.libre.pojo.vo.LendPageVO;
 import com.libre.pojo.vo.admin.HomeTopBookItem;
@@ -77,9 +79,23 @@ public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements Le
         if (lendCount > 0) {
             throw new LendException(ExceptionEnums.LEND_USER_LEND_BOOK_EXIST);
         }
+
+        // 检查书籍是否存在
+        Book book = checkBookIsNullAndReturnBook(lendDTO.getBookId());
+
+        // 判断库存是否为空
+        Long lendBookNumber = lambdaQuery()
+                .eq(Lend::getBookId, lendDTO.getBookId())
+                .in(Lend::getState, LendStatus.LEND, LendStatus.OVERDUE)
+                .count();
+
+        // 相等说明库存为空
+        if(lendBookNumber.equals(book.getNumber())) {
+            throw new LendException(ExceptionEnums.LEND_BOOK_EMPTY);
+        }
+
+        // 判断库存是否为空
         Lend lend = BeanUtil.copyProperties(lendDTO, Lend.class);
-        // 避免前端id残留数据影响
-        if (lend.getId() != null) lend.setId(null);
         // 初始化借阅次数为0
         lend.setRenewCount(0);
         // 初始化为借阅状态
@@ -111,6 +127,22 @@ public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements Le
             throw new LendException(ExceptionEnums.LEND_USER_LEND_BOOK_EXIST);
         }
 
+        // 检查书籍是否存在
+        Book book = checkBookIsNullAndReturnBook(lendDTO.getBookId());
+
+        // 判断库存是否为空
+        Long lendBookNumber = lambdaQuery()
+                // 排除自己
+                .ne(Lend::getId, lendDTO.getId())
+                .eq(Lend::getBookId, lendDTO.getBookId())
+                .in(Lend::getState, LendStatus.LEND, LendStatus.OVERDUE)
+                .count();
+
+        // 相等说明库存为空
+        if(lendBookNumber.equals(book.getNumber())) {
+            throw new LendException(ExceptionEnums.LEND_BOOK_EMPTY);
+        }
+
         Lend lend = BeanUtil.copyProperties(lendDTO, Lend.class);
         if (lend.getRenewCount() > maxRenewCount) {
             throw new LendException(ExceptionEnums.LEND_RENEW_OVER_MAX_COUNT);
@@ -119,6 +151,23 @@ public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements Le
         
         // 清除首页缓存
         clearHomeCache();
+    }
+
+    /**
+     * 检查书籍是否存在
+     * @param bookId 书籍id
+     * @return 书籍
+     */
+    private Book checkBookIsNullAndReturnBook(Long bookId) {
+        // 判断该书籍是否存在
+        Book book = Db.lambdaQuery(Book.class)
+                .eq(Book::getId, bookId)
+                .one();
+        if(book == null) {
+            throw new LendException(ExceptionEnums.LEND_BOOK_NOT_EXIST);
+        }
+
+        return book;
     }
 
     /**
@@ -205,6 +254,17 @@ public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements Le
                 .count();
         if (lendCount > 0) {
             throw new LendException(ExceptionEnums.LEND_USER_LEND_BOOK_EXIST);
+        }
+
+        // 检查书籍是否存在
+        Book book=checkBookIsNullAndReturnBook(bookId);
+        // 检查库存是否为空
+        Long lendBookNumber = lambdaQuery()
+                .eq(Lend::getBookId, bookId)
+                .in(Lend::getState, LendStatus.LEND, LendStatus.OVERDUE)
+                .count();
+        if(lendBookNumber.equals(book.getNumber())) {
+            throw new LendException(ExceptionEnums.LEND_BOOK_EMPTY);
         }
 
         Lend lend = new Lend();

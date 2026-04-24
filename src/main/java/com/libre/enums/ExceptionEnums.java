@@ -36,6 +36,8 @@ public enum ExceptionEnums {
     LEND_USER_LEND_BOOK_EXIST(309001, "用户已借阅该图书且未归还"),
     LEND_RENEW_OVER_MAX_COUNT(309002, "续借次数超过最大值"),
     LEND_USER_NOT_LEND(209003, "用户未借阅该图书"),
+    LEND_BOOK_NOT_EXIST(109004, "借阅书籍不存在"),
+    LEND_BOOK_EMPTY(30905, "借阅书籍库存为空"),
 
     UTIL_PASSWORD_MD5_ERROR(410001, "密码MD5值异常");
 
