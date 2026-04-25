@@ -39,7 +39,9 @@ public enum ExceptionEnums {
     LEND_BOOK_NOT_EXIST(109004, "借阅书籍不存在"),
     LEND_BOOK_EMPTY(30905, "借阅书籍库存为空"),
 
-    UTIL_PASSWORD_MD5_ERROR(410001, "密码MD5值异常");
+    UTIL_PASSWORD_MD5_ERROR(410001, "密码MD5值异常"),
+
+    MODULE_EXIST(111001, "模块已存在");
 
     private final Integer code;
     private final String msg;
