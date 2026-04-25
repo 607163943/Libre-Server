@@ -149,4 +149,11 @@
         and (lend.state=1 or lend.state=3)
         order by lend.create_time desc
     </select>
+    <update id="updateOverTimeLend">
+        UPDATE tb_lend
+        SET state = 2
+        WHERE is_delete = 0
+          AND state = 1
+          AND NOW() > due_time;
+    </update>
 </mapper>

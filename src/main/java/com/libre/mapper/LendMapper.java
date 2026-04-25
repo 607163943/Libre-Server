@@ -73,4 +73,10 @@ public interface LendMapper extends BaseMapper<Lend> {
      * @return 分页结果
      */
     IPage<MyLendBookDetailVO> pageQueryMyLendDetail(@Param("page") IPage<MyLendBookDetailVO> page, @Param("userId") Long userId);
+
+    /**
+     * 查询超时借阅
+     * @return 超时借阅
+     */
+    void updateOverTimeLend();
 }

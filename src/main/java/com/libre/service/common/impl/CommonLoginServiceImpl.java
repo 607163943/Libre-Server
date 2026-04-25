@@ -1,4 +1,4 @@
-package com.libre.service.impl;
+package com.libre.service.common.impl;
 
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
@@ -10,19 +10,20 @@ import com.libre.pojo.dto.LoginDTO;
 import com.libre.pojo.dto.RegisterDTO;
 import com.libre.pojo.po.User;
 import com.libre.pojo.vo.LoginVO;
-import com.libre.service.LoginService;
 import com.libre.service.UserService;
+import com.libre.service.common.CommonLoginService;
 import com.libre.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @RequiredArgsConstructor
 @Service
-public class LoginServiceImpl implements LoginService {
+public class CommonLoginServiceImpl implements CommonLoginService {
     private final UserService userService;
 
     private final SecurityUtil securityUtil;
-
     /**
      * 登录
      * @param loginDTO 登录参数
@@ -41,6 +42,10 @@ public class LoginServiceImpl implements LoginService {
         if(!securityUtil.checkPassword(loginDTO.getPassword(), user.getPassword())) {
             throw new LoginException(ExceptionEnums.LOGIN_PASSWORD_ERROR);
         }
+
+        // 更新登录时间
+        user.setLastLoginTime(LocalDateTime.now());
+        userService.updateById(user);
 
         StpUtil.login(user.getId());
 

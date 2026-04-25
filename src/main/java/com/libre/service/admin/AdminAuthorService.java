@@ -1,4 +1,4 @@
-package com.libre.service;
+package com.libre.service.admin;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.libre.pojo.dto.AuthorDTO;
@@ -9,7 +9,7 @@ import com.libre.result.PageResult;
 
 import java.util.List;
 
-public interface AuthorService extends IService<Author> {
+public interface AdminAuthorService extends IService<Author> {
     /**
      * 分页查询作者信息
      * @param authorPageDTO 查询参数

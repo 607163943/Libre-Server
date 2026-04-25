@@ -4,7 +4,9 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import com.libre.pojo.dto.UserRoleDTO;
 import com.libre.pojo.dto.UserRolePageDTO;
+import com.libre.pojo.dto.admin.AddUserRoleDTO;
 import com.libre.pojo.po.UserRole;
+import com.libre.pojo.vo.RoleVO;
 import com.libre.pojo.vo.UserRolePageVO;
 import com.libre.pojo.vo.UserRoleVO;
 import com.libre.result.PageResult;
@@ -75,6 +77,20 @@ public class UserRoleController {
         if(CollUtil.isNotEmpty(ids)) {
             userRoleService.deleteBatchUserRole(ids);
         }
+        return Result.success();
+    }
+
+    @ApiOperation("获取用户拥有角色列表")
+    @GetMapping("/user/{userId}")
+    public Result<List<RoleVO>> getUserRoles(@PathVariable Long userId) {
+        List<RoleVO> roleVOList = userRoleService.getUserRoles(userId);
+        return Result.success(roleVOList);
+    }
+
+    @ApiOperation("批量设置指定用户的角色")
+    @PostMapping("/assign")
+    public Result<Void> assignUserRoles(@RequestBody @Valid AddUserRoleDTO addUserRoleDTO) {
+        userRoleService.assignUserRoles(addUserRoleDTO);
         return Result.success();
     }
 }

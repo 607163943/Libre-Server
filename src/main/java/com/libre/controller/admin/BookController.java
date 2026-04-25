@@ -9,7 +9,7 @@ import com.libre.pojo.vo.BookPageVO;
 import com.libre.pojo.vo.BookVO;
 import com.libre.result.PageResult;
 import com.libre.result.Result;
-import com.libre.service.BookService;
+import com.libre.service.admin.AdminBookService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -23,19 +23,19 @@ import java.util.List;
 @RestController("admin-book-controller")
 @RequiredArgsConstructor
 public class BookController {
-    private final BookService bookService;
+    private final AdminBookService adminBookService;
 
     @ApiOperation("图书分页查询接口")
     @GetMapping
     public Result<PageResult<List<BookPageVO>>> pageQueryBook(BookPageDTO bookPageDTO) {
-        PageResult<List<BookPageVO>> pageResult = bookService.pageQueryBook(bookPageDTO);
+        PageResult<List<BookPageVO>> pageResult = adminBookService.pageQueryBook(bookPageDTO);
         return Result.success(pageResult);
     }
 
     @ApiOperation("获取指定图书信息")
     @GetMapping("{bookId}")
     public Result<BookVO> getBook(@PathVariable Long bookId) {
-        Book book = bookService.getById(bookId);
+        Book book = adminBookService.getById(bookId);
         BookVO bookVO = BeanUtil.copyProperties(book, BookVO.class);
         return Result.success(bookVO);
     }
@@ -43,7 +43,7 @@ public class BookController {
     @ApiOperation("获取所有图书")
     @GetMapping("all")
     public Result<List<BookVO>> getAllBooks() {
-        List<Book> bookList = bookService.list();
+        List<Book> bookList = adminBookService.list();
         List<BookVO> bookVOList = BeanUtil.copyToList(bookList, BookVO.class);
         return Result.success(bookVOList);
     }
@@ -51,21 +51,21 @@ public class BookController {
     @ApiOperation("图书添加接口")
     @PostMapping
     public Result<Void> addBook(@RequestBody @Valid BookDTO bookDTO) {
-        bookService.addBook(bookDTO);
+        adminBookService.addBook(bookDTO);
         return Result.success();
     }
 
     @ApiOperation("图书修改接口")
     @PutMapping
     public Result<Void> modifyBook(@RequestBody @Valid BookDTO bookDTO) {
-        bookService.modifyBook(bookDTO);
+        adminBookService.modifyBook(bookDTO);
         return Result.success();
     }
 
     @ApiOperation("图书删除接口")
     @DeleteMapping("{bookId}")
     public Result<Void> deleteBook(@PathVariable Long bookId) {
-        bookService.deleteBook(bookId);
+        adminBookService.deleteBook(bookId);
         return Result.success();
     }
 
@@ -73,7 +73,7 @@ public class BookController {
     @DeleteMapping
     public Result<Void> deleteBatchBook(@RequestParam List<Long> ids) {
         if(CollUtil.isNotEmpty(ids)) {
-            bookService.deleteBatchBook(ids);
+            adminBookService.deleteBatchBook(ids);
         }
         return Result.success();
     }

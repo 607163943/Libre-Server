@@ -1,10 +1,11 @@
-package com.libre.service;
+package com.libre.service.common;
 
 import com.libre.pojo.dto.LoginDTO;
 import com.libre.pojo.dto.RegisterDTO;
 import com.libre.pojo.vo.LoginVO;
 
-public interface LoginService {
+public interface CommonLoginService {
+
     /**
      * 登录
      * @param loginDTO 登录参数

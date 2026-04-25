@@ -3,7 +3,7 @@ package com.libre.controller.admin;
 import com.libre.pojo.dto.LoginDTO;
 import com.libre.pojo.vo.LoginVO;
 import com.libre.result.Result;
-import com.libre.service.LoginService;
+import com.libre.service.common.CommonLoginService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -19,19 +19,19 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 @RestController("admin-login-controller")
 public class LoginController {
-    private final LoginService loginService;
+    private final CommonLoginService commonLoginService;
 
     @ApiOperation("登录接口")
     @PostMapping("/login")
     public Result<LoginVO> login(@RequestBody @Valid LoginDTO loginDTO) {
-        LoginVO loginVO = loginService.login(loginDTO);
+        LoginVO loginVO = commonLoginService.login(loginDTO);
         return Result.success(loginVO);
     }
 
     @ApiOperation("登出接口")
     @PostMapping("/logout")
     public Result<Void> logout() {
-        loginService.logout();
+        commonLoginService.logout();
         return Result.success();
     }
 }

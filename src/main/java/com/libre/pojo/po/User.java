@@ -20,6 +20,8 @@ public class User extends BasePO {
     private String password;
     // 姓名
     private String name;
+    // 上次登录时间
+    private LocalDateTime lastLoginTime;
     // 修改时间
     private LocalDateTime updateTime;
 }
