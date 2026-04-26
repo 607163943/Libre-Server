@@ -22,7 +22,13 @@
         <where>
             p.is_delete = 0
             <if test="permissionPageDTO.permissionCode != null and permissionPageDTO.permissionCode != ''">
-                AND permission_code LIKE CONCAT('%', #{permissionPageDTO.permissionCode}, '%')
+                AND CONCAT(
+                CASE m.client_type WHEN 1 THEN 'admin' WHEN 2 THEN 'app' ELSE 'other' END,
+                ':',
+                m.module_key,
+                ':',
+                p.action_code
+                ) LIKE CONCAT('%', #{permissionPageDTO.permissionCode}, '%')
             </if>
             <if test="permissionPageDTO.moduleId != null">
                 AND m.id = #{permissionPageDTO.moduleId}

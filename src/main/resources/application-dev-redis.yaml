@@ -1,0 +1,8 @@
+# springboot
+spring:
+  # redis配置
+  redis:
+    database: ${redis.database}
+    host: ${redis.host}
+    port: ${redis.port}
+    password: ${redis.password}

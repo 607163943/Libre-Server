@@ -12,8 +12,8 @@ import com.libre.pojo.dto.admin.LendDTO;
 import com.libre.pojo.dto.admin.LendPageDTO;
 import com.libre.pojo.po.Book;
 import com.libre.pojo.po.Lend;
-import com.libre.pojo.vo.admin.LendPageVO;
 import com.libre.pojo.vo.admin.HomeTopBookItem;
+import com.libre.pojo.vo.admin.LendPageVO;
 import com.libre.pojo.vo.admin.RecentLendTrendItem;
 import com.libre.pojo.vo.app.HomeTopLendBookItem;
 import com.libre.result.PageResult;
@@ -24,7 +24,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -83,18 +82,17 @@ public class AdminLendServiceImpl extends ServiceImpl<LendMapper, Lend> implemen
                 .count();
 
         // 相等说明库存为空
-        if(lendBookNumber.equals(book.getNumber())) {
+        if (lendBookNumber.equals(book.getNumber())) {
             throw new LendException(ExceptionEnums.LEND_BOOK_EMPTY);
         }
 
-        // 判断库存是否为空
         Lend lend = BeanUtil.copyProperties(lendDTO, Lend.class);
         // 初始化借阅次数为0
         lend.setRenewCount(0);
         // 初始化为借阅状态
         lend.setState(LendStatus.LEND);
         // 默认借阅时间为7天
-        lend.setDueTime(LocalDateTime.now().plusDays(7));
+        lend.setDueTime(lendDTO.getLendTime().plusDays(7));
         save(lend);
 
         // 清除首页缓存
@@ -132,13 +130,18 @@ public class AdminLendServiceImpl extends ServiceImpl<LendMapper, Lend> implemen
                 .count();
 
         // 相等说明库存为空
-        if(lendBookNumber.equals(book.getNumber())) {
+        if (lendBookNumber.equals(book.getNumber())) {
             throw new LendException(ExceptionEnums.LEND_BOOK_EMPTY);
         }
 
         Lend lend = BeanUtil.copyProperties(lendDTO, Lend.class);
         if (lend.getRenewCount() > maxRenewCount) {
             throw new LendException(ExceptionEnums.LEND_RENEW_OVER_MAX_COUNT);
+        }
+
+        // 更新了借阅时间则逾期时间同步更新
+        if(lend.getLendTime()!=null) {
+            lend.setDueTime(lendDTO.getLendTime().plusDays(7));
         }
         updateById(lend);
 
@@ -148,6 +151,7 @@ public class AdminLendServiceImpl extends ServiceImpl<LendMapper, Lend> implemen
 
     /**
      * 检查书籍是否存在
+     *
      * @param bookId 书籍id
      * @return 书籍
      */
@@ -156,7 +160,7 @@ public class AdminLendServiceImpl extends ServiceImpl<LendMapper, Lend> implemen
         Book book = Db.lambdaQuery(Book.class)
                 .eq(Book::getId, bookId)
                 .one();
-        if(book == null) {
+        if (book == null) {
             throw new LendException(ExceptionEnums.LEND_BOOK_NOT_EXIST);
         }
 

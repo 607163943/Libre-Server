@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 @ApiModel("借阅DTO")
 @Data
@@ -29,4 +30,11 @@ public class LendDTO {
     @ApiModelProperty("借阅状态(1借阅 2归还 3逾期)")
     @NotNull(message = "借阅状态不能为空")
     private Integer state;
+
+    @ApiModelProperty("借阅时间")
+    @NotNull(message = "借阅时间不能为空")
+    private LocalDateTime lendTime;
+
+    @ApiModelProperty("归还时间")
+    private LocalDateTime returnTime;
 }

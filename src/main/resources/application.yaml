@@ -7,60 +7,12 @@ spring:
   # 激活环境
   profiles:
     active: dev
+    group:
+      dev:
+        - dev-db
+        - dev-redis
+        - dev-logging
+        - dev-security
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher # 使用旧的匹配方式已兼容Knife4j文档依赖
-  # 数据库配置
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://${mysql.host}:${mysql.port}/${mysql.database}?serverTimezone=UTC&useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2b8
-    username: ${mysql.username}
-    password: ${mysql.password}
-  # redis配置
-  redis:
-    database: ${redis.database}
-    host: ${redis.host}
-    port: ${redis.port}
-    password: ${redis.password}
-# 日志配置
-logging:
-  file:
-    name: logs/app.log  # 会在项目根目录下生成 logs/app.log
-  level:
-    root: warn # 框架日志级别
-    com.libre: debug # 业务日志级别
-  pattern:
-    # 控制台日志格式（开发用，更简洁）
-    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] [%logger{36}] - %msg%n"
-    # 文件日志格式（保留完整日期时间）
-    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] [%logger{36}] - %msg%n"
-
-# mybatis-plus
-mybatis-plus:
-  type-aliases-package: com.libre.pojo.po
-  global-config:
-    db-config:
-      id-type: auto # 全局设置主键默认自增长
-      logic-delete-field: isDelete
-      logic-not-delete-value: 0
-
-############## Sa-Token 配置 (文档: https://sa-token.cc) ##############
-sa-token:
-  # jwt秘钥
-  jwt-secret-key: libre
-  # token 名称（同时也是 cookie 名称）
-  token-name: satoken
-  # token 有效期（单位：秒） 默认30天，-1 代表永久有效
-  timeout: 2592000
-  # token 最低活跃频率（单位：秒），如果 token 超过此时间没有访问系统就会被冻结，默认-1 代表不限制，永不冻结
-  active-timeout: -1
-  # 是否允许同一账号多地同时登录 （为 true 时允许一起登录, 为 false 时新登录挤掉旧登录）
-  is-concurrent: true
-  # 在多人登录同一账号时，是否共用一个 token （为 true 时所有登录共用一个 token, 为 false 时每次登录新建一个 token）
-  is-share: false
-  # token 风格（默认可取值：uuid、simple-uuid、random-32、random-64、random-128、tik）
-  token-style: uuid
-  # 是否输出操作日志
-  is-log: true
-  is-read-cookie: false # 禁用Cookie读取，做纯JWT认证
-  is-write-header: false # 禁用Header写入

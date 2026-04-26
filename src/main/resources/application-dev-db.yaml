@@ -1,0 +1,17 @@
+# springboot
+spring:
+  # 数据库配置
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${mysql.host}:${mysql.port}/${mysql.database}?serverTimezone=UTC&useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2b8
+    username: ${mysql.username}
+    password: ${mysql.password}
+
+# mybatis-plus
+mybatis-plus:
+  type-aliases-package: com.libre.pojo.po
+  global-config:
+    db-config:
+      id-type: auto # 全局设置主键默认自增长
+      logic-delete-field: isDelete
+      logic-not-delete-value: 0

@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
-
 @Api(tags = "角色管理接口")
 @RequestMapping("/admin/role")
 @RestController

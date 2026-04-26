@@ -14,7 +14,7 @@ public class Knife4jConfig {
     @Bean
     public Docket adminDocket() {
         return new Docket(DocumentationType.SWAGGER_2)
-                .groupName("admin")
+                .groupName("管理端")
                 .apiInfo(apiInfo())
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.libre.controller.admin"))
@@ -26,10 +26,10 @@ public class Knife4jConfig {
     @Bean
     public Docket userDocket() {
         return new Docket(DocumentationType.SWAGGER_2)
-                .groupName("user")
+                .groupName("App端")
                 .apiInfo(apiInfo())
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.libre.controller.user"))
+                .apis(RequestHandlerSelectors.basePackage("com.libre.controller.app"))
                 .paths(PathSelectors.any())
                 .build();
 

@@ -20,6 +20,8 @@ public class Lend extends BasePO {
     private Long bookId;
     // 借阅状态(1借阅 2归还 3逾期)
     private Integer state;
+    // 借阅时间
+    private LocalDateTime lendTime;
     // 续阅次数
     private Integer renewCount;
     // 应还时间
