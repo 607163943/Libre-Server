@@ -2,11 +2,11 @@ package com.libre.controller.admin;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
-import com.libre.pojo.dto.PermissionDTO;
-import com.libre.pojo.dto.PermissionPageDTO;
+import com.libre.pojo.dto.admin.PermissionDTO;
+import com.libre.pojo.dto.admin.PermissionPageDTO;
 import com.libre.pojo.po.Permission;
-import com.libre.pojo.vo.PermissionPageVO;
-import com.libre.pojo.vo.PermissionVO;
+import com.libre.pojo.vo.admin.PermissionPageVO;
+import com.libre.pojo.vo.admin.PermissionVO;
 import com.libre.pojo.vo.admin.AdminPermissionCodeVO;
 import com.libre.result.PageResult;
 import com.libre.result.Result;

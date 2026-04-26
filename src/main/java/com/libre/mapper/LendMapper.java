@@ -2,10 +2,10 @@ package com.libre.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.libre.pojo.dto.LendPageDTO;
+import com.libre.pojo.dto.admin.LendPageDTO;
 import com.libre.pojo.dto.app.MyLendPageDTO;
 import com.libre.pojo.po.Lend;
-import com.libre.pojo.vo.LendPageVO;
+import com.libre.pojo.vo.admin.LendPageVO;
 import com.libre.pojo.vo.admin.HomeTopBookItem;
 import com.libre.pojo.vo.admin.RecentLendTrendItem;
 import com.libre.pojo.vo.app.HomeTopLendBookItem;

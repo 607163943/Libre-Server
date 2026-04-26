@@ -1,0 +1,25 @@
+package com.libre.pojo.vo.admin;
+
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@ApiModel("模块分页视图对象")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class ModulePageVO {
+    @ApiModelProperty("模块ID")
+    private Long id;
+
+    @ApiModelProperty("模块名称")
+    private String moduleName;
+
+    @ApiModelProperty("模块标识")
+    private String moduleKey;
+
+    @ApiModelProperty("模块所属客户端类型")
+    private Integer clientType;
+}

@@ -2,7 +2,7 @@ package com.libre.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.libre.pojo.po.UserRole;
-import com.libre.pojo.vo.RoleVO;
+import com.libre.pojo.vo.admin.RoleVO;
 
 import java.util.List;
 

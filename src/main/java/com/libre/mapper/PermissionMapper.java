@@ -2,9 +2,9 @@ package com.libre.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.libre.pojo.dto.PermissionPageDTO;
+import com.libre.pojo.dto.admin.PermissionPageDTO;
 import com.libre.pojo.po.Permission;
-import com.libre.pojo.vo.PermissionPageVO;
+import com.libre.pojo.vo.admin.PermissionPageVO;
 import com.libre.pojo.vo.admin.AdminPermissionCodeVO;
 import org.apache.ibatis.annotations.Param;
 

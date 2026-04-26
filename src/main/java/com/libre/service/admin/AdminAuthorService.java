@@ -1,10 +1,10 @@
 package com.libre.service.admin;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.libre.pojo.dto.AuthorDTO;
-import com.libre.pojo.dto.AuthorPageDTO;
+import com.libre.pojo.dto.admin.AuthorDTO;
+import com.libre.pojo.dto.admin.AuthorPageDTO;
 import com.libre.pojo.po.Author;
-import com.libre.pojo.vo.AuthorPageVO;
+import com.libre.pojo.vo.admin.AuthorPageVO;
 import com.libre.result.PageResult;
 
 import java.util.List;

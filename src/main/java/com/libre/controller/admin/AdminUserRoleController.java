@@ -1,7 +1,7 @@
 package com.libre.controller.admin;
 
 import com.libre.pojo.dto.admin.AddUserRoleDTO;
-import com.libre.pojo.vo.RoleVO;
+import com.libre.pojo.vo.admin.RoleVO;
 import com.libre.result.Result;
 import com.libre.service.admin.AdminUserRoleService;
 import io.swagger.annotations.Api;

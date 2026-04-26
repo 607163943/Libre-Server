@@ -2,11 +2,11 @@ package com.libre.controller.admin;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
-import com.libre.pojo.dto.BookDTO;
-import com.libre.pojo.dto.BookPageDTO;
+import com.libre.pojo.dto.admin.BookDTO;
+import com.libre.pojo.dto.admin.BookPageDTO;
 import com.libre.pojo.po.Book;
-import com.libre.pojo.vo.BookPageVO;
-import com.libre.pojo.vo.BookVO;
+import com.libre.pojo.vo.admin.BookPageVO;
+import com.libre.pojo.vo.admin.BookVO;
 import com.libre.result.PageResult;
 import com.libre.result.Result;
 import com.libre.service.admin.AdminBookService;

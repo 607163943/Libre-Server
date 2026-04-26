@@ -1,10 +1,10 @@
 package com.libre.service.admin;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.libre.pojo.dto.RoleDTO;
-import com.libre.pojo.dto.RolePageDTO;
+import com.libre.pojo.dto.admin.RoleDTO;
+import com.libre.pojo.dto.admin.RolePageDTO;
 import com.libre.pojo.po.Role;
-import com.libre.pojo.vo.RolePageVO;
+import com.libre.pojo.vo.admin.RolePageVO;
 import com.libre.result.PageResult;
 
 import java.util.List;

@@ -3,7 +3,7 @@ package com.libre.service.admin;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.libre.pojo.dto.admin.AddUserRoleDTO;
 import com.libre.pojo.po.UserRole;
-import com.libre.pojo.vo.RoleVO;
+import com.libre.pojo.vo.admin.RoleVO;
 
 import java.util.List;
 

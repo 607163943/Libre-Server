@@ -1,11 +1,9 @@
 package com.libre.service.app;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.libre.pojo.dto.BasePageDTO;
-import com.libre.pojo.dto.LendPageDTO;
 import com.libre.pojo.dto.app.MyLendPageDTO;
+import com.libre.pojo.dto.common.BasePageDTO;
 import com.libre.pojo.po.Lend;
-import com.libre.pojo.vo.LendPageVO;
 import com.libre.pojo.vo.admin.HomeTopBookItem;
 import com.libre.pojo.vo.admin.RecentLendTrendItem;
 import com.libre.pojo.vo.app.*;
@@ -14,13 +12,6 @@ import com.libre.result.PageResult;
 import java.util.List;
 
 public interface AppLendService extends IService<Lend> {
-    /**
-     * 分页查询借阅信息
-     * @param lendPageDTO 查询参数
-     * @return 查询结果
-     */
-    PageResult<List<LendPageVO>> pageQueryLend(LendPageDTO lendPageDTO);
-
     /**
      * 获取最近借阅趋势
      * @return 最近借阅趋势

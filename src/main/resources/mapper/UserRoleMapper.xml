@@ -4,7 +4,7 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.libre.mapper.UserRoleMapper">
     <!--获取用户角色信息-->
-    <select id="getUserRoles" resultType="com.libre.pojo.vo.RoleVO">
+    <select id="getUserRoles" resultType="com.libre.pojo.vo.admin.RoleVO">
         select role.id, role.role_name
         from tb_user_role user_role
                  join tb_role role on user_role.role_id = role.id

@@ -1,10 +1,10 @@
 package com.libre.service.admin;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.libre.pojo.dto.LendDTO;
-import com.libre.pojo.dto.LendPageDTO;
+import com.libre.pojo.dto.admin.LendDTO;
+import com.libre.pojo.dto.admin.LendPageDTO;
 import com.libre.pojo.po.Lend;
-import com.libre.pojo.vo.LendPageVO;
+import com.libre.pojo.vo.admin.LendPageVO;
 import com.libre.pojo.vo.admin.HomeTopBookItem;
 import com.libre.pojo.vo.admin.RecentLendTrendItem;
 import com.libre.pojo.vo.app.HomeTopLendBookItem;

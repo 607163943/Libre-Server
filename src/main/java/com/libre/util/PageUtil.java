@@ -2,7 +2,7 @@ package com.libre.util;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.libre.pojo.dto.BasePageDTO;
+import com.libre.pojo.dto.common.BasePageDTO;
 
 public class PageUtil {
     public static <T> IPage<T> createPage(BasePageDTO basePageDTO) {

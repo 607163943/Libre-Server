@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.libre.mapper.UserRoleMapper;
 import com.libre.pojo.dto.admin.AddUserRoleDTO;
 import com.libre.pojo.po.UserRole;
-import com.libre.pojo.vo.RoleVO;
+import com.libre.pojo.vo.admin.RoleVO;
 import com.libre.service.admin.AdminUserRoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;

@@ -1,7 +1,7 @@
 package com.libre.controller.app;
 
 import cn.dev33.satoken.stp.StpUtil;
-import com.libre.pojo.dto.BasePageDTO;
+import com.libre.pojo.dto.common.BasePageDTO;
 import com.libre.pojo.dto.app.MyLendPageDTO;
 import com.libre.pojo.dto.app.UserPasswordDTO;
 import com.libre.pojo.dto.app.UserProfileDTO;

@@ -7,14 +7,11 @@ import com.baomidou.mybatisplus.extension.toolkit.Db;
 import com.libre.constant.LendStatus;
 import com.libre.enums.ExceptionEnums;
 import com.libre.exception.LendException;
-import com.libre.mapper.BookMapper;
 import com.libre.mapper.LendMapper;
-import com.libre.pojo.dto.BasePageDTO;
-import com.libre.pojo.dto.LendPageDTO;
 import com.libre.pojo.dto.app.MyLendPageDTO;
+import com.libre.pojo.dto.common.BasePageDTO;
 import com.libre.pojo.po.Book;
 import com.libre.pojo.po.Lend;
-import com.libre.pojo.vo.LendPageVO;
 import com.libre.pojo.vo.admin.HomeTopBookItem;
 import com.libre.pojo.vo.admin.RecentLendTrendItem;
 import com.libre.pojo.vo.app.*;
@@ -23,7 +20,6 @@ import com.libre.service.app.AppLendService;
 import com.libre.util.PageUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -32,31 +28,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class AppLendServiceImpl extends ServiceImpl<LendMapper, Lend> implements AppLendService {
-    private final BookMapper bookMapper;
-
-    private final StringRedisTemplate stringRedisTemplate;
-
     @Value("${business.lend.max-lend-count}")
     private Integer maxRenewCount;
-
-    /**
-     * 分页查询借阅信息
-     *
-     * @param lendPageDTO 查询参数
-     * @return 分页结果
-     */
-    @Override
-    public PageResult<List<LendPageVO>> pageQueryLend(LendPageDTO lendPageDTO) {
-        // 构建分页条件
-        IPage<LendPageVO> page = PageUtil.createPage(lendPageDTO);
-        // 查询
-        page = baseMapper.pageQueryLend(page, lendPageDTO);
-
-        return PageResult.<List<LendPageVO>>builder()
-                .total(page.getTotal())
-                .data(page.getRecords())
-                .build();
-    }
 
     /**
      * 检查书籍是否存在

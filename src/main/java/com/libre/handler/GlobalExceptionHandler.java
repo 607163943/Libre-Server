@@ -1,5 +1,6 @@
 package com.libre.handler;
 
+import com.libre.enums.ExceptionEnums;
 import com.libre.exception.*;
 import com.libre.result.Result;
 import lombok.extern.slf4j.Slf4j;
@@ -22,8 +23,9 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(LoginException.class)
     public Result<Void> handleLoginException(LoginException e) {
-        log.warn("登录模块异常：{}", e.getMsg());
-        return Result.error(e.getCode(), e.getMsg());
+        ExceptionEnums exceptionEnums = e.getExceptionEnums();
+        log.warn("登录模块异常：{}", exceptionEnums.getMsg());
+        return Result.error(exceptionEnums.getCode(), exceptionEnums.getMsg());
     }
 
     /**
@@ -34,8 +36,9 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(AuthorizeException.class)
     public Result<Void> handleAuthorizeException(AuthorizeException e) {
-        log.warn("未授权访问：{}", e.getMsg());
-        return Result.error(e.getCode(), e.getMsg());
+        ExceptionEnums exceptionEnums = e.getExceptionEnums();
+        log.warn("未授权访问：{}", exceptionEnums.getMsg());
+        return Result.error(exceptionEnums.getCode(), exceptionEnums.getMsg());
     }
 
     /**
@@ -47,8 +50,9 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(RegisterException.class)
     public Result<Void> handleRegisterException(RegisterException e) {
-        log.warn("注册模块异常：{}", e.getMsg());
-        return Result.error(e.getCode(), e.getMsg());
+        ExceptionEnums exceptionEnums = e.getExceptionEnums();
+        log.warn("注册模块异常：{}", exceptionEnums.getMsg());
+        return Result.error(exceptionEnums.getCode(), exceptionEnums.getMsg());
     }
 
     /**
@@ -60,8 +64,9 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(PublisherException.class)
     public Result<Void> handlePublisherException(PublisherException e) {
-        log.warn("出版社模块异常：{}", e.getMsg());
-        return Result.error(e.getCode(), e.getMsg());
+        ExceptionEnums exceptionEnums = e.getExceptionEnums();
+        log.warn("出版社模块异常：{}", exceptionEnums.getMsg());
+        return Result.error(exceptionEnums.getCode(), exceptionEnums.getMsg());
     }
 
     /**
@@ -73,8 +78,9 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(RoleException.class)
     public Result<Void> handleRoleException(RoleException e) {
-        log.warn("角色模块异常：{}", e.getMsg());
-        return Result.error(e.getCode(), e.getMsg());
+        ExceptionEnums exceptionEnums = e.getExceptionEnums();
+        log.warn("角色模块异常：{}", exceptionEnums.getMsg());
+        return Result.error(exceptionEnums.getCode(), exceptionEnums.getMsg());
     }
 
     /**
@@ -86,8 +92,9 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(UserException.class)
     public Result<Void> handleUserException(UserException e) {
-        log.warn("用户模块异常：{}", e.getMsg());
-        return Result.error(e.getCode(), e.getMsg());
+        ExceptionEnums exceptionEnums = e.getExceptionEnums();
+        log.warn("用户模块异常：{}", exceptionEnums.getMsg());
+        return Result.error(exceptionEnums.getCode(), exceptionEnums.getMsg());
     }
 
     /**
@@ -98,8 +105,9 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(BookException.class)
     public Result<Void> handleBookException(BookException e) {
-        log.warn("图书模块异常：{}", e.getMsg());
-        return Result.error(e.getCode(), e.getMsg());
+        ExceptionEnums exceptionEnums = e.getExceptionEnums();
+        log.warn("图书模块异常：{}", exceptionEnums.getMsg());
+        return Result.error(exceptionEnums.getCode(), exceptionEnums.getMsg());
     }
 
     /**
@@ -111,8 +119,9 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(AuthorException.class)
     public Result<Void> handleAuthorException(AuthorException e) {
-        log.warn("作者模块异常：{}", e.getMsg());
-        return Result.error(e.getCode(), e.getMsg());
+        ExceptionEnums exceptionEnums = e.getExceptionEnums();
+        log.warn("作者模块异常：{}", exceptionEnums.getMsg());
+        return Result.error(exceptionEnums.getCode(), exceptionEnums.getMsg());
     }
 
     /**
@@ -123,8 +132,9 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ModuleException.class)
     public Result<Void> handleModuleException(ModuleException e) {
-        log.warn("模块管理异常：{}", e.getMsg());
-        return Result.error(e.getCode(), e.getMsg());
+        ExceptionEnums exceptionEnums = e.getExceptionEnums();
+        log.warn("模块管理异常：{}", exceptionEnums.getMsg());
+        return Result.error(exceptionEnums.getCode(), exceptionEnums.getMsg());
     }
 
     /**
@@ -135,8 +145,9 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(PermissionException.class)
     public Result<Void> handlePermissionException(PermissionException e) {
-        log.warn("权限模块异常：{}", e.getMsg());
-        return Result.error(e.getCode(), e.getMsg());
+        ExceptionEnums exceptionEnums = e.getExceptionEnums();
+        log.warn("权限模块异常：{}", exceptionEnums.getMsg());
+        return Result.error(exceptionEnums.getCode(), exceptionEnums.getMsg());
     }
 
     /**
@@ -147,8 +158,9 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(LendException.class)
     public Result<Void> handleLendException(LendException e) {
-        log.warn("借阅模块异常：{}", e.getMsg());
-        return Result.error(e.getCode(), e.getMsg());
+        ExceptionEnums exceptionEnums = e.getExceptionEnums();
+        log.warn("借阅模块异常：{}", exceptionEnums.getMsg());
+        return Result.error(exceptionEnums.getCode(), exceptionEnums.getMsg());
     }
 
 
@@ -161,8 +173,9 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(LibreException.class)
     public Result<Void> handleLibreException(LibreException e) {
-        log.warn("未知业务异常：{}", e.getMsg());
-        return Result.error(e.getCode(), e.getMsg());
+        ExceptionEnums exceptionEnums = e.getExceptionEnums();
+        log.warn("未知业务异常：{}", exceptionEnums.getMsg());
+        return Result.error(exceptionEnums.getCode(), exceptionEnums.getMsg());
     }
 
     /**
@@ -173,8 +186,9 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(UtilException.class)
     public Result<Void> handleUtilException(UtilException e) {
-        log.warn("工具类异常：{}", e.getMsg());
-        return Result.error(e.getCode(), e.getMsg());
+        ExceptionEnums exceptionEnums = e.getExceptionEnums();
+        log.warn("工具类异常：{}", exceptionEnums.getMsg());
+        return Result.error(exceptionEnums.getCode(), exceptionEnums.getMsg());
     }
 
     /**

@@ -1,7 +1,7 @@
 package com.libre.controller.admin;
 
-import com.libre.pojo.dto.LoginDTO;
-import com.libre.pojo.vo.LoginVO;
+import com.libre.pojo.dto.common.LoginDTO;
+import com.libre.pojo.vo.common.LoginVO;
 import com.libre.result.Result;
 import com.libre.service.common.CommonLoginService;
 import io.swagger.annotations.Api;

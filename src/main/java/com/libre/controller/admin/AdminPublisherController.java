@@ -2,11 +2,11 @@ package com.libre.controller.admin;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
-import com.libre.pojo.dto.PublisherDTO;
-import com.libre.pojo.dto.PublisherPageDTO;
+import com.libre.pojo.dto.admin.PublisherDTO;
+import com.libre.pojo.dto.admin.PublisherPageDTO;
 import com.libre.pojo.po.Publisher;
-import com.libre.pojo.vo.PublisherPageVO;
-import com.libre.pojo.vo.PublisherVO;
+import com.libre.pojo.vo.admin.PublisherPageVO;
+import com.libre.pojo.vo.admin.PublisherVO;
 import com.libre.result.PageResult;
 import com.libre.result.Result;
 import com.libre.service.admin.AdminPublisherService;

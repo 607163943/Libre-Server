@@ -1,10 +1,10 @@
 package com.libre.service.admin;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.libre.pojo.dto.PermissionDTO;
-import com.libre.pojo.dto.PermissionPageDTO;
+import com.libre.pojo.dto.admin.PermissionDTO;
+import com.libre.pojo.dto.admin.PermissionPageDTO;
 import com.libre.pojo.po.Permission;
-import com.libre.pojo.vo.PermissionPageVO;
+import com.libre.pojo.vo.admin.PermissionPageVO;
 import com.libre.pojo.vo.admin.AdminPermissionCodeVO;
 import com.libre.result.PageResult;
 

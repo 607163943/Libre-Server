@@ -2,10 +2,10 @@ package com.libre.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.libre.pojo.dto.BookPageDTO;
+import com.libre.pojo.dto.admin.BookPageDTO;
 import com.libre.pojo.dto.app.SearchDTO;
 import com.libre.pojo.po.Book;
-import com.libre.pojo.vo.BookPageVO;
+import com.libre.pojo.vo.admin.BookPageVO;
 import com.libre.pojo.vo.app.BookDetailVO;
 import com.libre.pojo.vo.app.HomeTopLatestBookItem;
 import com.libre.pojo.vo.app.SearchBookVO;

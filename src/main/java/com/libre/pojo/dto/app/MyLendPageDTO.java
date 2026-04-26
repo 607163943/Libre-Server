@@ -1,6 +1,6 @@
 package com.libre.pojo.dto.app;
 
-import com.libre.pojo.dto.BasePageDTO;
+import com.libre.pojo.dto.common.BasePageDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;

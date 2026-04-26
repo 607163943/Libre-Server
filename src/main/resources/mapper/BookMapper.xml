@@ -4,7 +4,7 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.libre.mapper.BookMapper">
     <!--图书分页查询-->
-    <select id="pageQueryBook" resultType="com.libre.pojo.vo.BookPageVO">
+    <select id="pageQueryBook" resultType="com.libre.pojo.vo.admin.BookPageVO">
         select book.id,
         book.book_name,
         book.author_id,
