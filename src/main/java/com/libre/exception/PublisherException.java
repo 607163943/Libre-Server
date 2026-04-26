@@ -1,23 +1,9 @@
 package com.libre.exception;
 
-import com.libre.enums.AdminExceptionEnums;
-import com.libre.enums.AppExceptionEnums;
-import com.libre.enums.CommonExceptionEnums;
+import com.libre.enums.ExceptionEnums;
 
 public class PublisherException extends LibreException {
-    public PublisherException(String msg, Integer code) {
-        super(msg, code);
-    }
-
-    public PublisherException(CommonExceptionEnums exceptionEnums) {
-        super(exceptionEnums);
-    }
-
-    public PublisherException(AdminExceptionEnums exceptionEnums) {
-        super(exceptionEnums);
-    }
-
-    public PublisherException(AppExceptionEnums exceptionEnums) {
+    public PublisherException(ExceptionEnums exceptionEnums) {
         super(exceptionEnums);
     }
 }

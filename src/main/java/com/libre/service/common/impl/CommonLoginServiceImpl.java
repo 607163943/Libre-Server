@@ -3,7 +3,7 @@ package com.libre.service.common.impl;
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
-import com.libre.enums.CommonExceptionEnums;
+import com.libre.enums.ExceptionEnums;
 import com.libre.exception.LoginException;
 import com.libre.exception.RegisterException;
 import com.libre.pojo.dto.LoginDTO;
@@ -35,12 +35,12 @@ public class CommonLoginServiceImpl implements CommonLoginService {
                 .one();
         // 检查用户是否存在
         if(user==null) {
-            throw new LoginException(CommonExceptionEnums.LOGIN_USER_NOT_EXIST);
+            throw new LoginException(ExceptionEnums.LOGIN_USER_NOT_EXIST);
         }
 
         // 检查密码是否正确
         if(!securityUtil.checkPassword(loginDTO.getPassword(), user.getPassword())) {
-            throw new LoginException(CommonExceptionEnums.LOGIN_PASSWORD_ERROR);
+            throw new LoginException(ExceptionEnums.LOGIN_PASSWORD_ERROR);
         }
 
         // 更新登录时间
@@ -68,7 +68,7 @@ public class CommonLoginServiceImpl implements CommonLoginService {
                 .eq(User::getUsername, registerDTO.getUsername())
                 .count();
         if(userCount>0) {
-            throw new RegisterException(CommonExceptionEnums.LOGIN_REGISTER_USER_EXIST);
+            throw new RegisterException(ExceptionEnums.LOGIN_REGISTER_USER_EXIST);
         }
 
         User user = BeanUtil.copyProperties(registerDTO, User.class);

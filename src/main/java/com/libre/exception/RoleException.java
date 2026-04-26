@@ -1,23 +1,9 @@
 package com.libre.exception;
 
-import com.libre.enums.AdminExceptionEnums;
-import com.libre.enums.AppExceptionEnums;
-import com.libre.enums.CommonExceptionEnums;
+import com.libre.enums.ExceptionEnums;
 
 public class RoleException extends LibreException {
-    public RoleException(String msg, Integer code) {
-        super(msg, code);
-    }
-
-    public RoleException(CommonExceptionEnums exceptionEnums) {
-        super(exceptionEnums);
-    }
-
-    public RoleException(AdminExceptionEnums exceptionEnums) {
-        super(exceptionEnums);
-    }
-
-    public RoleException(AppExceptionEnums exceptionEnums) {
+    public RoleException(ExceptionEnums exceptionEnums) {
         super(exceptionEnums);
     }
 }

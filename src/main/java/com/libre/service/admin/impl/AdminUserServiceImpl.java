@@ -4,7 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.libre.enums.CommonExceptionEnums;
+import com.libre.enums.ExceptionEnums;
 import com.libre.exception.UserException;
 import com.libre.mapper.UserMapper;
 import com.libre.pojo.dto.UserDTO;
@@ -64,7 +64,7 @@ public class AdminUserServiceImpl extends ServiceImpl<UserMapper, User> implemen
                 .count();
 
         if (userCount > 0) {
-            throw new UserException(CommonExceptionEnums.USER_EXIST);
+            throw new UserException(ExceptionEnums.USER_EXIST);
         }
 
         User user = BeanUtil.copyProperties(userDTO, User.class);
@@ -90,7 +90,7 @@ public class AdminUserServiceImpl extends ServiceImpl<UserMapper, User> implemen
                 .ne(User::getId, userDTO.getId())
                 .count();
         if (count > 0) {
-            throw new UserException(CommonExceptionEnums.USER_EXIST);
+            throw new UserException(ExceptionEnums.USER_EXIST);
         }
 
         User user = BeanUtil.copyProperties(userDTO, User.class);

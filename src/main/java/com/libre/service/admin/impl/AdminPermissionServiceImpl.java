@@ -4,7 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.libre.enums.AdminExceptionEnums;
+import com.libre.enums.ExceptionEnums;
 import com.libre.exception.PermissionException;
 import com.libre.mapper.PermissionMapper;
 import com.libre.pojo.dto.PermissionDTO;
@@ -63,7 +63,7 @@ public class AdminPermissionServiceImpl extends ServiceImpl<PermissionMapper, Pe
                 .count();
 
         if (permissionCount > 0) {
-            throw new PermissionException(AdminExceptionEnums.PERMISSION_EXIST);
+            throw new PermissionException(ExceptionEnums.PERMISSION_EXIST);
         }
 
         Permission permission = BeanUtil.copyProperties(permissionDTO, Permission.class);
@@ -88,7 +88,7 @@ public class AdminPermissionServiceImpl extends ServiceImpl<PermissionMapper, Pe
                 .ne(Permission::getId, permissionDTO.getId())
                 .count();
         if (count > 0) {
-            throw new PermissionException(AdminExceptionEnums.PERMISSION_EXIST);
+            throw new PermissionException(ExceptionEnums.PERMISSION_EXIST);
         }
 
         Permission permission = BeanUtil.copyProperties(permissionDTO, Permission.class);
@@ -110,7 +110,7 @@ public class AdminPermissionServiceImpl extends ServiceImpl<PermissionMapper, Pe
                 .count();
         // 这里假设有一个角色权限关联表，需要根据实际业务逻辑实现
         if(rolePermissionCount>0) {
-            throw new PermissionException(AdminExceptionEnums.PERMISSION_HAS_ROLE);
+            throw new PermissionException(ExceptionEnums.PERMISSION_HAS_ROLE);
         }
 
         lambdaUpdate()
@@ -134,7 +134,7 @@ public class AdminPermissionServiceImpl extends ServiceImpl<PermissionMapper, Pe
                 .count();
         // 这里假设有一个角色权限关联表，需要根据实际业务逻辑实现
         if(rolePermissionCount>0) {
-            throw new PermissionException(AdminExceptionEnums.PERMISSION_HAS_ROLE);
+            throw new PermissionException(ExceptionEnums.PERMISSION_HAS_ROLE);
         }
         // 这里假设有一个角色权限关联表，需要根据实际业务逻辑实现
 

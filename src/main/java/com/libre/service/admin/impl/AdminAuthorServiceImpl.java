@@ -5,7 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.libre.enums.AdminExceptionEnums;
+import com.libre.enums.ExceptionEnums;
 import com.libre.exception.AuthorException;
 import com.libre.mapper.AuthorMapper;
 import com.libre.pojo.dto.AuthorDTO;
@@ -67,7 +67,7 @@ public class AdminAuthorServiceImpl extends ServiceImpl<AuthorMapper, Author> im
                 .count();
 
         if (authorCount > 0) {
-            throw new AuthorException(AdminExceptionEnums.AUTHOR_EXIST);
+            throw new AuthorException(ExceptionEnums.AUTHOR_EXIST);
         }
 
         Author author = BeanUtil.copyProperties(authorDTO, Author.class);
@@ -92,7 +92,7 @@ public class AdminAuthorServiceImpl extends ServiceImpl<AuthorMapper, Author> im
                 .ne(Author::getId, authorDTO.getId())
                 .count();
         if (count > 0) {
-            throw new AuthorException(AdminExceptionEnums.AUTHOR_EXIST);
+            throw new AuthorException(ExceptionEnums.AUTHOR_EXIST);
         }
 
         Author author = BeanUtil.copyProperties(authorDTO, Author.class);
@@ -115,7 +115,7 @@ public class AdminAuthorServiceImpl extends ServiceImpl<AuthorMapper, Author> im
                 .count();
 
         if(bookCount>0) {
-            throw new AuthorException(AdminExceptionEnums.AUTHOR_HAS_BOOK);
+            throw new AuthorException(ExceptionEnums.AUTHOR_HAS_BOOK);
         }
 
         lambdaUpdate()
@@ -138,7 +138,7 @@ public class AdminAuthorServiceImpl extends ServiceImpl<AuthorMapper, Author> im
                 .in(Book::getAuthorId, ids)
                 .count();
         if(bookCount>0) {
-            throw new AuthorException(AdminExceptionEnums.AUTHOR_HAS_BOOK);
+            throw new AuthorException(ExceptionEnums.AUTHOR_HAS_BOOK);
         }
 
         lambdaUpdate()

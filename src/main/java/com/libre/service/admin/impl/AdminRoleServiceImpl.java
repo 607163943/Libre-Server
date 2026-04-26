@@ -5,7 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.libre.enums.CommonExceptionEnums;
+import com.libre.enums.ExceptionEnums;
 import com.libre.exception.RoleException;
 import com.libre.mapper.RoleMapper;
 import com.libre.pojo.dto.RoleDTO;
@@ -64,7 +64,7 @@ public class AdminRoleServiceImpl extends ServiceImpl<RoleMapper, Role> implemen
                 .count();
 
         if (roleCount > 0) {
-            throw new RoleException(CommonExceptionEnums.ROLE_EXIST);
+            throw new RoleException(ExceptionEnums.ROLE_EXIST);
         }
 
         Role role = BeanUtil.copyProperties(roleDTO, Role.class);
@@ -89,7 +89,7 @@ public class AdminRoleServiceImpl extends ServiceImpl<RoleMapper, Role> implemen
                 .ne(Role::getId, roleDTO.getId())
                 .count();
         if (count > 0) {
-            throw new RoleException(CommonExceptionEnums.ROLE_EXIST);
+            throw new RoleException(ExceptionEnums.ROLE_EXIST);
         }
 
         Role role = BeanUtil.copyProperties(roleDTO, Role.class);

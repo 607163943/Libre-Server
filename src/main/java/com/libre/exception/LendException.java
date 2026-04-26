@@ -1,23 +1,9 @@
 package com.libre.exception;
 
-import com.libre.enums.AdminExceptionEnums;
-import com.libre.enums.AppExceptionEnums;
-import com.libre.enums.CommonExceptionEnums;
+import com.libre.enums.ExceptionEnums;
 
 public class LendException extends LibreException {
-    public LendException(String msg, Integer code) {
-        super(msg, code);
-    }
-
-    public LendException(CommonExceptionEnums exceptionEnums) {
-        super(exceptionEnums);
-    }
-
-    public LendException(AdminExceptionEnums exceptionEnums) {
-        super(exceptionEnums);
-    }
-
-    public LendException(AppExceptionEnums exceptionEnums) {
+    public LendException(ExceptionEnums exceptionEnums) {
         super(exceptionEnums);
     }
 }

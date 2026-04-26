@@ -1,23 +1,9 @@
 package com.libre.exception;
 
-import com.libre.enums.AdminExceptionEnums;
-import com.libre.enums.AppExceptionEnums;
-import com.libre.enums.CommonExceptionEnums;
+import com.libre.enums.ExceptionEnums;
 
 public class UserException extends LibreException {
-    public UserException(String msg, Integer code) {
-        super(msg, code);
-    }
-
-    public UserException(CommonExceptionEnums exceptionEnums) {
-        super(exceptionEnums);
-    }
-
-    public UserException(AdminExceptionEnums exceptionEnums) {
-        super(exceptionEnums);
-    }
-
-    public UserException(AppExceptionEnums exceptionEnums) {
+    public UserException(ExceptionEnums exceptionEnums) {
         super(exceptionEnums);
     }
 }

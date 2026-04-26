@@ -5,8 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.extension.toolkit.Db;
 import com.libre.constant.LendStatus;
-import com.libre.enums.AppExceptionEnums;
-import com.libre.enums.CommonExceptionEnums;
+import com.libre.enums.ExceptionEnums;
 import com.libre.exception.LendException;
 import com.libre.mapper.BookMapper;
 import com.libre.mapper.LendMapper;
@@ -70,7 +69,7 @@ public class AppLendServiceImpl extends ServiceImpl<LendMapper, Lend> implements
                 .eq(Book::getId, bookId)
                 .one();
         if(book == null) {
-            throw new LendException(CommonExceptionEnums.LEND_BOOK_NOT_EXIST);
+            throw new LendException(ExceptionEnums.LEND_BOOK_NOT_EXIST);
         }
 
         return book;
@@ -116,7 +115,7 @@ public class AppLendServiceImpl extends ServiceImpl<LendMapper, Lend> implements
                 .ne(Lend::getState, LendStatus.RETURN)
                 .count();
         if (lendCount > 0) {
-            throw new LendException(CommonExceptionEnums.LEND_USER_LEND_BOOK_EXIST);
+            throw new LendException(ExceptionEnums.LEND_USER_LEND_BOOK_EXIST);
         }
 
         // 检查书籍是否存在
@@ -127,7 +126,7 @@ public class AppLendServiceImpl extends ServiceImpl<LendMapper, Lend> implements
                 .in(Lend::getState, LendStatus.LEND, LendStatus.OVERDUE)
                 .count();
         if(lendBookNumber.equals(book.getNumber())) {
-            throw new LendException(CommonExceptionEnums.LEND_BOOK_EMPTY);
+            throw new LendException(ExceptionEnums.LEND_BOOK_EMPTY);
         }
 
         Lend lend = new Lend();
@@ -156,7 +155,7 @@ public class AppLendServiceImpl extends ServiceImpl<LendMapper, Lend> implements
                 .in(Lend::getState, LendStatus.LEND, LendStatus.OVERDUE)
                 .count();
         if (lendCount == 0) {
-            throw new LendException(AppExceptionEnums.LEND_USER_NOT_LEND);
+            throw new LendException(ExceptionEnums.LEND_USER_NOT_LEND);
         }
 
         lambdaUpdate()
@@ -240,7 +239,7 @@ public class AppLendServiceImpl extends ServiceImpl<LendMapper, Lend> implements
                 .in(Lend::getState, LendStatus.LEND, LendStatus.OVERDUE)
                 .one();
         if (lend == null) {
-            throw new LendException(AppExceptionEnums.LEND_USER_NOT_LEND);
+            throw new LendException(ExceptionEnums.LEND_USER_NOT_LEND);
         }
 
         // 逾期则在当前日期续7天
@@ -254,7 +253,7 @@ public class AppLendServiceImpl extends ServiceImpl<LendMapper, Lend> implements
 
         // 续借不能超过3次
         if (lend.getRenewCount() > maxRenewCount) {
-            throw new LendException(CommonExceptionEnums.LEND_RENEW_OVER_MAX_COUNT);
+            throw new LendException(ExceptionEnums.LEND_RENEW_OVER_MAX_COUNT);
         }
         updateById(lend);
     }

@@ -1,7 +1,7 @@
 package com.libre.util;
 
 import cn.hutool.crypto.digest.BCrypt;
-import com.libre.enums.CommonExceptionEnums;
+import com.libre.enums.ExceptionEnums;
 import com.libre.exception.UtilException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -22,7 +22,7 @@ public class SecurityUtil {
     public String mix(String frontendPasswordMd5, String pepper) {
         // 低于32位说明md5值异常
         if (frontendPasswordMd5.length() < 32) {
-            throw new UtilException(CommonExceptionEnums.UTIL_PASSWORD_MD5_ERROR);
+            throw new UtilException(ExceptionEnums.UTIL_PASSWORD_MD5_ERROR);
         }
 
         // 交叉混淆

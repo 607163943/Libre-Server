@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.extension.toolkit.Db;
 import com.libre.constant.LendStatus;
-import com.libre.enums.CommonExceptionEnums;
+import com.libre.enums.ExceptionEnums;
 import com.libre.exception.LendException;
 import com.libre.mapper.LendMapper;
 import com.libre.pojo.dto.LendDTO;
@@ -70,7 +70,7 @@ public class AdminLendServiceImpl extends ServiceImpl<LendMapper, Lend> implemen
                 .count();
 
         if (lendCount > 0) {
-            throw new LendException(CommonExceptionEnums.LEND_USER_LEND_BOOK_EXIST);
+            throw new LendException(ExceptionEnums.LEND_USER_LEND_BOOK_EXIST);
         }
 
         // 检查书籍是否存在
@@ -84,7 +84,7 @@ public class AdminLendServiceImpl extends ServiceImpl<LendMapper, Lend> implemen
 
         // 相等说明库存为空
         if(lendBookNumber.equals(book.getNumber())) {
-            throw new LendException(CommonExceptionEnums.LEND_BOOK_EMPTY);
+            throw new LendException(ExceptionEnums.LEND_BOOK_EMPTY);
         }
 
         // 判断库存是否为空
@@ -117,7 +117,7 @@ public class AdminLendServiceImpl extends ServiceImpl<LendMapper, Lend> implemen
                 .count();
 
         if (lendCount > 0) {
-            throw new LendException(CommonExceptionEnums.LEND_USER_LEND_BOOK_EXIST);
+            throw new LendException(ExceptionEnums.LEND_USER_LEND_BOOK_EXIST);
         }
 
         // 检查书籍是否存在
@@ -133,12 +133,12 @@ public class AdminLendServiceImpl extends ServiceImpl<LendMapper, Lend> implemen
 
         // 相等说明库存为空
         if(lendBookNumber.equals(book.getNumber())) {
-            throw new LendException(CommonExceptionEnums.LEND_BOOK_EMPTY);
+            throw new LendException(ExceptionEnums.LEND_BOOK_EMPTY);
         }
 
         Lend lend = BeanUtil.copyProperties(lendDTO, Lend.class);
         if (lend.getRenewCount() > maxRenewCount) {
-            throw new LendException(CommonExceptionEnums.LEND_RENEW_OVER_MAX_COUNT);
+            throw new LendException(ExceptionEnums.LEND_RENEW_OVER_MAX_COUNT);
         }
         updateById(lend);
 
@@ -157,7 +157,7 @@ public class AdminLendServiceImpl extends ServiceImpl<LendMapper, Lend> implemen
                 .eq(Book::getId, bookId)
                 .one();
         if(book == null) {
-            throw new LendException(CommonExceptionEnums.LEND_BOOK_NOT_EXIST);
+            throw new LendException(ExceptionEnums.LEND_BOOK_NOT_EXIST);
         }
 
         return book;
