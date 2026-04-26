@@ -20,9 +20,9 @@ import java.util.List;
 
 @Api(tags = "图书管理接口")
 @RequestMapping("/admin/book")
-@RestController("admin-book-controller")
+@RestController
 @RequiredArgsConstructor
-public class BookController {
+public class AdminBookController {
     private final AdminBookService adminBookService;
 
     @ApiOperation("图书分页查询接口")

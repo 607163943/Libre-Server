@@ -1,7 +1,6 @@
-package com.libre.service.impl;
+package com.libre.service.admin.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -14,8 +13,8 @@ import com.libre.pojo.po.Permission;
 import com.libre.pojo.po.RolePermission;
 import com.libre.pojo.vo.PermissionPageVO;
 import com.libre.result.PageResult;
-import com.libre.service.PermissionService;
 import com.libre.service.RolePermissionService;
+import com.libre.service.admin.AdminPermissionService;
 import com.libre.util.PageUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -26,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
 @Service
-public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permission> implements PermissionService {
+public class AdminPermissionServiceImpl extends ServiceImpl<PermissionMapper, Permission> implements AdminPermissionService {
     private final StringRedisTemplate stringRedisTemplate;
     private final RolePermissionService rolePermissionService;
 
@@ -39,20 +38,13 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     @Override
     public PageResult<List<PermissionPageVO>> pageQueryPermission(PermissionPageDTO permissionPageDTO) {
         // 构建分页条件
-        IPage<Permission> page = PageUtil.createPage(permissionPageDTO);
+        IPage<PermissionPageVO> page = PageUtil.createPage(permissionPageDTO);
         // 查询
-        page = lambdaQuery()
-                .like(StrUtil.isNotBlank(permissionPageDTO.getPermissionCode())
-                        , Permission::getPermissionCode, permissionPageDTO.getPermissionCode())
-                .like(StrUtil.isNotBlank(permissionPageDTO.getPermissionDesc())
-                        , Permission::getPermissionDesc, permissionPageDTO.getPermissionDesc())
-                .page(page);
-        // 构建VO数据
-        List<PermissionPageVO> permissionPageVOS = BeanUtil.copyToList(page.getRecords(), PermissionPageVO.class);
+        page = baseMapper.pageQueryPermission(page, permissionPageDTO);
 
         return PageResult.<List<PermissionPageVO>>builder()
                 .total(page.getTotal())
-                .data(permissionPageVOS)
+                .data(page.getRecords())
                 .build();
     }
 
@@ -65,7 +57,8 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     public void addPermission(PermissionDTO permissionDTO) {
         // 判断是否已存在同名权限码
         Long permissionCount = lambdaQuery()
-                .eq(Permission::getPermissionCode, permissionDTO.getPermissionCode())
+                .eq(Permission::getActionCode, permissionDTO.getActionCode())
+                .eq(Permission::getModuleId,permissionDTO.getModuleId())
                 .count();
 
         if (permissionCount > 0) {
@@ -73,10 +66,9 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
         }
 
         Permission permission = BeanUtil.copyProperties(permissionDTO, Permission.class);
-        // 避免前端id残留数据影响
-        if (permission.getId() != null) permission.setId(null);
+
         save(permission);
-        
+
         // 清除缓存
         stringRedisTemplate.delete("admin:permission:all");
     }
@@ -90,7 +82,8 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     public void modifyPermission(PermissionDTO permissionDTO) {
         // 判断是否已存在不是当前修改权限的同名权限码
         Long count = lambdaQuery()
-                .eq(Permission::getPermissionCode, permissionDTO.getPermissionCode())
+                .eq(Permission::getActionCode, permissionDTO.getActionCode())
+                .eq(Permission::getModuleId, permissionDTO.getModuleId())
                 .ne(Permission::getId, permissionDTO.getId())
                 .count();
         if (count > 0) {
@@ -99,7 +92,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
 
         Permission permission = BeanUtil.copyProperties(permissionDTO, Permission.class);
         updateById(permission);
-        
+
         // 清除缓存
         stringRedisTemplate.delete("admin:permission:all");
     }
@@ -118,13 +111,13 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
         if(rolePermissionCount>0) {
             throw new PermissionException(ExceptionEnums.PERMISSION_HAS_ROLE);
         }
-        
+
         lambdaUpdate()
                 // 使用时间戳标记逻辑删除，避免唯一键冲突
                 .set(Permission::getIsDelete, System.currentTimeMillis())
                 .eq(Permission::getId, permissionId)
                 .update();
-        
+
         // 清除缓存
         stringRedisTemplate.delete("admin:permission:all");
     }
@@ -148,7 +141,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
                 .set(Permission::getIsDelete, System.currentTimeMillis())
                 .in(Permission::getId, ids)
                 .update();
-        
+
         // 清除缓存
         stringRedisTemplate.delete("admin:permission:all");
     }
@@ -160,19 +153,19 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     @Override
     public List<Permission> getAllPermission() {
         String cacheKey = "admin:permission:all";
-        
+
         // 尝试从缓存中获取
         String cachedData = stringRedisTemplate.opsForValue().get(cacheKey);
         if (cachedData != null) {
             return JSONUtil.toList(cachedData, Permission.class);
         }
-        
+
         // 缓存未命中，查询数据库
         List<Permission> permissionList = list();
-        
+
         // 存入缓存，过期时间30分钟
         stringRedisTemplate.opsForValue().set(cacheKey, JSONUtil.toJsonStr(permissionList), 30, TimeUnit.MINUTES);
-        
+
         return permissionList;
     }
 }

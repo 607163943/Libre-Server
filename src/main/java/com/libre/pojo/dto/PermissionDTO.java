@@ -19,11 +19,15 @@ public class PermissionDTO {
     @NotNull(message = "权限ID不能为空", groups = UpdateGroup.class)
     private Long id;
 
-    @ApiModelProperty("权限码")
-    @NotBlank(message = "权限码不能为空")
-    private String permissionCode;
+    @ApiModelProperty("操作码，权限码格式：客户端码:模块码:操作码")
+    @NotBlank(message = "操作码不能为空")
+    private String actionCode;
 
     @ApiModelProperty("权限描述")
     @NotBlank(message = "权限描述不能为空")
     private String permissionDesc;
+
+    @ApiModelProperty("所属模块")
+    @NotNull(message = "模块id不能为空")
+    private Long moduleId;
 }

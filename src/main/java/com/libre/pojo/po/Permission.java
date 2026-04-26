@@ -14,10 +14,12 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Permission extends BasePO {
-    // 权限码
-    private String permissionCode;
+    // 操作码
+    private String actionCode;
     // 权限描述
     private String permissionDesc;
+    // 模块ID
+    private Long moduleId;
     // 修改时间
     private LocalDateTime updateTime;
 }

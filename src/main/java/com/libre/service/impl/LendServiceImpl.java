@@ -1,7 +1,6 @@
 package com.libre.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -12,7 +11,6 @@ import com.libre.exception.LendException;
 import com.libre.mapper.BookMapper;
 import com.libre.mapper.LendMapper;
 import com.libre.pojo.dto.BasePageDTO;
-import com.libre.pojo.dto.LendDTO;
 import com.libre.pojo.dto.LendPageDTO;
 import com.libre.pojo.dto.user.MyLendPageDTO;
 import com.libre.pojo.po.Book;
@@ -63,97 +61,6 @@ public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements Le
     }
 
     /**
-     * 添加借阅记录
-     *
-     * @param lendDTO 借阅信息
-     */
-    @Override
-    public void addLend(LendDTO lendDTO) {
-        // 判断用户是否已经借阅过该书籍
-        Long lendCount = lambdaQuery()
-                .eq(Lend::getUserId, lendDTO.getUserId())
-                .eq(Lend::getBookId, lendDTO.getBookId())
-                .eq(Lend::getState, LendStatus.LEND)
-                .count();
-
-        if (lendCount > 0) {
-            throw new LendException(ExceptionEnums.LEND_USER_LEND_BOOK_EXIST);
-        }
-
-        // 检查书籍是否存在
-        Book book = checkBookIsNullAndReturnBook(lendDTO.getBookId());
-
-        // 判断库存是否为空
-        Long lendBookNumber = lambdaQuery()
-                .eq(Lend::getBookId, lendDTO.getBookId())
-                .in(Lend::getState, LendStatus.LEND, LendStatus.OVERDUE)
-                .count();
-
-        // 相等说明库存为空
-        if(lendBookNumber.equals(book.getNumber())) {
-            throw new LendException(ExceptionEnums.LEND_BOOK_EMPTY);
-        }
-
-        // 判断库存是否为空
-        Lend lend = BeanUtil.copyProperties(lendDTO, Lend.class);
-        // 初始化借阅次数为0
-        lend.setRenewCount(0);
-        // 初始化为借阅状态
-        lend.setState(LendStatus.LEND);
-        // 默认借阅时间为7天
-        lend.setDueTime(LocalDateTime.now().plusDays(7));
-        save(lend);
-        
-        // 清除首页缓存
-        clearHomeCache();
-    }
-
-    /**
-     * 修改借阅记录
-     *
-     * @param lendDTO 借阅信息
-     */
-    @Override
-    public void modifyLend(LendDTO lendDTO) {
-        // 判断用户是否已经借阅过该书籍
-        Long lendCount = lambdaQuery()
-                .eq(Lend::getUserId, lendDTO.getUserId())
-                .eq(Lend::getBookId, lendDTO.getBookId())
-                .eq(Lend::getState, LendStatus.LEND)
-                .ne(Lend::getId, lendDTO.getId())
-                .count();
-
-        if (lendCount > 0) {
-            throw new LendException(ExceptionEnums.LEND_USER_LEND_BOOK_EXIST);
-        }
-
-        // 检查书籍是否存在
-        Book book = checkBookIsNullAndReturnBook(lendDTO.getBookId());
-
-        // 判断库存是否为空
-        Long lendBookNumber = lambdaQuery()
-                // 排除自己
-                .ne(Lend::getId, lendDTO.getId())
-                .eq(Lend::getBookId, lendDTO.getBookId())
-                .in(Lend::getState, LendStatus.LEND, LendStatus.OVERDUE)
-                .count();
-
-        // 相等说明库存为空
-        if(lendBookNumber.equals(book.getNumber())) {
-            throw new LendException(ExceptionEnums.LEND_BOOK_EMPTY);
-        }
-
-        Lend lend = BeanUtil.copyProperties(lendDTO, Lend.class);
-        if (lend.getRenewCount() > maxRenewCount) {
-            throw new LendException(ExceptionEnums.LEND_RENEW_OVER_MAX_COUNT);
-        }
-        updateById(lend);
-        
-        // 清除首页缓存
-        clearHomeCache();
-    }
-
-    /**
      * 检查书籍是否存在
      * @param bookId 书籍id
      * @return 书籍
@@ -168,40 +75,6 @@ public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements Le
         }
 
         return book;
-    }
-
-    /**
-     * 删除借阅记录
-     *
-     * @param lendId 借阅记录id
-     */
-    @Override
-    public void deleteLend(Long lendId) {
-        lambdaUpdate()
-                // 使用时间戳标记逻辑删除，避免唯一键冲突
-                .set(Lend::getIsDelete, System.currentTimeMillis())
-                .eq(Lend::getId, lendId)
-                .update();
-        
-        // 清除首页缓存
-        clearHomeCache();
-    }
-
-    /**
-     * 批量删除借阅记录
-     *
-     * @param ids 借阅记录id列表
-     */
-    @Override
-    public void deleteBatchLend(List<Long> ids) {
-        lambdaUpdate()
-                // 使用时间戳标记逻辑删除，避免唯一键冲突
-                .set(Lend::getIsDelete, System.currentTimeMillis())
-                .in(Lend::getId, ids)
-                .update();
-        
-        // 清除首页缓存
-        clearHomeCache();
     }
 
     /**

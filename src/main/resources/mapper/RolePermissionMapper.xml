@@ -5,7 +5,7 @@
 <mapper namespace="com.libre.mapper.RolePermissionMapper">
 
     <select id="pageQueryRolePermission" resultType="com.libre.pojo.vo.RolePermissionPageVO">
-        select role_permission.id, role.role_name, permission.permission_code, permission.permission_desc
+        select role_permission.id, role.role_name, permission.action_code, permission.permission_desc
         from tb_role_permission role_permission
                  join tb_role role on role_permission.role_id = role.id
                  join tb_permission permission on role_permission.permission_id = permission.id

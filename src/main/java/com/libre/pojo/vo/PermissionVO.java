@@ -14,9 +14,12 @@ public class PermissionVO {
     @ApiModelProperty("权限ID")
     private Long id;
 
-    @ApiModelProperty("权限码")
-    private String permissionCode;
+    @ApiModelProperty("操作码，权限码格式：客户端码:模块码:操作码")
+    private String actionCode;
 
     @ApiModelProperty("权限描述")
     private String permissionDesc;
+
+    @ApiModelProperty("模块id")
+    private Long moduleId;
 }

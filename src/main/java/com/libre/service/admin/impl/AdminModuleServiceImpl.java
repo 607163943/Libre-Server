@@ -62,7 +62,12 @@ public class AdminModuleServiceImpl extends ServiceImpl<ModuleMapper, Module> im
     public void addModule(ModuleDTO moduleDTO) {
         // 判断是否已存在同名模块
         Long moduleCount = lambdaQuery()
+                // 同客户端下同名、同编码模块均不允许
                 .eq(Module::getModuleKey, moduleDTO.getModuleKey())
+                .eq(Module::getClientType,moduleDTO.getClientType())
+                .or()
+                .eq(Module::getModuleName, moduleDTO.getModuleName())
+                .eq(Module::getClientType, moduleDTO.getClientType())
                 .count();
 
         if (moduleCount > 0) {
@@ -87,7 +92,13 @@ public class AdminModuleServiceImpl extends ServiceImpl<ModuleMapper, Module> im
     public void modifyModule(ModuleDTO moduleDTO) {
         // 判断是否已存在不是当前修改模块的同名模块
         Long count = lambdaQuery()
+                // 同客户端下同名、同编码模块均不允许
                 .eq(Module::getModuleKey, moduleDTO.getModuleKey())
+                .eq(Module::getClientType,moduleDTO.getClientType())
+                .ne(Module::getId, moduleDTO.getId())
+                .or()
+                .eq(Module::getModuleName, moduleDTO.getModuleName())
+                .eq(Module::getClientType, moduleDTO.getClientType())
                 .ne(Module::getId, moduleDTO.getId())
                 .count();
         if (count > 0) {

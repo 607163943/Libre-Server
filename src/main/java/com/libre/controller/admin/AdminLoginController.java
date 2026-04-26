@@ -17,8 +17,8 @@ import javax.validation.Valid;
 @Api(tags = "登录接口")
 @RequestMapping("/admin")
 @RequiredArgsConstructor
-@RestController("admin-login-controller")
-public class LoginController {
+@RestController
+public class AdminLoginController {
     private final CommonLoginService commonLoginService;
 
     @ApiOperation("登录接口")

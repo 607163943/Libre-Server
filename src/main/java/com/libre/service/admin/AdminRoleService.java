@@ -1,4 +1,4 @@
-package com.libre.service;
+package com.libre.service.admin;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.libre.pojo.dto.RoleDTO;
@@ -9,7 +9,7 @@ import com.libre.result.PageResult;
 
 import java.util.List;
 
-public interface RoleService extends IService<Role> {
+public interface AdminRoleService extends IService<Role> {
     /**
      * 分页查询角色信息
      * @param rolePageDTO 查询参数

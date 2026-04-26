@@ -16,6 +16,9 @@ public class PermissionPageDTO extends BasePageDTO {
     @ApiModelProperty("权限码")
     private String permissionCode;
 
-    @ApiModelProperty("权限描述")
-    private String permissionDesc;
+    @ApiModelProperty("模块id")
+    private Long moduleId;
+
+    @ApiModelProperty("客户端类型 1管理端 2App端")
+    private Long clientType;
 }

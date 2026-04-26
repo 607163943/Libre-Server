@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import com.libre.pojo.dto.RolePermissionDTO;
 import com.libre.pojo.dto.RolePermissionPageDTO;
+import com.libre.pojo.dto.admin.AddRolePermissionDTO;
 import com.libre.pojo.po.RolePermission;
 import com.libre.pojo.vo.RolePermissionPageVO;
 import com.libre.pojo.vo.RolePermissionVO;
@@ -20,9 +21,9 @@ import java.util.List;
 
 @Api(tags = "角色权限关联管理接口")
 @RequestMapping("/admin/role-permission")
-@RestController("admin-role-permission-controller")
+@RestController
 @RequiredArgsConstructor
-public class RolePermissionController {
+public class AdminRolePermissionController {
     private final RolePermissionService rolePermissionService;
 
     @ApiOperation("角色权限关联分页查询接口")
@@ -67,6 +68,19 @@ public class RolePermissionController {
         if(CollUtil.isNotEmpty(ids)) {
             rolePermissionService.deleteBatchRolePermission(ids);
         }
+        return Result.success();
+    }
+    @ApiOperation("查询指定角色已拥有的权限 id 列表")
+    @GetMapping("/role/{roleId}")
+    public Result<List<Long>> getRolePermissionIds(@PathVariable Long roleId) {
+        List<Long> permissionIds = rolePermissionService.getRolePermissionIds(roleId);
+        return Result.success(permissionIds);
+    }
+
+    @ApiOperation("批量设置指定角色的权限")
+    @PostMapping("/assign")
+    public Result<Void> assignRolePermission(@RequestBody AddRolePermissionDTO addRolePermissionDTO) {
+        rolePermissionService.assignRolePermission(addRolePermissionDTO);
         return Result.success();
     }
 }

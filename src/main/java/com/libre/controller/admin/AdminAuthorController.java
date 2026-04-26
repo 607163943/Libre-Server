@@ -20,9 +20,9 @@ import java.util.List;
 
 @Api(tags = "作者管理接口")
 @RequestMapping("/admin/author")
-@RestController("admin-author-controller")
+@RestController
 @RequiredArgsConstructor
-public class AuthorController {
+public class AdminAuthorController {
     private final AdminAuthorService adminAuthorService;
 
     @ApiOperation("作者分页查询接口")

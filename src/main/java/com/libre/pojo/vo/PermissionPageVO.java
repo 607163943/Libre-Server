@@ -19,4 +19,10 @@ public class PermissionPageVO {
 
     @ApiModelProperty("权限描述")
     private String permissionDesc;
+
+    @ApiModelProperty("模块名")
+    private String moduleName;
+
+    @ApiModelProperty("客户端类型 1管理端 2App端")
+    private Integer clientType;
 }

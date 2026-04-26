@@ -3,8 +3,8 @@ package com.libre.service.impl;
 import cn.dev33.satoken.stp.StpInterface;
 import com.libre.pojo.po.Role;
 import com.libre.pojo.po.UserRole;
-import com.libre.service.RoleService;
 import com.libre.service.UserRoleService;
+import com.libre.service.admin.AdminRoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service    // 保证此类被 SpringBoot 扫描，完成 Sa-Token 的自定义权限验证扩展
 public class StpInterfaceImpl implements StpInterface {
-    private final RoleService roleService;
+    private final AdminRoleService adminRoleService;
 
     private final UserRoleService userRoleService;
 
@@ -52,7 +52,7 @@ public class StpInterfaceImpl implements StpInterface {
         List<Long> roleIds = userRoleList.stream()
                 .map(UserRole::getRoleId)
                 .collect(Collectors.toList());
-        List<Role> roleList = roleService.lambdaQuery()
+        List<Role> roleList = adminRoleService.lambdaQuery()
                 .in(Role::getId, roleIds)
                 .list();
 

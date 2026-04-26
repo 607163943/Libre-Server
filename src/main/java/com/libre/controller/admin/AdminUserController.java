@@ -20,9 +20,9 @@ import java.util.List;
 
 @Api(tags = "用户管理接口")
 @RequestMapping("/admin/user")
-@RestController("admin-user-controller")
+@RestController
 @RequiredArgsConstructor
-public class UserController {
+public class AdminUserController {
     private final UserService userService;
 
     @ApiOperation("用户分页查询接口")

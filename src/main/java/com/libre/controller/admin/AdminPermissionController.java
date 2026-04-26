@@ -9,7 +9,7 @@ import com.libre.pojo.vo.PermissionPageVO;
 import com.libre.pojo.vo.PermissionVO;
 import com.libre.result.PageResult;
 import com.libre.result.Result;
-import com.libre.service.PermissionService;
+import com.libre.service.admin.AdminPermissionService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -20,22 +20,22 @@ import java.util.List;
 
 @Api(tags = "权限管理接口")
 @RequestMapping("/admin/permission")
-@RestController("admin-permission-controller")
+@RestController
 @RequiredArgsConstructor
-public class PermissionController {
-    private final PermissionService permissionService;
+public class AdminPermissionController {
+    private final AdminPermissionService adminPermissionService;
 
     @ApiOperation("权限分页查询接口")
     @GetMapping
     public Result<PageResult<List<PermissionPageVO>>> pageQueryPermission(PermissionPageDTO permissionPageDTO) {
-        PageResult<List<PermissionPageVO>> pageResult = permissionService.pageQueryPermission(permissionPageDTO);
+        PageResult<List<PermissionPageVO>> pageResult = adminPermissionService.pageQueryPermission(permissionPageDTO);
         return Result.success(pageResult);
     }
 
     @ApiOperation("获取指定权限信息")
     @GetMapping("{permissionId}")
     public Result<PermissionVO> getPermission(@PathVariable Long permissionId) {
-        Permission permission = permissionService.getById(permissionId);
+        Permission permission = adminPermissionService.getById(permissionId);
         PermissionVO permissionVO = BeanUtil.copyProperties(permission, PermissionVO.class);
         return Result.success(permissionVO);
     }
@@ -43,7 +43,7 @@ public class PermissionController {
     @ApiOperation("获取所有权限")
     @GetMapping("all")
     public Result<List<PermissionVO>> getAllPermissions() {
-        List<Permission> permissionList = permissionService.getAllPermission();
+        List<Permission> permissionList = adminPermissionService.getAllPermission();
         List<PermissionVO> permissionVOList = BeanUtil.copyToList(permissionList, PermissionVO.class);
         return Result.success(permissionVOList);
     }
@@ -51,21 +51,21 @@ public class PermissionController {
     @ApiOperation("权限添加接口")
     @PostMapping
     public Result<Void> addPermission(@RequestBody @Valid PermissionDTO permissionDTO) {
-        permissionService.addPermission(permissionDTO);
+        adminPermissionService.addPermission(permissionDTO);
         return Result.success();
     }
 
     @ApiOperation("权限修改接口")
     @PutMapping
     public Result<Void> modifyPermission(@RequestBody @Valid PermissionDTO permissionDTO) {
-        permissionService.modifyPermission(permissionDTO);
+        adminPermissionService.modifyPermission(permissionDTO);
         return Result.success();
     }
 
     @ApiOperation("权限删除接口")
     @DeleteMapping("{permissionId}")
     public Result<Void> deletePermission(@PathVariable Long permissionId) {
-        permissionService.deletePermission(permissionId);
+        adminPermissionService.deletePermission(permissionId);
         return Result.success();
     }
 
@@ -73,7 +73,7 @@ public class PermissionController {
     @DeleteMapping
     public Result<Void> deleteBatchPermission(@RequestParam List<Long> ids) {
         if (CollUtil.isNotEmpty(ids)) {
-            permissionService.deleteBatchPermission(ids);
+            adminPermissionService.deleteBatchPermission(ids);
         }
         return Result.success();
     }

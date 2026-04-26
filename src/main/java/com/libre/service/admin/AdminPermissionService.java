@@ -1,4 +1,4 @@
-package com.libre.service;
+package com.libre.service.admin;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.libre.pojo.dto.PermissionDTO;
@@ -9,7 +9,7 @@ import com.libre.result.PageResult;
 
 import java.util.List;
 
-public interface PermissionService extends IService<Permission> {
+public interface AdminPermissionService extends IService<Permission> {
     /**
      * 分页查询权限信息
      * @param permissionPageDTO 查询参数

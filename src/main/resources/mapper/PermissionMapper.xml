@@ -4,4 +4,32 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.libre.mapper.PermissionMapper">
 
+    <select id="pageQueryPermission" resultType="com.libre.pojo.vo.PermissionPageVO">
+        SELECT
+        p.id,
+        CONCAT(
+        CASE m.client_type WHEN 1 THEN 'admin' WHEN 2 THEN 'app' ELSE 'other' END,
+        ':',
+        m.module_key,
+        ':',
+        p.action_code
+        ) AS permission_code,
+        p.permission_desc,
+        m.module_name,
+        m.client_type
+        FROM tb_permission p
+        JOIN tb_module m ON p.module_id = m.id
+        <where>
+            p.is_delete = 0
+            <if test="permissionPageDTO.permissionCode != null and permissionPageDTO.permissionCode != ''">
+                AND permission_code LIKE CONCAT('%', #{permissionPageDTO.permissionCode}, '%')
+            </if>
+            <if test="permissionPageDTO.moduleId != null">
+                AND m.id = #{permissionPageDTO.moduleId}
+            </if>
+            <if test="permissionPageDTO.clientType != null">
+                AND m.client_type = #{permissionPageDTO.clientType}
+            </if>
+        </where>
+    </select>
 </mapper>

@@ -20,7 +20,7 @@ import java.util.List;
 
 @Api(tags = "模块管理接口")
 @RequestMapping("/admin/module")
-@RestController("admin-module-controller")
+@RestController
 @RequiredArgsConstructor
 public class AdminModuleController {
     private final AdminModuleService adminModuleService;

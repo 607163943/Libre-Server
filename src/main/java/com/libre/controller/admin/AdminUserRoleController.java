@@ -14,9 +14,9 @@ import java.util.List;
 
 @Api(tags = "用户角色管理接口")
 @RequestMapping("/admin/user-role")
-@RestController("admin-user-role-controller")
+@RestController
 @RequiredArgsConstructor
-public class UserRoleController {
+public class AdminUserRoleController {
     private final UserRoleService userRoleService;
 
     @ApiOperation("获取用户拥有角色列表")
