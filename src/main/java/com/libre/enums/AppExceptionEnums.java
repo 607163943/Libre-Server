@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum AppExceptionEnums {
-    ADMIN_PERMISSION_DENIED(10001, "权限不够，无法访问管理端");
+    LEND_USER_NOT_LEND(20101, "用户未借阅该图书");
     private final Integer code;
     private final String msg;
 }

@@ -52,13 +52,6 @@ public interface AppLendService extends IService<Lend> {
     void userReturnBook(Long bookId);
 
     /**
-     * 获取图书详情
-     * @param bookId 图书id
-     * @return 图书详情
-     */
-    BookDetailVO getBookDetail(Long bookId);
-
-    /**
      * 获取用户借阅数据统计
      * @return 用户借阅数据统计
      */

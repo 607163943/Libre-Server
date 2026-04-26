@@ -5,7 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.libre.enums.CommonExceptionEnums;
+import com.libre.enums.AdminExceptionEnums;
 import com.libre.exception.ModuleException;
 import com.libre.mapper.ModuleMapper;
 import com.libre.pojo.dto.ModuleDTO;
@@ -71,7 +71,7 @@ public class AdminModuleServiceImpl extends ServiceImpl<ModuleMapper, Module> im
                 .count();
 
         if (moduleCount > 0) {
-            throw new ModuleException(CommonExceptionEnums.MODULE_EXIST);
+            throw new ModuleException(AdminExceptionEnums.MODULE_EXIST);
         }
 
         Module module = BeanUtil.copyProperties(moduleDTO, Module.class);
@@ -102,7 +102,7 @@ public class AdminModuleServiceImpl extends ServiceImpl<ModuleMapper, Module> im
                 .ne(Module::getId, moduleDTO.getId())
                 .count();
         if (count > 0) {
-            throw new ModuleException(CommonExceptionEnums.MODULE_EXIST);
+            throw new ModuleException(AdminExceptionEnums.MODULE_EXIST);
         }
 
         Module module = BeanUtil.copyProperties(moduleDTO, Module.class);

@@ -25,4 +25,8 @@ public class Result<T> {
     public static <T> Result<T> success() {
         return success(null);
     }
+
+    public static <T> Result<T> error(Integer code,String msg) {
+        return Result.of(code,null,msg);
+    }
 }

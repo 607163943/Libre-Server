@@ -7,7 +7,6 @@ import com.libre.pojo.po.Permission;
 import com.libre.pojo.vo.PermissionPageVO;
 import com.libre.pojo.vo.admin.AdminPermissionCodeVO;
 import com.libre.result.PageResult;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -54,11 +53,4 @@ public interface AdminPermissionService extends IService<Permission> {
      * @return 权限码列表
      */
     List<AdminPermissionCodeVO> getAllPermissionCodes();
-
-    /**
-     * 获取权限码列表
-     * @param permissionIds 权限id集合
-     * @return 权限码列表
-     */
-    List<String> getPermissionCodes(List<Long> permissionIds);
 }

@@ -1,11 +1,11 @@
 package com.libre.service.app.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
-import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.extension.toolkit.Db;
 import com.libre.constant.LendStatus;
+import com.libre.enums.AppExceptionEnums;
 import com.libre.enums.CommonExceptionEnums;
 import com.libre.exception.LendException;
 import com.libre.mapper.BookMapper;
@@ -29,7 +29,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
 @Service
@@ -157,7 +156,7 @@ public class AppLendServiceImpl extends ServiceImpl<LendMapper, Lend> implements
                 .in(Lend::getState, LendStatus.LEND, LendStatus.OVERDUE)
                 .count();
         if (lendCount == 0) {
-            throw new LendException(CommonExceptionEnums.LEND_USER_NOT_LEND);
+            throw new LendException(AppExceptionEnums.LEND_USER_NOT_LEND);
         }
 
         lambdaUpdate()
@@ -166,49 +165,6 @@ public class AppLendServiceImpl extends ServiceImpl<LendMapper, Lend> implements
                 .eq(Lend::getBookId, bookId)
                 .eq(Lend::getUserId, StpUtil.getLoginIdAsLong())
                 .update();
-    }
-
-    /**
-     * 获取图书详情
-     *
-     * @param bookId 图书id
-     * @return 图书详情
-     */
-    @Override
-    public BookDetailVO getBookDetail(Long bookId) {
-        String cacheKey = "user:book:detail:" + bookId;
-
-        // 尝试从缓存中获取
-        String cachedData = stringRedisTemplate.opsForValue().get(cacheKey);
-
-        BookDetailVO bookDetail;
-        if(cachedData!=null) {
-            // 已登录状态，查询数据库获取实时信息
-            bookDetail = JSONUtil.toBean(cachedData, BookDetailVO.class);
-        }else {
-            // 查询数据库，建立缓存
-            bookDetail = bookMapper.getBookDetail(bookId);
-            stringRedisTemplate.opsForValue().set(cacheKey, JSONUtil.toJsonStr(bookDetail),1, TimeUnit.HOURS);
-        }
-
-        if(!StpUtil.isLogin()) {
-            return bookDetail;
-        }
-
-        Lend lend = lambdaQuery()
-                .eq(Lend::getBookId, bookId)
-                .eq(Lend::getUserId, StpUtil.getLoginIdAsLong())
-                .in(Lend::getState, LendStatus.LEND, LendStatus.OVERDUE)
-                .one();
-
-        if (lend == null) {
-            return bookDetail;
-        }
-
-        bookDetail.setState(lend.getState());
-
-        // 已登录且有借阅记录，不缓存个性化数据（因为每个用户的借阅状态不同）
-        return bookDetail;
     }
 
     /**
@@ -284,7 +240,7 @@ public class AppLendServiceImpl extends ServiceImpl<LendMapper, Lend> implements
                 .in(Lend::getState, LendStatus.LEND, LendStatus.OVERDUE)
                 .one();
         if (lend == null) {
-            throw new LendException(CommonExceptionEnums.LEND_USER_NOT_LEND);
+            throw new LendException(AppExceptionEnums.LEND_USER_NOT_LEND);
         }
 
         // 逾期则在当前日期续7天
