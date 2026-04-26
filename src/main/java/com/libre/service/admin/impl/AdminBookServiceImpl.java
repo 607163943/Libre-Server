@@ -3,7 +3,7 @@ package com.libre.service.admin.impl;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.libre.enums.ExceptionEnums;
+import com.libre.enums.CommonExceptionEnums;
 import com.libre.exception.BookException;
 import com.libre.mapper.BookMapper;
 import com.libre.pojo.dto.BookDTO;
@@ -64,7 +64,7 @@ public class AdminBookServiceImpl extends ServiceImpl<BookMapper, Book> implemen
                 .count();
 
         if (bookCount > 0) {
-            throw new BookException(ExceptionEnums.BOOK_EXIST);
+            throw new BookException(CommonExceptionEnums.BOOK_EXIST);
         }
 
         // 判断名称/作者/出版社/封面/简介/语言/出版日期是否已存在同时重复图书
@@ -76,7 +76,7 @@ public class AdminBookServiceImpl extends ServiceImpl<BookMapper, Book> implemen
                 .eq(Book::getPublishDate, bookDTO.getPublishDate())
                 .count();
         if (bookCount > 0) {
-            throw new BookException(ExceptionEnums.BOOK_EXIST);
+            throw new BookException(CommonExceptionEnums.BOOK_EXIST);
         }
 
         Book book = BeanUtil.copyProperties(bookDTO, Book.class);
@@ -101,7 +101,7 @@ public class AdminBookServiceImpl extends ServiceImpl<BookMapper, Book> implemen
                 .ne(Book::getId, bookDTO.getId())
                 .count();
         if (count > 0) {
-            throw new BookException(ExceptionEnums.BOOK_EXIST);
+            throw new BookException(CommonExceptionEnums.BOOK_EXIST);
         }
 
         // 判断名称/作者/出版社/封面/简介/语言/出版日期是否已存在同时重复图书
@@ -114,7 +114,7 @@ public class AdminBookServiceImpl extends ServiceImpl<BookMapper, Book> implemen
                 .ne(Book::getId, bookDTO.getId())
                 .count();
         if (count > 0) {
-            throw new BookException(ExceptionEnums.BOOK_EXIST);
+            throw new BookException(CommonExceptionEnums.BOOK_EXIST);
         }
 
         Book book = BeanUtil.copyProperties(bookDTO, Book.class);

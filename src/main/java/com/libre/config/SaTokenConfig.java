@@ -5,8 +5,10 @@ import cn.dev33.satoken.jwt.StpLogicJwtForStateless;
 import cn.dev33.satoken.router.SaRouter;
 import cn.dev33.satoken.stp.StpLogic;
 import cn.dev33.satoken.stp.StpUtil;
-import com.libre.enums.ExceptionEnums;
+import com.libre.enums.AdminExceptionEnums;
+import com.libre.enums.CommonExceptionEnums;
 import com.libre.exception.LoginException;
+import com.libre.exception.admin.AdminPermissionException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -45,13 +47,18 @@ public class SaTokenConfig implements WebMvcConfigurer {
                 try {
                     StpUtil.checkLogin();
                 } catch (Exception e) {
-                    throw new LoginException(ExceptionEnums.LOGIN_USER_NOT_LOGIN);
+                    throw new LoginException(CommonExceptionEnums.LOGIN_USER_NOT_LOGIN);
                 }
             });
 
             // 鉴权
-            SaRouter.match("/user/**", r -> StpUtil.checkRoleOr("读者", "超级管理员"));
-            SaRouter.match("/admin/**", r -> StpUtil.checkRoleOr("管理员", "超级管理员"));
+            SaRouter.match("/admin/**").check(r -> {
+                try {
+                    StpUtil.checkPermissionOr("admin:client:view");
+                } catch (Exception e) {
+                    throw new AdminPermissionException(AdminExceptionEnums.ADMIN_PERMISSION_DENIED);
+                }
+            });
         })).addPathPatterns("/**");
     }
 }

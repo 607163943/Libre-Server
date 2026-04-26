@@ -1,6 +1,6 @@
 package com.libre.handler;
 
-import com.libre.enums.ExceptionEnums;
+import com.libre.enums.CommonExceptionEnums;
 import com.libre.exception.*;
 import com.libre.result.Result;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(LoginException.class)
     public Result<Void> handleLoginException(LoginException e) {
-        ExceptionEnums exceptionEnums = e.getExceptionEnums();
+        CommonExceptionEnums exceptionEnums = e.getExceptionEnums();
         log.warn("登录模块异常：{}", exceptionEnums.getMsg());
         return Result.of(exceptionEnums.getCode(), null, exceptionEnums.getMsg());
     }
@@ -37,7 +37,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(RegisterException.class)
     public Result<Void> handleRegisterException(RegisterException e) {
-        ExceptionEnums exceptionEnums = e.getExceptionEnums();
+        CommonExceptionEnums exceptionEnums = e.getExceptionEnums();
         log.warn("注册模块异常：{}", exceptionEnums.getMsg());
         return Result.of(exceptionEnums.getCode(), null, exceptionEnums.getMsg());
     }
@@ -51,7 +51,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(PublisherException.class)
     public Result<Void> handlePublisherException(PublisherException e) {
-        ExceptionEnums exceptionEnums = e.getExceptionEnums();
+        CommonExceptionEnums exceptionEnums = e.getExceptionEnums();
         log.warn("出版社模块异常：{}", exceptionEnums.getMsg());
         return Result.of(exceptionEnums.getCode(), null, exceptionEnums.getMsg());
     }
@@ -65,7 +65,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(RoleException.class)
     public Result<Void> handleRoleException(RoleException e) {
-        ExceptionEnums exceptionEnums = e.getExceptionEnums();
+        CommonExceptionEnums exceptionEnums = e.getExceptionEnums();
         log.warn("角色模块异常：{}", exceptionEnums.getMsg());
         return Result.of(exceptionEnums.getCode(), null, exceptionEnums.getMsg());
     }
@@ -79,7 +79,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(UserException.class)
     public Result<Void> handleUserException(UserException e) {
-        ExceptionEnums exceptionEnums = e.getExceptionEnums();
+        CommonExceptionEnums exceptionEnums = e.getExceptionEnums();
         log.warn("用户模块异常：{}", exceptionEnums.getMsg());
         return Result.of(exceptionEnums.getCode(), null, exceptionEnums.getMsg());
     }
@@ -93,7 +93,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(BookException.class)
     public Result<Void> handleBookException(BookException e) {
-        ExceptionEnums exceptionEnums = e.getExceptionEnums();
+        CommonExceptionEnums exceptionEnums = e.getExceptionEnums();
         log.warn("图书模块异常：{}", exceptionEnums.getMsg());
         return Result.of(exceptionEnums.getCode(), null, exceptionEnums.getMsg());
     }
@@ -107,7 +107,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(AuthorException.class)
     public Result<Void> handleAuthorException(AuthorException e) {
-        ExceptionEnums exceptionEnums = e.getExceptionEnums();
+        CommonExceptionEnums exceptionEnums = e.getExceptionEnums();
         log.warn("作者模块异常：{}", exceptionEnums.getMsg());
         return Result.of(exceptionEnums.getCode(), null, exceptionEnums.getMsg());
     }
@@ -119,10 +119,11 @@ public class GlobalExceptionHandler {
      * @param e 业务异常
      * @return 错误信息
      */
+    // TODO:异常分离后需要修改
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(LibreException.class)
-    public Result<Void> handleLibreException(LibreException e) {
-        ExceptionEnums exceptionEnums = e.getExceptionEnums();
+    @ExceptionHandler(CommonException.class)
+    public Result<Void> handleLibreException(CommonException e) {
+        CommonExceptionEnums exceptionEnums = e.getExceptionEnums();
         log.warn("未知业务异常：{}", exceptionEnums.getMsg());
         return Result.of(exceptionEnums.getCode(), null, exceptionEnums.getMsg());
     }

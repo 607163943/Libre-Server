@@ -7,6 +7,7 @@ import com.libre.pojo.dto.PermissionPageDTO;
 import com.libre.pojo.po.Permission;
 import com.libre.pojo.vo.PermissionPageVO;
 import com.libre.pojo.vo.PermissionVO;
+import com.libre.pojo.vo.admin.AdminPermissionCodeVO;
 import com.libre.result.PageResult;
 import com.libre.result.Result;
 import com.libre.service.admin.AdminPermissionService;
@@ -46,6 +47,13 @@ public class AdminPermissionController {
         List<Permission> permissionList = adminPermissionService.getAllPermission();
         List<PermissionVO> permissionVOList = BeanUtil.copyToList(permissionList, PermissionVO.class);
         return Result.success(permissionVOList);
+    }
+
+    @ApiOperation("获取所有权限(完整权限码)")
+    @GetMapping("all-code")
+    public Result<List<AdminPermissionCodeVO>> getAllPermissionCodes() {
+        List<AdminPermissionCodeVO> adminPermissionCodeVOS = adminPermissionService.getAllPermissionCodes();
+        return Result.success(adminPermissionCodeVOS);
     }
 
     @ApiOperation("权限添加接口")

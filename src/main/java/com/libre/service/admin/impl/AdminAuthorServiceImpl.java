@@ -5,7 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.libre.enums.ExceptionEnums;
+import com.libre.enums.CommonExceptionEnums;
 import com.libre.exception.AuthorException;
 import com.libre.mapper.AuthorMapper;
 import com.libre.pojo.dto.AuthorDTO;
@@ -14,8 +14,8 @@ import com.libre.pojo.po.Author;
 import com.libre.pojo.po.Book;
 import com.libre.pojo.vo.AuthorPageVO;
 import com.libre.result.PageResult;
-import com.libre.service.BookService;
 import com.libre.service.admin.AdminAuthorService;
+import com.libre.service.admin.AdminBookService;
 import com.libre.util.PageUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class AdminAuthorServiceImpl extends ServiceImpl<AuthorMapper, Author> implements AdminAuthorService {
     private final StringRedisTemplate stringRedisTemplate;
-    private final BookService bookService;
+    private final AdminBookService adminBookService;
 
     /**
      * 分页查询作者信息
@@ -67,7 +67,7 @@ public class AdminAuthorServiceImpl extends ServiceImpl<AuthorMapper, Author> im
                 .count();
 
         if (authorCount > 0) {
-            throw new AuthorException(ExceptionEnums.AUTHOR_EXIST);
+            throw new AuthorException(CommonExceptionEnums.AUTHOR_EXIST);
         }
 
         Author author = BeanUtil.copyProperties(authorDTO, Author.class);
@@ -92,7 +92,7 @@ public class AdminAuthorServiceImpl extends ServiceImpl<AuthorMapper, Author> im
                 .ne(Author::getId, authorDTO.getId())
                 .count();
         if (count > 0) {
-            throw new AuthorException(ExceptionEnums.AUTHOR_EXIST);
+            throw new AuthorException(CommonExceptionEnums.AUTHOR_EXIST);
         }
 
         Author author = BeanUtil.copyProperties(authorDTO, Author.class);
@@ -110,12 +110,12 @@ public class AdminAuthorServiceImpl extends ServiceImpl<AuthorMapper, Author> im
     @Override
     public void deleteAuthor(Long authorId) {
         // 判断是否存在该作者的图书
-        Long bookCount = bookService.lambdaQuery()
+        Long bookCount = adminBookService.lambdaQuery()
                 .eq(Book::getAuthorId, authorId)
                 .count();
 
         if(bookCount>0) {
-            throw new AuthorException(ExceptionEnums.AUTHOR_HAS_BOOK);
+            throw new AuthorException(CommonExceptionEnums.AUTHOR_HAS_BOOK);
         }
 
         lambdaUpdate()
@@ -134,11 +134,11 @@ public class AdminAuthorServiceImpl extends ServiceImpl<AuthorMapper, Author> im
      */
     @Override
     public void deleteBatchAuthor(List<Long> ids) {
-        Long bookCount = bookService.lambdaQuery()
+        Long bookCount = adminBookService.lambdaQuery()
                 .in(Book::getAuthorId, ids)
                 .count();
         if(bookCount>0) {
-            throw new AuthorException(ExceptionEnums.AUTHOR_HAS_BOOK);
+            throw new AuthorException(CommonExceptionEnums.AUTHOR_HAS_BOOK);
         }
 
         lambdaUpdate()

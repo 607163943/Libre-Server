@@ -40,7 +40,7 @@
         </if>
     </select>
     <!-- 查询最新添加的图书-->
-    <select id="getHomeTopLatestBookList" resultType="com.libre.pojo.vo.user.HomeTopLatestBookItem">
+    <select id="getHomeTopLatestBookList" resultType="com.libre.pojo.vo.app.HomeTopLatestBookItem">
         select book.id, book.book_name, author.author_name, book.cover_url, book.publish_date, book.create_time
         from tb_book book
                  join tb_author author on book.author_id = author.id
@@ -49,7 +49,7 @@
         limit 3
     </select>
     <!--查询最新添加的图书-->
-    <select id="search" resultType="com.libre.pojo.vo.user.SearchBookVO">
+    <select id="search" resultType="com.libre.pojo.vo.app.SearchBookVO">
         select book.id,
         book.book_name,
         author.author_name,
@@ -72,7 +72,7 @@
         </if>
     </select>
     <!--获取图书详情-->
-    <select id="getBookDetail" resultType="com.libre.pojo.vo.user.BookDetailVO">
+    <select id="getBookDetail" resultType="com.libre.pojo.vo.app.BookDetailVO">
         select book.id,
                book.book_name,
                publisher.publisher_name,

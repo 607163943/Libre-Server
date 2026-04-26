@@ -7,7 +7,7 @@ import com.libre.pojo.po.Lend;
 import com.libre.pojo.vo.LendPageVO;
 import com.libre.pojo.vo.admin.HomeTopBookItem;
 import com.libre.pojo.vo.admin.RecentLendTrendItem;
-import com.libre.pojo.vo.user.HomeTopLendBookItem;
+import com.libre.pojo.vo.app.HomeTopLendBookItem;
 import com.libre.result.PageResult;
 
 import java.util.List;

@@ -5,7 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.libre.enums.ExceptionEnums;
+import com.libre.enums.CommonExceptionEnums;
 import com.libre.exception.PublisherException;
 import com.libre.mapper.PublisherMapper;
 import com.libre.pojo.dto.PublisherDTO;
@@ -14,7 +14,7 @@ import com.libre.pojo.po.Book;
 import com.libre.pojo.po.Publisher;
 import com.libre.pojo.vo.PublisherPageVO;
 import com.libre.result.PageResult;
-import com.libre.service.BookService;
+import com.libre.service.admin.AdminBookService;
 import com.libre.service.admin.AdminPublisherService;
 import com.libre.util.PageUtil;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 @Service
 public class AdminPublisherServiceImpl extends ServiceImpl<PublisherMapper, Publisher> implements AdminPublisherService {
-    private final BookService bookService;
+    private final AdminBookService adminBookService;
 
     private final StringRedisTemplate stringRedisTemplate;
 
@@ -66,7 +66,7 @@ public class AdminPublisherServiceImpl extends ServiceImpl<PublisherMapper, Publ
                 .count();
 
         if(publisherCount>0) {
-            throw new PublisherException(ExceptionEnums.PUBLISHER_EXIST);
+            throw new PublisherException(CommonExceptionEnums.PUBLISHER_EXIST);
         }
 
         Publisher publisher = BeanUtil.copyProperties(publisherDTO, Publisher.class);
@@ -90,7 +90,7 @@ public class AdminPublisherServiceImpl extends ServiceImpl<PublisherMapper, Publ
                 .ne(Publisher::getId, publisherDTO.getId())
                 .count();
         if(count>0) {
-            throw new PublisherException(ExceptionEnums.PUBLISHER_EXIST);
+            throw new PublisherException(CommonExceptionEnums.PUBLISHER_EXIST);
         }
 
         Publisher publisher = BeanUtil.copyProperties(publisherDTO, Publisher.class);
@@ -107,12 +107,12 @@ public class AdminPublisherServiceImpl extends ServiceImpl<PublisherMapper, Publ
     @Override
     public void deletePublisher(Long publisherId) {
         // 校验是否存在该出版社发布的图书
-        Long bookCount = bookService.lambdaQuery()
+        Long bookCount = adminBookService.lambdaQuery()
                 .eq(Book::getPublisherId, publisherId)
                 .count();
 
         if(bookCount>0) {
-            throw new PublisherException(ExceptionEnums.PUBLISHER_HAS_BOOK);
+            throw new PublisherException(CommonExceptionEnums.PUBLISHER_HAS_BOOK);
         }
 
         lambdaUpdate()

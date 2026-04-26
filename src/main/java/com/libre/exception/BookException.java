@@ -1,11 +1,9 @@
 package com.libre.exception;
 
-import com.libre.enums.ExceptionEnums;
-import lombok.EqualsAndHashCode;
+import com.libre.enums.CommonExceptionEnums;
 
-@EqualsAndHashCode(callSuper = true)
-public class BookException extends LibreException {
-    public BookException(ExceptionEnums exceptionEnums) {
+public class BookException extends CommonException {
+    public BookException(CommonExceptionEnums exceptionEnums) {
         super(exceptionEnums);
     }
 }

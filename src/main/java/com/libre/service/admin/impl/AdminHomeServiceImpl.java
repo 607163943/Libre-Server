@@ -5,10 +5,10 @@ import com.libre.constant.Role;
 import com.libre.pojo.po.Lend;
 import com.libre.pojo.po.UserRole;
 import com.libre.pojo.vo.admin.*;
-import com.libre.service.BookService;
-import com.libre.service.LendService;
-import com.libre.service.UserRoleService;
+import com.libre.service.admin.AdminBookService;
 import com.libre.service.admin.AdminHomeService;
+import com.libre.service.admin.AdminLendService;
+import com.libre.service.admin.AdminUserRoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -22,11 +22,11 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 @Service
 public class AdminHomeServiceImpl implements AdminHomeService {
-    private final BookService bookService;
+    private final AdminBookService adminBookService;
 
-    private final UserRoleService userRoleService;
+    private final AdminUserRoleService adminUserRoleService;
 
-    private final LendService lendService;
+    private final AdminLendService adminLendService;
 
     private final StringRedisTemplate stringRedisTemplate;
 
@@ -46,12 +46,12 @@ public class AdminHomeServiceImpl implements AdminHomeService {
         }
 
         // 缓存未命中，查询数据库
-        long bookCount = bookService.count();
-        Long readerCount = userRoleService.lambdaQuery().eq(UserRole::getRoleId, Role.READER).count();
+        long bookCount = adminBookService.count();
+        Long readerCount = adminUserRoleService.lambdaQuery().eq(UserRole::getRoleId, Role.READER).count();
 
         // 获取当天借阅数量
         LocalDateTime startOfDay = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
-        Long todayLendCount = lendService.lambdaQuery()
+        Long todayLendCount = adminLendService.lambdaQuery()
                 .ge(Lend::getCreateTime, startOfDay)
                 .count();
 
@@ -83,7 +83,7 @@ public class AdminHomeServiceImpl implements AdminHomeService {
         }
 
         // 缓存未命中，查询数据库
-        List<RecentLendTrendItem> recentLendTrendItemList = lendService.getRecentLendTrend();
+        List<RecentLendTrendItem> recentLendTrendItemList = adminLendService.getRecentLendTrend();
         HomeRecentLendTrendVO result = HomeRecentLendTrendVO.builder()
                 .recentLendTrendItemList(recentLendTrendItemList)
                 .build();
@@ -110,7 +110,7 @@ public class AdminHomeServiceImpl implements AdminHomeService {
         }
 
         // 缓存未命中，查询数据库
-        List<HomeTopBookItem> homeTopBookItemList = lendService.getHomeTopBook();
+        List<HomeTopBookItem> homeTopBookItemList = adminLendService.getHomeTopBook();
         HomeTopBookVO result = HomeTopBookVO.builder()
                 .homeTopBookItemList(homeTopBookItemList)
                 .build();

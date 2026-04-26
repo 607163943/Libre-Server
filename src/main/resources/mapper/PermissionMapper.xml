@@ -32,4 +32,38 @@
             </if>
         </where>
     </select>
+    <select id="getAllPermissionCodes" resultType="com.libre.pojo.vo.admin.AdminPermissionCodeVO">
+        SELECT
+        p.id,
+        CONCAT(
+        CASE m.client_type WHEN 1 THEN 'admin' WHEN 2 THEN 'app' ELSE 'other' END,
+        ':',
+        m.module_key,
+        ':',
+        p.action_code
+        ) AS permission_code,
+        p.permission_desc,
+        m.id,
+        m.client_type
+        FROM tb_permission p
+        JOIN tb_module m ON p.module_id = m.id
+        where p.is_delete=0
+    </select>
+    <select id="getPermissionCodes" resultType="java.lang.String">
+        SELECT
+        CONCAT(
+        CASE m.client_type WHEN 1 THEN 'admin' WHEN 2 THEN 'app' ELSE 'other' END,
+        ':',
+        m.module_key,
+        ':',
+        p.action_code
+        ) AS permission_code
+        FROM tb_permission p
+        JOIN tb_module m ON p.module_id = m.id
+        where p.is_delete=0
+        and p.id in
+        <foreach collection="permissionIds" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </select>
 </mapper>

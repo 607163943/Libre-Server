@@ -1,9 +1,9 @@
 package com.libre.exception;
 
-import com.libre.enums.ExceptionEnums;
+import com.libre.enums.CommonExceptionEnums;
 
-public class LendException extends LibreException {
-    public LendException(ExceptionEnums exceptionEnums) {
+public class LendException extends CommonException {
+    public LendException(CommonExceptionEnums exceptionEnums) {
         super(exceptionEnums);
     }
 }

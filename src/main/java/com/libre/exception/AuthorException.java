@@ -1,9 +1,9 @@
 package com.libre.exception;
 
-import com.libre.enums.ExceptionEnums;
+import com.libre.enums.CommonExceptionEnums;
 
-public class AuthorException extends LibreException{
-    public AuthorException(ExceptionEnums exceptionEnums) {
+public class AuthorException extends CommonException {
+    public AuthorException(CommonExceptionEnums exceptionEnums) {
         super(exceptionEnums);
     }
 }

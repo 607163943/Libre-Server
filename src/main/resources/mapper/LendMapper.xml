@@ -48,7 +48,7 @@
         limit 5
     </select>
     <!-- 查询借阅数量最多的3本书-->
-    <select id="getHomeTopLendBookList" resultType="com.libre.pojo.vo.user.HomeTopLendBookItem">
+    <select id="getHomeTopLendBookList" resultType="com.libre.pojo.vo.app.HomeTopLendBookItem">
         select book.id, book.book_name, author.author_name, book.cover_url, book.publish_date, count(0) as lend_count
         from tb_lend lend
                  join tb_book book on lend.book_id = book.id
@@ -59,7 +59,7 @@
         limit 3
     </select>
     <!--分页查询用户借阅书籍-->
-    <select id="pageQueryMyLend" resultType="com.libre.pojo.vo.user.MyLendBookVO">
+    <select id="pageQueryMyLend" resultType="com.libre.pojo.vo.app.MyLendBookVO">
         select book.id,
         book.book_name,
         book.cover_url,
@@ -99,7 +99,7 @@
         and due_time &lt; now()
     </select>
     <!--分页查询用户历史借阅书籍-->
-    <select id="pageQueryMyLendHistory" resultType="com.libre.pojo.vo.user.MyLendHistoryBookVO">
+    <select id="pageQueryMyLendHistory" resultType="com.libre.pojo.vo.app.MyLendHistoryBookVO">
         select book.id,
         book.book_name,
         author.author_name,
@@ -132,7 +132,7 @@
         order by lend.create_time desc
     </select>
     <!--分页查询用户借阅书籍详情-->
-    <select id="pageQueryMyLendDetail" resultType="com.libre.pojo.vo.user.MyLendBookDetailVO">
+    <select id="pageQueryMyLendDetail" resultType="com.libre.pojo.vo.app.MyLendBookDetailVO">
         select book.id,
         book.book_name,
         book.cover_url,

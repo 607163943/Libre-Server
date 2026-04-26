@@ -1,10 +1,11 @@
 package com.libre.service.admin.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.libre.enums.ExceptionEnums;
+import com.libre.enums.CommonExceptionEnums;
 import com.libre.exception.PermissionException;
 import com.libre.mapper.PermissionMapper;
 import com.libre.pojo.dto.PermissionDTO;
@@ -12,14 +13,16 @@ import com.libre.pojo.dto.PermissionPageDTO;
 import com.libre.pojo.po.Permission;
 import com.libre.pojo.po.RolePermission;
 import com.libre.pojo.vo.PermissionPageVO;
+import com.libre.pojo.vo.admin.AdminPermissionCodeVO;
 import com.libre.result.PageResult;
-import com.libre.service.RolePermissionService;
 import com.libre.service.admin.AdminPermissionService;
+import com.libre.service.admin.AdminRolePermissionService;
 import com.libre.util.PageUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -27,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class AdminPermissionServiceImpl extends ServiceImpl<PermissionMapper, Permission> implements AdminPermissionService {
     private final StringRedisTemplate stringRedisTemplate;
-    private final RolePermissionService rolePermissionService;
+    private final AdminRolePermissionService adminRolePermissionService;
 
     /**
      * 分页查询权限信息
@@ -62,7 +65,7 @@ public class AdminPermissionServiceImpl extends ServiceImpl<PermissionMapper, Pe
                 .count();
 
         if (permissionCount > 0) {
-            throw new PermissionException(ExceptionEnums.PERMISSION_EXIST);
+            throw new PermissionException(CommonExceptionEnums.PERMISSION_EXIST);
         }
 
         Permission permission = BeanUtil.copyProperties(permissionDTO, Permission.class);
@@ -87,7 +90,7 @@ public class AdminPermissionServiceImpl extends ServiceImpl<PermissionMapper, Pe
                 .ne(Permission::getId, permissionDTO.getId())
                 .count();
         if (count > 0) {
-            throw new PermissionException(ExceptionEnums.PERMISSION_EXIST);
+            throw new PermissionException(CommonExceptionEnums.PERMISSION_EXIST);
         }
 
         Permission permission = BeanUtil.copyProperties(permissionDTO, Permission.class);
@@ -104,12 +107,12 @@ public class AdminPermissionServiceImpl extends ServiceImpl<PermissionMapper, Pe
      */
     @Override
     public void deletePermission(Long permissionId) {
-        Long rolePermissionCount = rolePermissionService.lambdaQuery()
+        Long rolePermissionCount = adminRolePermissionService.lambdaQuery()
                 .eq(RolePermission::getPermissionId, permissionId)
                 .count();
         // 这里假设有一个角色权限关联表，需要根据实际业务逻辑实现
         if(rolePermissionCount>0) {
-            throw new PermissionException(ExceptionEnums.PERMISSION_HAS_ROLE);
+            throw new PermissionException(CommonExceptionEnums.PERMISSION_HAS_ROLE);
         }
 
         lambdaUpdate()
@@ -128,12 +131,12 @@ public class AdminPermissionServiceImpl extends ServiceImpl<PermissionMapper, Pe
      */
     @Override
     public void deleteBatchPermission(List<Long> ids) {
-        Long rolePermissionCount = rolePermissionService.lambdaQuery()
+        Long rolePermissionCount = adminRolePermissionService.lambdaQuery()
                 .in(RolePermission::getPermissionId, ids)
                 .count();
         // 这里假设有一个角色权限关联表，需要根据实际业务逻辑实现
         if(rolePermissionCount>0) {
-            throw new PermissionException(ExceptionEnums.PERMISSION_HAS_ROLE);
+            throw new PermissionException(CommonExceptionEnums.PERMISSION_HAS_ROLE);
         }
         // 这里假设有一个角色权限关联表，需要根据实际业务逻辑实现
 
@@ -167,5 +170,41 @@ public class AdminPermissionServiceImpl extends ServiceImpl<PermissionMapper, Pe
         stringRedisTemplate.opsForValue().set(cacheKey, JSONUtil.toJsonStr(permissionList), 30, TimeUnit.MINUTES);
 
         return permissionList;
+    }
+
+    /**
+     * 获取所有权限码列表（完整权限码 带缓存）
+     * @return 权限码列表
+     */
+    @Override
+    public List<AdminPermissionCodeVO> getAllPermissionCodes() {
+        String cacheKey = "admin:permission:code-all";
+
+        // 尝试从缓存中获取
+        String cachedData = stringRedisTemplate.opsForValue().get(cacheKey);
+        if (cachedData != null) {
+            return JSONUtil.toList(cachedData, AdminPermissionCodeVO.class);
+        }
+
+        // 缓存未命中，查询数据库
+        List<AdminPermissionCodeVO> adminPermissionCodeVOS = baseMapper.getAllPermissionCodes();
+
+        // 存入缓存，过期时间30分钟
+        stringRedisTemplate.opsForValue().set(cacheKey, JSONUtil.toJsonStr(adminPermissionCodeVOS), 30, TimeUnit.MINUTES);
+
+        return adminPermissionCodeVOS;
+    }
+
+    /**
+     * 获取权限码
+     * @param permissionIds 权限id集合
+     * @return 权限码集合
+     */
+    @Override
+    public List<String> getPermissionCodes(List<Long> permissionIds) {
+        if(CollUtil.isEmpty(permissionIds)) {
+            return Collections.emptyList();
+        }
+        return baseMapper.getPermissionCodes(permissionIds);
     }
 }
