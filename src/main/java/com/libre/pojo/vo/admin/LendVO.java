@@ -23,8 +23,8 @@ public class LendVO {
     private Integer state;
     @ApiModelProperty("续借次数")
     private Integer renewCount;
+    @ApiModelProperty("借阅时间")
+    private LocalDateTime lendTime;
     @ApiModelProperty("应还时间")
     private LocalDateTime returnTime;
-    @ApiModelProperty("到期时间")
-    private LocalDateTime dueTime;
 }

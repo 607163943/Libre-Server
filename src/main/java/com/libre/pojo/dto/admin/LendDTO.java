@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Range;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -16,7 +17,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class LendDTO {
     @ApiModelProperty("借阅ID")
-    @NotNull(message = "借阅ID不能为空",groups = {UpdateGroup.class})
+    @NotNull(message = "借阅ID不能为空", groups = {UpdateGroup.class})
     private Long id;
 
     @ApiModelProperty("借阅者ID")
@@ -29,7 +30,13 @@ public class LendDTO {
 
     @ApiModelProperty("借阅状态(1借阅 2归还 3逾期)")
     @NotNull(message = "借阅状态不能为空")
+    @Range(min = 1, max = 3, message = "借阅状态范围错误")
     private Integer state;
+
+    @ApiModelProperty("续借次数")
+    @NotNull(message = "续借次数不能为空")
+    @Range(min = 0, max = 3, message = "续借次数范围错误")
+    private Integer renewCount;
 
     @ApiModelProperty("借阅时间")
     @NotNull(message = "借阅时间不能为空")

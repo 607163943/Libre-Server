@@ -22,6 +22,7 @@ public enum ExceptionEnums {
     LEND_BOOK_EMPTY(10503, "借阅书籍库存为空"),
     LEND_RENEW_OVER_MAX_COUNT(10504, "续借次数超过最大值"),
     LEND_BOOK_NOT_EXIST(10505, "借阅书籍不存在"),
+    LEND_USER_NOT_EXIST(10506,"借阅用户不存在"),
 
     LOGIN_USER_NOT_LOGIN(10601, "用户未登录"),
     LOGIN_USER_NOT_EXIST(10602, "用户不存在"),

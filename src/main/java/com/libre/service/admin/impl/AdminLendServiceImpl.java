@@ -12,6 +12,7 @@ import com.libre.pojo.dto.admin.LendDTO;
 import com.libre.pojo.dto.admin.LendPageDTO;
 import com.libre.pojo.po.Book;
 import com.libre.pojo.po.Lend;
+import com.libre.pojo.po.User;
 import com.libre.pojo.vo.admin.HomeTopBookItem;
 import com.libre.pojo.vo.admin.LendPageVO;
 import com.libre.pojo.vo.admin.RecentLendTrendItem;
@@ -20,7 +21,6 @@ import com.libre.result.PageResult;
 import com.libre.service.admin.AdminLendService;
 import com.libre.util.PageUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -31,9 +31,6 @@ import java.util.List;
 public class AdminLendServiceImpl extends ServiceImpl<LendMapper, Lend> implements AdminLendService {
 
     private final StringRedisTemplate stringRedisTemplate;
-
-    @Value("${business.lend.max-lend-count}")
-    private Integer maxRenewCount;
 
     /**
      * 分页查询借阅信息
@@ -75,6 +72,15 @@ public class AdminLendServiceImpl extends ServiceImpl<LendMapper, Lend> implemen
         // 检查书籍是否存在
         Book book = checkBookIsNullAndReturnBook(lendDTO.getBookId());
 
+        // 检查用户是否存在
+        boolean userExists = Db.lambdaQuery(User.class)
+                .eq(User::getId, lendDTO.getUserId())
+                .exists();
+
+        if (!userExists) {
+            throw new LendException(ExceptionEnums.LEND_USER_NOT_EXIST);
+        }
+
         // 判断库存是否为空
         Long lendBookNumber = lambdaQuery()
                 .eq(Lend::getBookId, lendDTO.getBookId())
@@ -106,41 +112,50 @@ public class AdminLendServiceImpl extends ServiceImpl<LendMapper, Lend> implemen
      */
     @Override
     public void modifyLend(LendDTO lendDTO) {
-        // 判断用户是否已经借阅过该书籍
-        Long lendCount = lambdaQuery()
-                .eq(Lend::getUserId, lendDTO.getUserId())
-                .eq(Lend::getBookId, lendDTO.getBookId())
-                .eq(Lend::getState, LendStatus.LEND)
-                .ne(Lend::getId, lendDTO.getId())
-                .count();
-
-        if (lendCount > 0) {
-            throw new LendException(ExceptionEnums.LEND_USER_LEND_BOOK_EXIST);
-        }
-
         // 检查书籍是否存在
         Book book = checkBookIsNullAndReturnBook(lendDTO.getBookId());
 
-        // 判断库存是否为空
-        Long lendBookNumber = lambdaQuery()
-                // 排除自己
-                .ne(Lend::getId, lendDTO.getId())
-                .eq(Lend::getBookId, lendDTO.getBookId())
-                .in(Lend::getState, LendStatus.LEND, LendStatus.OVERDUE)
-                .count();
+        // 检查用户是否存在
+        boolean userExists = Db.lambdaQuery(User.class)
+                .eq(User::getId, lendDTO.getUserId())
+                .exists();
 
-        // 相等说明库存为空
-        if (lendBookNumber.equals(book.getNumber())) {
-            throw new LendException(ExceptionEnums.LEND_BOOK_EMPTY);
+        if (!userExists) {
+            throw new LendException(ExceptionEnums.LEND_USER_NOT_EXIST);
+        }
+
+        // 非归还状态
+        if (!lendDTO.getState().equals(LendStatus.RETURN)) {
+            // 判断用户是否已经借阅过该书籍
+            Long lendCount = lambdaQuery()
+                    .eq(Lend::getUserId, lendDTO.getUserId())
+                    .eq(Lend::getBookId, lendDTO.getBookId())
+                    .eq(Lend::getState, LendStatus.LEND)
+                    .ne(Lend::getId, lendDTO.getId())
+                    .count();
+
+            if (lendCount > 0) {
+                throw new LendException(ExceptionEnums.LEND_USER_LEND_BOOK_EXIST);
+            }
+
+            // 判断库存是否为空
+            Long lendBookNumber = lambdaQuery()
+                    // 排除自己
+                    .ne(Lend::getId, lendDTO.getId())
+                    .eq(Lend::getBookId, lendDTO.getBookId())
+                    .in(Lend::getState, LendStatus.LEND, LendStatus.OVERDUE)
+                    .count();
+
+            // 相等说明库存为空
+            if (lendBookNumber.equals(book.getNumber())) {
+                throw new LendException(ExceptionEnums.LEND_BOOK_EMPTY);
+            }
         }
 
         Lend lend = BeanUtil.copyProperties(lendDTO, Lend.class);
-        if (lend.getRenewCount() > maxRenewCount) {
-            throw new LendException(ExceptionEnums.LEND_RENEW_OVER_MAX_COUNT);
-        }
 
         // 更新了借阅时间则逾期时间同步更新
-        if(lend.getLendTime()!=null) {
+        if (lend.getLendTime() != null) {
             lend.setDueTime(lendDTO.getLendTime().plusDays(7));
         }
         updateById(lend);
