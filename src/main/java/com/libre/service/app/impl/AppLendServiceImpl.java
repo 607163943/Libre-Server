@@ -109,6 +109,8 @@ public class AppLendServiceImpl extends ServiceImpl<LendMapper, Lend> implements
         lend.setRenewCount(0);
         // 初始化为借阅状态
         lend.setState(LendStatus.LEND);
+        // 设置借阅时间
+        lend.setLendTime(LocalDateTime.now());
         // 默认借阅时间为7天
         lend.setDueTime(LocalDateTime.now().plusDays(7));
         save(lend);
@@ -215,7 +217,7 @@ public class AppLendServiceImpl extends ServiceImpl<LendMapper, Lend> implements
             throw new LendException(ExceptionEnums.LEND_USER_NOT_LEND);
         }
 
-        // 逾期则在当前日期续7天
+        // 逾期日期更新
         if (lend.getState().equals(LendStatus.OVERDUE)) {
             lend.setDueTime(LocalDateTime.now().plusDays(7));
         } else {

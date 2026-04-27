@@ -72,6 +72,7 @@ public class AdminPermissionServiceImpl extends ServiceImpl<PermissionMapper, Pe
 
         // 清除缓存
         stringRedisTemplate.delete("admin:permission:all");
+        stringRedisTemplate.delete("admin:permission:code-all");
     }
 
     /**

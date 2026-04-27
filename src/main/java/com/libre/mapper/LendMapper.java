@@ -76,7 +76,6 @@ public interface LendMapper extends BaseMapper<Lend> {
 
     /**
      * 查询超时借阅
-     * @return 超时借阅
      */
     void updateOverTimeLend();
 }
