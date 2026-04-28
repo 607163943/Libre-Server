@@ -29,12 +29,12 @@ public class SaTokenConfig implements WebMvcConfigurer {
                     // 管理端
                     "/admin/login/**",
                     // 用户端
-                    "/user/login/**",
-                    "/user/register/**",
-                    "/user/search/**",
-                    "/user/book/**",
-                    "/user/home/top/lend/book",
-                    "/user/home/top/latest/book",
+                    "/app/login/**",
+                    "/app/register/**",
+                    "/app/search/**",
+                    "/app/book/**",
+                    "/app/home/top/lend/book",
+                    "/app/home/top/latest/book",
                     // Knife4j文档
                     "/doc.html", "/webjars/**", "/favicon.ico", "/swagger-resources/**", "/v2/api-docs/**",
                     // 浏览器插件

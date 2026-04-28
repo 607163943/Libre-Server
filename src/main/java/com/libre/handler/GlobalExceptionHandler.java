@@ -5,11 +5,14 @@ import com.libre.exception.*;
 import com.libre.result.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @Slf4j
 @RestControllerAdvice
@@ -30,6 +33,7 @@ public class GlobalExceptionHandler {
 
     /**
      * 自定义授权异常处理
+     *
      * @param e 授权异常
      * @return 错误信息
      */
@@ -99,6 +103,7 @@ public class GlobalExceptionHandler {
 
     /**
      * 自定义图书模块异常处理
+     *
      * @param e 图书模块异常
      * @return 错误信息
      */
@@ -126,6 +131,7 @@ public class GlobalExceptionHandler {
 
     /**
      * 自定义模块管理异常处理
+     *
      * @param e 模块管理异常
      * @return 错误信息
      */
@@ -139,6 +145,7 @@ public class GlobalExceptionHandler {
 
     /**
      * 自定义权限模块异常处理
+     *
      * @param e 权限模块异常
      * @return 错误信息
      */
@@ -152,6 +159,7 @@ public class GlobalExceptionHandler {
 
     /**
      * 自定义借阅模块异常处理
+     *
      * @param e 借阅模块异常
      * @return 错误信息
      */
@@ -180,6 +188,7 @@ public class GlobalExceptionHandler {
 
     /**
      * 自定义工具类异常处理
+     *
      * @param e 工具类异常
      * @return 错误信息
      */
@@ -189,6 +198,23 @@ public class GlobalExceptionHandler {
         ExceptionEnums exceptionEnums = e.getExceptionEnums();
         log.warn("工具类异常：{}", exceptionEnums.getMsg());
         return Result.error(exceptionEnums.getCode(), exceptionEnums.getMsg());
+    }
+
+    /**
+     * 参数绑定异常处理
+     *
+     * @param e 参数绑定异常
+     * @return 错误信息
+     */
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(BindException.class)
+    public Result<Void> handleBindException(BindException e) {
+        List<FieldError> fieldErrors = e.getFieldErrors();
+        StringBuilder errorMsg = new StringBuilder();
+        for (FieldError fieldError : fieldErrors) {
+            errorMsg.append(fieldError.getDefaultMessage()).append("; ");
+        }
+        return Result.error(400, errorMsg.toString());
     }
 
     /**

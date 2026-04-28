@@ -22,7 +22,7 @@ import java.util.List;
 
 @Api(tags = "用户端用户接口")
 @RequiredArgsConstructor
-@RequestMapping("/user/user")
+@RequestMapping("/app/user")
 @RestController
 public class AppUserController {
     private final AppUserService appUserService;

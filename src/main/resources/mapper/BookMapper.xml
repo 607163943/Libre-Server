@@ -48,29 +48,23 @@
         order by book.create_time desc
         limit 3
     </select>
-    <!--查询最新添加的图书-->
-    <select id="search" resultType="com.libre.pojo.vo.app.SearchBookVO">
-        select book.id,
-        book.book_name,
-        author.author_name,
-        publisher.publisher_name,
-        book.isbn,
-        book.cover_url,
-        book.publish_date
-        from tb_book book
-        join tb_author author on book.author_id = author.id
-        join tb_publisher publisher on book.publisher_id = publisher.id
-        where book.is_delete = 0
-        <if test="searchDTO.keyword!=null and searchDTO.keyword!=''">
-            and book.book_name like concat('%', #{searchDTO.keyword}, '%')
-            or author.author_name like concat('%', #{searchDTO.keyword}, '%')
-            or publisher.publisher_name like concat('%', #{searchDTO.keyword}, '%')
-            or book.isbn like concat('%', #{searchDTO.keyword}, '%')
-        </if>
-        <if test="searchDTO.isDateSort == 1">
-            order by book.publish_date desc
-        </if>
+    <!--ES全量同步-->
+    <select id="findAllBookDocs" resultType="com.libre.pojo.doc.BookDoc">
+        SELECT
+            book.id,
+            book.book_name as bookName,
+            author.author_name as authorName,
+            publisher.publisher_name as publisherName,
+            book.isbn,
+            book.cover_url as coverUrl,
+            book.publish_date as publishDate,
+            book.is_delete as isDelete
+        FROM tb_book book
+                 JOIN tb_author author ON book.author_id = author.id
+                 JOIN tb_publisher publisher ON book.publisher_id = publisher.id
+        WHERE book.is_delete = 0
     </select>
+
     <!--获取图书详情-->
     <select id="getBookDetail" resultType="com.libre.pojo.vo.app.BookDetailVO">
         select book.id,
@@ -87,5 +81,20 @@
                  join tb_publisher publisher on book.publisher_id = publisher.id
         where book.id = #{bookId}
           and book.is_delete = 0
+    </select>
+    <select id="findBookDockById" resultType="com.libre.pojo.doc.BookDoc">
+        SELECT
+            book.id,
+            book.book_name as bookName,
+            author.author_name as authorName,
+            publisher.publisher_name as publisherName,
+            book.isbn,
+            book.cover_url as coverUrl,
+            book.publish_date as publishDate,
+            book.is_delete as isDelete
+        FROM tb_book book
+                 JOIN tb_author author ON book.author_id = author.id
+                 JOIN tb_publisher publisher ON book.publisher_id = publisher.id
+        WHERE book.id = #{bookId} and book.is_delete = 0
     </select>
 </mapper>

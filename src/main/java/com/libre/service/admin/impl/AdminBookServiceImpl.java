@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.libre.enums.ExceptionEnums;
 import com.libre.exception.BookException;
 import com.libre.mapper.BookMapper;
+import com.libre.pojo.doc.BookDoc;
 import com.libre.pojo.dto.admin.BookDTO;
 import com.libre.pojo.dto.admin.BookPageDTO;
 import com.libre.pojo.po.Book;
@@ -14,6 +15,7 @@ import com.libre.result.PageResult;
 import com.libre.service.admin.AdminBookService;
 import com.libre.util.PageUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +25,8 @@ import java.util.List;
 @Service
 public class AdminBookServiceImpl extends ServiceImpl<BookMapper, Book> implements AdminBookService {
     private final StringRedisTemplate stringRedisTemplate;
+
+    private final ElasticsearchRestTemplate elasticsearchRestTemplate;
     /**
      * 清除首页缓存
      */
@@ -86,6 +90,9 @@ public class AdminBookServiceImpl extends ServiceImpl<BookMapper, Book> implemen
 
         // 清除首页缓存
         clearHomeCache();
+
+        BookDoc bookDoc = baseMapper.findBookDockById(book.getId());
+        elasticsearchRestTemplate.save(bookDoc);
     }
 
     /**
@@ -122,6 +129,8 @@ public class AdminBookServiceImpl extends ServiceImpl<BookMapper, Book> implemen
 
         // 清除首页缓存
         clearHomeCache();
+        BookDoc bookDoc = baseMapper.findBookDockById(book.getId());
+        elasticsearchRestTemplate.save(bookDoc);
     }
 
     /**
@@ -139,6 +148,7 @@ public class AdminBookServiceImpl extends ServiceImpl<BookMapper, Book> implemen
 
         // 清除首页缓存
         clearHomeCache();
+        elasticsearchRestTemplate.delete(bookId.toString(), BookDoc.class);
     }
 
     /**
@@ -155,5 +165,6 @@ public class AdminBookServiceImpl extends ServiceImpl<BookMapper, Book> implemen
 
         // 清除首页缓存
         clearHomeCache();
+        ids.forEach(id -> elasticsearchRestTemplate.delete(id.toString(), BookDoc.class));
     }
 }

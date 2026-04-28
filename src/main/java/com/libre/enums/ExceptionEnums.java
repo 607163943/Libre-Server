@@ -38,7 +38,10 @@ public enum ExceptionEnums {
 
     USER_ROLE_EXIST(11001, "用户角色关系已存在"),
 
-    UTIL_PASSWORD_MD5_ERROR(11101, "密码MD5值异常");
+    UTIL_PASSWORD_MD5_ERROR(11101, "密码MD5值异常"),
+
+    MESSAGE_EXIST(11201, "消息已存在"),
+    MESSAGE_NOT_EXIST(11202, "消息不存在");
 
     private final Integer code;
     private final String msg;

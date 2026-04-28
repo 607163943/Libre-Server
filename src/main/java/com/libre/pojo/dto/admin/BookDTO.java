@@ -43,15 +43,18 @@ public class BookDTO {
     private String introduction;
 
     @ApiModelProperty("语言")
+    @NotBlank(message = "语言不能为空")
     private String language;
 
     @ApiModelProperty("出版日期")
-    @NotBlank(message = "出版日期不能为空")
+    @NotNull(message = "出版日期不能为空")
     private LocalDate publishDate;
 
     @ApiModelProperty("价格")
+    @NotNull(message = "价格不能为空")
     private Long price;
 
     @ApiModelProperty("数量")
+    @NotNull(message = "数量不能为空")
     private Integer number;
 }

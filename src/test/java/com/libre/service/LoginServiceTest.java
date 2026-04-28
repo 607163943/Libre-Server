@@ -4,6 +4,7 @@ import cn.hutool.core.lang.UUID;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.crypto.digest.BCrypt;
 import com.libre.pojo.po.User;
+import com.libre.service.common.CommonUserService;
 import com.libre.util.SecurityUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,7 @@ import java.util.List;
 @SpringBootTest
 public class LoginServiceTest {
     @Autowired
-    private UserService userService;
+    private CommonUserService userService;
 
     @Autowired
     private SecurityUtil securityUtil;

@@ -13,6 +13,10 @@ redis:
   database: 0
   password: 123456
 
+# elasticsearch
+es:
+  host: 192.168.150.101
+  port: 9200
 # security
 security:
   pepper: 8a77fd7f7ee9b36a965e0c6fc56f3230

@@ -1,0 +1,5 @@
+# elasticsearch配置
+spring:
+  elasticsearch:
+    uris: http://${es.host}:${es.port}
+    connection-timeout: 10s

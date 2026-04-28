@@ -13,6 +13,7 @@ spring:
         - dev-redis
         - dev-logging
         - dev-security
+        - dev-es
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher # 使用旧的匹配方式已兼容Knife4j文档依赖

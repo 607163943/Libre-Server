@@ -5,19 +5,13 @@
 ## 🛠 功能模块
 
 * 作者模块
-
 * 出版社模板
-
 * 图书模块
-
 * 用户模块
-
 * 角色模块
-
-* 用户角色模块
-
+* 消息模块
+* 权限模块
 * 借阅模块
-
 * 登录模块
 
 ## 🛠️ 技术栈
@@ -28,7 +22,7 @@
     * **无状态认证插件**：`Sa-Token-JWT1.45.0`
 * **接口文档**：`Knife4j3.0.3`
 * **工具**：`Hutool-All5.8.40`、`Lombok`
-* **开发环境**：`JDK 8`、`MySQL 8.0.45`、`Maven3.9.9`、`Redis7.2`
+* **开发环境**：`JDK 8`、`MySQL 8.0.45`、`Maven3.9.9`、`Redis7.2`、`ElasticSearch7.17.15`
 
 ## 🗄 数据库设计
 
@@ -40,6 +34,11 @@
 - `tb_role`：角色表
 - `tb_user_role`：用户角色中间表
 - `tb_lend`：借阅表
+- `tb_permission`：权限表
+- `tb_module`：模块表
+- `tb_role_permission`：角色权限中间表
+- `tb_message`：消息表
+- `tb_user_message`：用户消息关联表
 
 ## 🚀 快速启动
 

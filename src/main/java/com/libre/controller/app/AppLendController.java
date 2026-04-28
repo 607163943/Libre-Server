@@ -19,7 +19,7 @@ import java.util.List;
  * 用户端借阅管理接口
  */
 @Api(tags = "用户端借阅管理接口")
-@RequestMapping("/user/lend")
+@RequestMapping("/app/lend")
 @RestController
 @RequiredArgsConstructor
 public class AppLendController {

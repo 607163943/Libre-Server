@@ -2,13 +2,12 @@ package com.libre.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.libre.pojo.doc.BookDoc;
 import com.libre.pojo.dto.admin.BookPageDTO;
-import com.libre.pojo.dto.app.SearchDTO;
 import com.libre.pojo.po.Book;
 import com.libre.pojo.vo.admin.BookPageVO;
 import com.libre.pojo.vo.app.BookDetailVO;
 import com.libre.pojo.vo.app.HomeTopLatestBookItem;
-import com.libre.pojo.vo.app.SearchBookVO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -29,11 +28,19 @@ public interface BookMapper extends BaseMapper<Book> {
     List<HomeTopLatestBookItem> getHomeTopLatestBookList();
 
     /**
-     * 搜索图书
-     * @param searchDTO 搜索参数
-     * @return 搜索图书
+     * 根据id获取图书文档
+     * @param id 图书id
+     * @return Book文档
      */
-    IPage<SearchBookVO> search(@Param("page") IPage<SearchBookVO> page, @Param("searchDTO") SearchDTO searchDTO);
+    BookDoc findBookDockById(Long id);
+
+    // 用于全量同步数据到 ES
+
+    /**
+     * 获取所有图书文档
+     * @return 图书文档列表
+     */
+    List<BookDoc> findAllBookDocs();
 
     /**
      * 获取图书详情

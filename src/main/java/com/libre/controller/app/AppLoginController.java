@@ -18,7 +18,7 @@ import javax.validation.Valid;
 @Api(tags = "用户端登录接口")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/app")
 public class AppLoginController {
     private final CommonLoginService commonLoginService;
 

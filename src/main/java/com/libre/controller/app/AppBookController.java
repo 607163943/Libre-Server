@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
  * 用户端图书管理接口
  */
 @Api(tags = "用户端图书管理接口")
-@RequestMapping("/user/book")
+@RequestMapping("/app/book")
 @RestController
 @RequiredArgsConstructor
 public class AppBookController {
