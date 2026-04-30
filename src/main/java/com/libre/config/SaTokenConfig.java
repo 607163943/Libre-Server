@@ -38,7 +38,9 @@ public class SaTokenConfig implements WebMvcConfigurer {
                     // Knife4j文档
                     "/doc.html", "/webjars/**", "/favicon.ico", "/swagger-resources/**", "/v2/api-docs/**",
                     // 浏览器插件
-                    "/.well-known/**"
+                    "/.well-known/**",
+                    // 其他
+                    "/error"
             ).stop();
 
             // 认证

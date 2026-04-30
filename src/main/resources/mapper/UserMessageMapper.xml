@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.libre.mapper.UserMessageMapper">
+
+    <select id="pageQueryUserMessage" resultType="com.libre.pojo.vo.app.UserMessageVO">
+        SELECT m.id,m.content, m.title, um.create_time AS createTime,um.is_read,m.type
+        FROM tb_user_message um
+        JOIN tb_message m ON um.message_id = m.id
+        WHERE um.receiver_id = #{userMessagePageDTO.userId}
+        <if test="userMessagePageDTO.type == 1">
+            AND um.is_read = 0
+        </if>
+        <if test="userMessagePageDTO.type == 2">
+            AND um.is_read = 1
+        </if>
+        ORDER BY um.create_time DESC
+    </select>
+
+    <select id="getUserMessageDetail" resultType="com.libre.pojo.vo.app.UserMessageDetailVO">
+        SELECT m.id, m.content, m.title, m.create_time AS createTime, m.type
+        FROM tb_user_message um
+                 JOIN tb_message m ON um.message_id = m.id
+        WHERE um.message_id = #{messageId}
+          AND um.receiver_id = #{userId}
+    </select>
+
+</mapper>

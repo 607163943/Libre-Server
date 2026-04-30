@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.libre.pojo.dto.admin.LendPageDTO;
 import com.libre.pojo.dto.app.MyLendPageDTO;
+import com.libre.pojo.dto.common.OverLend;
 import com.libre.pojo.po.Lend;
 import com.libre.pojo.vo.admin.LendPageVO;
 import com.libre.pojo.vo.admin.HomeTopBookItem;
@@ -78,4 +79,10 @@ public interface LendMapper extends BaseMapper<Lend> {
      * 查询超时借阅
      */
     void updateOverTimeLend();
+
+    /**
+     * 查询超时借阅
+     * @return 超时借阅
+     */
+    List<OverLend> selectOverLend();
 }
