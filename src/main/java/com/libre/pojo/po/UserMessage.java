@@ -1,13 +1,12 @@
 package com.libre.pojo.po;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 
+@SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 @TableName("tb_user_message")
 @Data
@@ -18,6 +17,8 @@ public class UserMessage extends BasePO {
     private Long id;
     // 用户id
     private Long receiverId;
+    // 平台范围(0所有平台 1管理员平台 2读者平台)
+    private Integer platformScope;
     // 消息id
     private Long messageId;
     // 是否已读(0未读 1已读)

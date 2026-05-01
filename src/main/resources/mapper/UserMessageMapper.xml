@@ -4,11 +4,15 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.libre.mapper.UserMessageMapper">
 
-    <select id="pageQueryUserMessage" resultType="com.libre.pojo.vo.app.UserMessageVO">
+    <select id="pageQueryUserMessage" resultType="com.libre.pojo.vo.common.UserMessageVO">
         SELECT m.id,m.content, m.title, um.create_time AS createTime,um.is_read,m.type
         FROM tb_user_message um
         JOIN tb_message m ON um.message_id = m.id
         WHERE um.receiver_id = #{userMessagePageDTO.userId}
+        AND um.platform_scope in
+        <foreach collection="userMessagePageDTO.platformScopes" separator="," open="(" close=")" item="platformScope">
+            #{platformScope}
+        </foreach>
         <if test="userMessagePageDTO.type == 1">
             AND um.is_read = 0
         </if>

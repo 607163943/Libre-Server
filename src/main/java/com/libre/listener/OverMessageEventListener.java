@@ -1,5 +1,6 @@
 package com.libre.listener;
 
+import com.libre.constant.MessageType;
 import com.libre.pojo.dto.common.OverMessageInfo;
 import com.libre.pojo.event.BatchOverMessageEvent;
 import com.libre.pojo.po.Message;
@@ -34,7 +35,7 @@ public class OverMessageEventListener {
             Message m = new Message();
             m.setTitle("图书逾期提醒");
             m.setContent("您的《" + info.getBookName() + "》已逾期" + info.getOverDay() + "天");
-            m.setType(1);
+            m.setType(MessageType.LEND);
             m.setState(1);
             m.setCreateUserId(0L);
             return m;

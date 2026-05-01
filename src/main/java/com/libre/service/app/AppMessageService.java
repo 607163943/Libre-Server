@@ -1,10 +1,10 @@
 package com.libre.service.app;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.libre.pojo.dto.app.UserMessagePageDTO;
+import com.libre.pojo.dto.common.UserMessagePageDTO;
 import com.libre.pojo.po.Message;
 import com.libre.pojo.vo.app.UserMessageDetailVO;
-import com.libre.pojo.vo.app.UserMessageVO;
+import com.libre.pojo.vo.common.UserMessageVO;
 import com.libre.result.PageResult;
 
 import java.util.List;

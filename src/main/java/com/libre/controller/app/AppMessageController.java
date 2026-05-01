@@ -1,8 +1,8 @@
 package com.libre.controller.app;
 
-import com.libre.pojo.dto.app.UserMessagePageDTO;
+import com.libre.pojo.dto.common.UserMessagePageDTO;
 import com.libre.pojo.vo.app.UserMessageDetailVO;
-import com.libre.pojo.vo.app.UserMessageVO;
+import com.libre.pojo.vo.common.UserMessageVO;
 import com.libre.result.PageResult;
 import com.libre.result.Result;
 import com.libre.service.app.AppMessageService;

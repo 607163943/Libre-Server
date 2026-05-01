@@ -4,8 +4,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.libre.pojo.dto.admin.MessageDTO;
 import com.libre.pojo.dto.admin.MessagePageDTO;
 import com.libre.pojo.dto.admin.MessageSendDTO;
+import com.libre.pojo.dto.common.UserMessagePageDTO;
 import com.libre.pojo.po.Message;
 import com.libre.pojo.vo.admin.MessagePageVO;
+import com.libre.pojo.vo.app.UserMessageDetailVO;
+import com.libre.pojo.vo.common.UserMessageVO;
 import com.libre.result.PageResult;
 
 import java.util.List;
@@ -44,7 +47,21 @@ public interface AdminMessageService extends IService<Message> {
 
     /**
      * 发送消息
-     * @param id 消息id
+     * @param messageSendDTO 消息DTO
      */
     void sendMessage(MessageSendDTO messageSendDTO);
+
+    /**
+     * 分页查询用户消息
+     * @param userMessagePageDTO 查询参数
+     * @return 查询结果
+     */
+    PageResult<List<UserMessageVO>> pageQueryAdminMessage(UserMessagePageDTO userMessagePageDTO);
+
+    /**
+     * 根据消息id查询用户具体消息
+     * @param messageId 消息id
+     * @return 消息详情
+     */
+    UserMessageDetailVO getUserMessageDetail(Long messageId);
 }

@@ -4,16 +4,17 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.extension.toolkit.Db;
+import com.libre.constant.PlatformScope;
 import com.libre.constant.UserMessageState;
 import com.libre.enums.ExceptionEnums;
 import com.libre.exception.LibreException;
 import com.libre.mapper.MessageMapper;
 import com.libre.mapper.UserMessageMapper;
-import com.libre.pojo.dto.app.UserMessagePageDTO;
+import com.libre.pojo.dto.common.UserMessagePageDTO;
 import com.libre.pojo.po.Message;
 import com.libre.pojo.po.UserMessage;
 import com.libre.pojo.vo.app.UserMessageDetailVO;
-import com.libre.pojo.vo.app.UserMessageVO;
+import com.libre.pojo.vo.common.UserMessageVO;
 import com.libre.result.PageResult;
 import com.libre.service.app.AppMessageService;
 import com.libre.service.app.AppUserMessageService;
@@ -22,6 +23,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -45,10 +48,13 @@ public class AppMessageServiceImpl extends ServiceImpl<MessageMapper, Message> i
         // 设置当前登录用户ID
         Long userId = StpUtil.getLoginIdAsLong();
         userMessagePageDTO.setUserId(userId);
-        
+
+        // 设置查询端范围
+        userMessagePageDTO.setPlatformScopes(new ArrayList<>(Arrays.asList(PlatformScope.ALL, PlatformScope.ALL_READER)));
+
         // 查询
         page = userMessageMapper.pageQueryUserMessage(page, userMessagePageDTO);
-        
+
         return PageResult.<List<UserMessageVO>>builder()
                 .total(page.getTotal())
                 .data(page.getRecords())
@@ -65,10 +71,10 @@ public class AppMessageServiceImpl extends ServiceImpl<MessageMapper, Message> i
     public UserMessageDetailVO getUserMessageDetail(Long messageId) {
         // 获取当前登录用户ID
         Long userId = StpUtil.getLoginIdAsLong();
-        
+
         // 查询消息详情
         UserMessageDetailVO messageDetail = userMessageMapper.getUserMessageDetail(messageId, userId);
-        
+
         if (messageDetail == null) {
             throw new LibreException(ExceptionEnums.MESSAGE_NOT_EXIST);
         }
@@ -79,15 +85,15 @@ public class AppMessageServiceImpl extends ServiceImpl<MessageMapper, Message> i
                 .one();
 
         // 查询未读取消息=阅读消息
-        if(userMessage.getIsRead().equals(0)) {
+        if (userMessage.getIsRead().equals(0)) {
             Db.lambdaUpdate(UserMessage.class)
                     .set(UserMessage::getIsRead, UserMessageState.READ)
                     .set(UserMessage::getReadTime, LocalDateTime.now())
                     .eq(UserMessage::getMessageId, messageId)
-                    .eq(UserMessage::getReceiverId,userId)
+                    .eq(UserMessage::getReceiverId, userId)
                     .update();
         }
-        
+
         return messageDetail;
     }
 }

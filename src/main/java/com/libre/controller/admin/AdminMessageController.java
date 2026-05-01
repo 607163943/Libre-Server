@@ -5,12 +5,16 @@ import cn.hutool.core.collection.CollUtil;
 import com.libre.pojo.dto.admin.MessageDTO;
 import com.libre.pojo.dto.admin.MessagePageDTO;
 import com.libre.pojo.dto.admin.MessageSendDTO;
+import com.libre.pojo.dto.common.UserMessagePageDTO;
 import com.libre.pojo.po.Message;
 import com.libre.pojo.vo.admin.MessagePageVO;
 import com.libre.pojo.vo.admin.MessageVO;
+import com.libre.pojo.vo.app.UserMessageDetailVO;
+import com.libre.pojo.vo.common.UserMessageVO;
 import com.libre.result.PageResult;
 import com.libre.result.Result;
 import com.libre.service.admin.AdminMessageService;
+import com.libre.service.admin.AdminUserMessageService;
 import com.libre.validation.UpdateGroup;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -28,6 +32,29 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AdminMessageController {
     private final AdminMessageService adminMessageService;
+
+    private final AdminUserMessageService userMessageService;
+
+    @ApiOperation("分页查询管理员消息")
+    @GetMapping("/user")
+    public Result<PageResult<List<UserMessageVO>>> pageQueryAdminMessage(UserMessagePageDTO userMessagePageDTO) {
+        PageResult<List<UserMessageVO>> pageResult = adminMessageService.pageQueryAdminMessage(userMessagePageDTO);
+        return Result.success(pageResult);
+    }
+
+    @ApiOperation("根据消息id查询用户具体消息")
+    @GetMapping("/user/{messageId}")
+    public Result<UserMessageDetailVO> getUserMessageDetail(@PathVariable Long messageId) {
+        UserMessageDetailVO messageDetail = adminMessageService.getUserMessageDetail(messageId);
+        return Result.success(messageDetail);
+    }
+
+    @ApiOperation("获取用户未查看消息数量")
+    @GetMapping("/user/unread")
+    public Result<Long> getUserUnreadMessageCount() {
+        Long count = userMessageService.getUserUnreadMessageCount();
+        return Result.success(count);
+    }
 
     @ApiOperation("消息分页查询接口")
     @GetMapping

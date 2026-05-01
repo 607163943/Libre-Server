@@ -1,28 +1,61 @@
 package com.libre.service.admin.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.extension.toolkit.Db;
 import com.libre.constant.MessageStats;
+import com.libre.constant.PlatformScope;
+import com.libre.constant.Role;
+import com.libre.constant.UserMessageState;
+import com.libre.enums.ExceptionEnums;
+import com.libre.exception.LibreException;
 import com.libre.mapper.MessageMapper;
+import com.libre.mapper.UserMessageMapper;
 import com.libre.pojo.dto.admin.MessageDTO;
 import com.libre.pojo.dto.admin.MessagePageDTO;
 import com.libre.pojo.dto.admin.MessageSendDTO;
+import com.libre.pojo.dto.common.UserMessagePageDTO;
 import com.libre.pojo.po.Message;
+import com.libre.pojo.po.UserMessage;
+import com.libre.pojo.po.UserRole;
 import com.libre.pojo.vo.admin.MessagePageVO;
+import com.libre.pojo.vo.app.UserMessageDetailVO;
+import com.libre.pojo.vo.common.UserMessageVO;
 import com.libre.result.PageResult;
 import com.libre.service.admin.AdminMessageService;
+import com.libre.service.admin.AdminUserMessageService;
+import com.libre.service.admin.AdminUserRoleService;
 import com.libre.util.PageUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 public class AdminMessageServiceImpl extends ServiceImpl<MessageMapper, Message> implements AdminMessageService {
+
+    private final AdminUserRoleService userRoleService;
+
+    private final AdminUserMessageService userMessageService;
+
+    private final UserMessageMapper userMessageMapper;
+
+    // 保证事务
+    @Lazy
+    @Resource
+    private AdminMessageService messageService;
 
     /**
      * 分页查询消息信息
@@ -62,6 +95,8 @@ public class AdminMessageServiceImpl extends ServiceImpl<MessageMapper, Message>
         message.setCreateTime(LocalDateTime.now());
         // 设置更新时间
         message.setUpdateTime(LocalDateTime.now());
+        // 设置创建用户id
+        message.setCreateUserId(StpUtil.getLoginIdAsLong());
         save(message);
     }
 
@@ -94,6 +129,7 @@ public class AdminMessageServiceImpl extends ServiceImpl<MessageMapper, Message>
 
     /**
      * 批量删除消息信息
+     *
      * @param ids 消息id集合
      */
     @Override
@@ -106,15 +142,106 @@ public class AdminMessageServiceImpl extends ServiceImpl<MessageMapper, Message>
 
     /**
      * 发送消息
+     *
      * @param messageSendDTO 消息发送DTO
      */
+    @Transactional
     @Override
     public void sendMessage(MessageSendDTO messageSendDTO) {
-        // TODO：需要使用SpringEvent发送事件，由监听器处理
+        // 获取指定角色的用户群体
+        LambdaQueryChainWrapper<UserRole> chainWrapper = userRoleService.lambdaQuery();
+        Integer targetNumber = messageSendDTO.getTarget();
+        if (!targetNumber.equals(PlatformScope.ALL)) {
+            if (targetNumber.equals(PlatformScope.ALL_ADMIN)) {
+                chainWrapper.in(UserRole::getRoleId, Role.SUPER_ADMIN, Role.ADMIN);
+            } else {
+                chainWrapper.eq(UserRole::getRoleId, Role.READER);
+            }
+        }
+        List<UserRole> userRoleList = chainWrapper
+                .list();
+
+        // 获取用户id集合
+        List<Long> targetUserIds = userRoleList.stream().map(UserRole::getUserId).collect(Collectors.toList());
+        // 构建消息发送数据
+        List<UserMessage> userMessages = new ArrayList<>(targetUserIds.size());
+        for (Long targetUserId : targetUserIds) {
+            UserMessage userMessage = UserMessage.builder()
+                    .receiverId(targetUserId)
+                    .messageId(messageSendDTO.getId())
+                    .platformScope(targetNumber)
+                    .isRead(UserMessageState.UNREAD)
+                    .build();
+            userMessages.add(userMessage);
+        }
+
+        // 批量保存发送消息
+        userMessageService.saveBatch(userMessages);
         // 更新消息状态为已发送
-        lambdaUpdate()
+        messageService.lambdaUpdate()
                 .set(Message::getState, MessageStats.SEND)
                 .eq(Message::getId, messageSendDTO.getId())
                 .update();
+    }
+
+    /**
+     * 分页查询用户消息
+     * @param userMessagePageDTO 查询参数
+     * @return 分页结果
+     */
+    @Override
+    public PageResult<List<UserMessageVO>> pageQueryAdminMessage(UserMessagePageDTO userMessagePageDTO) {
+        // 构建分页条件
+        IPage<UserMessageVO> page = PageUtil.createPage(userMessagePageDTO);
+
+        // 设置当前登录用户ID
+        Long userId = StpUtil.getLoginIdAsLong();
+        userMessagePageDTO.setUserId(userId);
+
+        // 设置查询端范围
+        userMessagePageDTO.setPlatformScopes(new ArrayList<>(Arrays.asList(PlatformScope.ALL, PlatformScope.ALL_ADMIN)));
+
+        // 查询
+        page = userMessageMapper.pageQueryUserMessage(page, userMessagePageDTO);
+
+        return PageResult.<List<UserMessageVO>>builder()
+                .total(page.getTotal())
+                .data(page.getRecords())
+                .build();
+    }
+
+    /**
+     * 获取用户消息详情
+     * @param messageId 消息id
+     * @return 用户消息详情
+     */
+    @Override
+    public UserMessageDetailVO getUserMessageDetail(Long messageId) {
+        // 获取当前登录用户ID
+        Long userId = StpUtil.getLoginIdAsLong();
+
+        // 查询消息详情
+        UserMessageDetailVO messageDetail = userMessageMapper.getUserMessageDetail(messageId, userId);
+
+        if (messageDetail == null) {
+            throw new LibreException(ExceptionEnums.MESSAGE_NOT_EXIST);
+        }
+
+        UserMessage userMessage = userMessageService.lambdaQuery()
+                .eq(UserMessage::getMessageId, messageId)
+                .eq(UserMessage::getReceiverId, userId)
+                .one();
+
+        // 查询未读取消息=阅读消息
+        if (userMessage.getIsRead().equals(0)) {
+            Db.lambdaUpdate(UserMessage.class)
+                    .set(UserMessage::getIsRead, UserMessageState.READ)
+                    .set(UserMessage::getReadTime, LocalDateTime.now())
+                    .eq(UserMessage::getMessageId, messageId)
+                    .eq(UserMessage::getReceiverId, userId)
+                    .update();
+        }
+
+        return messageDetail;
     }
 }
