@@ -1,45 +1,11 @@
 package com.libre.service.admin;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.libre.pojo.dto.admin.RoleDTO;
-import com.libre.pojo.dto.admin.RolePageDTO;
 import com.libre.pojo.po.Role;
-import com.libre.pojo.vo.admin.RolePageVO;
-import com.libre.result.PageResult;
 
 import java.util.List;
 
 public interface AdminRoleService extends IService<Role> {
-    /**
-     * 分页查询角色信息
-     * @param rolePageDTO 查询参数
-     * @return 查询结果
-     */
-    PageResult<List<RolePageVO>> pageQueryRole(RolePageDTO rolePageDTO);
-
-    /**
-     * 添加角色
-     * @param roleDTO 角色信息
-     */
-    void addRole(RoleDTO roleDTO);
-
-    /**
-     * 修改角色
-     * @param roleDTO 角色信息
-     */
-    void modifyRole(RoleDTO roleDTO);
-
-    /**
-     * 删除角色
-     * @param roleId 角色id
-     */
-    void deleteRole(Long roleId);
-
-    /**
-     * 批量删除角色
-     * @param ids 角色id列表
-     */
-    void deleteBatchRole(List<Long> ids);
 
     /**
      * 获取所有角色列表（带缓存）
