@@ -24,6 +24,7 @@ public enum ExceptionEnums {
     LOGIN_USER_NOT_EXIST(10602, "用户不存在"),
     LOGIN_PASSWORD_ERROR(10603, "密码错误"),
     LOGIN_REGISTER_USER_EXIST(10604, "注册用户已存在"),
+    LOGIN_USER_DISABLE(10605, "用户已禁用"),
 
     PUBLISHER_EXIST(10701, "出版社已存在"),
     PUBLISHER_HAS_BOOK(10702, "存在该出版社出版图书，无法删除"),

@@ -15,6 +15,8 @@ public class UserPageVO {
     private Long id;
     @ApiModelProperty("用户名")
     private String username;
+    @ApiModelProperty("用户状态 0启用 1禁用")
+    private Integer state;
     @ApiModelProperty("姓名")
     private String name;
 }

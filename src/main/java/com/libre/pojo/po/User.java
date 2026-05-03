@@ -18,6 +18,8 @@ public class User extends BasePO {
     private String username;
     // 密码
     private String password;
+    // 状态 0-正常 1-禁用
+    private Integer state;
     // 姓名
     private String name;
     // 上次登录时间

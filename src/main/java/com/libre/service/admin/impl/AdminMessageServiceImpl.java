@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.extension.toolkit.Db;
 import com.libre.constant.MessageState;
 import com.libre.constant.PlatformScope;
-import com.libre.constant.Role;
+import com.libre.constant.RoleCode;
 import com.libre.constant.UserMessageState;
 import com.libre.enums.ExceptionEnums;
 import com.libre.exception.LibreException;
@@ -153,9 +153,9 @@ public class AdminMessageServiceImpl extends ServiceImpl<MessageMapper, Message>
         Integer targetNumber = messageSendDTO.getTarget();
         if (!targetNumber.equals(PlatformScope.ALL)) {
             if (targetNumber.equals(PlatformScope.ADMIN)) {
-                chainWrapper.in(UserRole::getRoleId, Role.SUPER_ADMIN, Role.ADMIN);
+                chainWrapper.in(UserRole::getRoleId, RoleCode.SUPER_ADMIN, RoleCode.ADMIN);
             } else {
-                chainWrapper.eq(UserRole::getRoleId, Role.READER);
+                chainWrapper.eq(UserRole::getRoleId, RoleCode.READER);
             }
         }
         List<UserRole> userRoleList = chainWrapper

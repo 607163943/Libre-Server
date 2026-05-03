@@ -1,7 +1,7 @@
 package com.libre.service.admin.impl;
 
 import cn.hutool.json.JSONUtil;
-import com.libre.constant.Role;
+import com.libre.constant.RoleCode;
 import com.libre.pojo.po.Lend;
 import com.libre.pojo.po.UserRole;
 import com.libre.pojo.vo.admin.*;
@@ -47,7 +47,7 @@ public class AdminHomeServiceImpl implements AdminHomeService {
 
         // 缓存未命中，查询数据库
         long bookCount = adminBookService.count();
-        Long readerCount = adminUserRoleService.lambdaQuery().eq(UserRole::getRoleId, Role.READER).count();
+        Long readerCount = adminUserRoleService.lambdaQuery().eq(UserRole::getRoleId, RoleCode.READER).count();
 
         // 获取当天借阅数量
         LocalDateTime startOfDay = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);

@@ -35,6 +35,12 @@
         <if test="lendPageDTO.state!=null">
             and lend.state = #{lendPageDTO.state}
         </if>
+        <if test="lendPageDTO.lendStartTime!=null and lendPageDTO.lendStartTime!=''">
+            and lend.create_time &gt;= #{lendPageDTO.lendStartTime}
+        </if>
+        <if test="lendPageDTO.lendEndTime!=null and lendPageDTO.lendEndTime!=''">
+            and lend.create_time &lt;= #{lendPageDTO.lendEndTime}
+        </if>
     </select>
     <!--统计最近7天新增的借阅数量-->
     <select id="getRecentLendTrend" resultType="com.libre.pojo.vo.admin.RecentLendTrendItem">

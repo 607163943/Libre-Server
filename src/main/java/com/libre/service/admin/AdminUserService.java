@@ -40,4 +40,11 @@ public interface AdminUserService extends IService<User> {
      * @param ids 用户id列表
      */
     void deleteBatchUser(List<Long> ids);
+
+    /**
+     * 修改用户状态
+     * @param userId 用户id
+     * @param state 状态
+     */
+    void modifyUserState(Long userId, Integer state);
 }

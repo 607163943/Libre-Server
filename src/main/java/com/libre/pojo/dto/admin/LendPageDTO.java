@@ -20,4 +20,8 @@ public class LendPageDTO extends BasePageDTO {
     private Long bookId;
     @ApiModelProperty("借阅状态(1借阅 2归还 3逾期)")
     private Integer state;
+    @ApiModelProperty("借阅开始时间")
+    private String lendStartTime;
+    @ApiModelProperty("借阅结束时间")
+    private String lendEndTime;
 }

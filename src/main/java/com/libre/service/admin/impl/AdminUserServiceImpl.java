@@ -129,4 +129,17 @@ public class AdminUserServiceImpl extends ServiceImpl<UserMapper, User> implemen
                 .in(User::getId, ids)
                 .update();
     }
+
+    /**
+     * 修改用户状态
+     * @param userId 用户id
+     * @param state 状态
+     */
+    @Override
+    public void modifyUserState(Long userId, Integer state) {
+        lambdaUpdate()
+                .set(User::getState, state)
+                .eq(User::getId, userId)
+                .update();
+    }
 }

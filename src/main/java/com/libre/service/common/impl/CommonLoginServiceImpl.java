@@ -3,6 +3,7 @@ package com.libre.service.common.impl;
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
+import com.libre.constant.UserState;
 import com.libre.enums.ExceptionEnums;
 import com.libre.exception.LoginException;
 import com.libre.exception.RegisterException;
@@ -36,6 +37,11 @@ public class CommonLoginServiceImpl implements CommonLoginService {
         // 检查用户是否存在
         if(user==null) {
             throw new LoginException(ExceptionEnums.LOGIN_USER_NOT_EXIST);
+        }
+
+        // 检查账号是否被禁用
+        if(user.getState().equals(UserState.DISABLE)) {
+            throw new LoginException(ExceptionEnums.LOGIN_USER_DISABLE);
         }
 
         // 检查密码是否正确

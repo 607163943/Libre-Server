@@ -26,19 +26,19 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 public class AdminUserController {
-    private final AdminUserService adminUserService;
+    private final AdminUserService userService;
 
     @ApiOperation("用户分页查询接口")
     @GetMapping
     public Result<PageResult<List<UserPageVO>>> pageQueryUser(UserPageDTO userPageDTO) {
-        PageResult<List<UserPageVO>> pageResult = adminUserService.pageQueryUser(userPageDTO);
+        PageResult<List<UserPageVO>> pageResult = userService.pageQueryUser(userPageDTO);
         return Result.success(pageResult);
     }
 
     @ApiOperation("获取指定用户信息")
     @GetMapping("{userId}")
     public Result<UserVO> getUser(@PathVariable Long userId) {
-        User user = adminUserService.getById(userId);
+        User user = userService.getById(userId);
         UserVO userVO = BeanUtil.copyProperties(user, UserVO.class);
         return Result.success(userVO);
     }
@@ -46,7 +46,7 @@ public class AdminUserController {
     @ApiOperation("获取所有用户")
     @GetMapping("all")
     public Result<List<UserVO>> getAllUsers() {
-        List<User> userList = adminUserService.list();
+        List<User> userList = userService.list();
         List<UserVO> userVOList = BeanUtil.copyToList(userList, UserVO.class);
         return Result.success(userVOList);
     }
@@ -54,21 +54,21 @@ public class AdminUserController {
     @ApiOperation("用户添加接口")
     @PostMapping
     public Result<Void> addUser(@RequestBody @Valid UserDTO userDTO) {
-        adminUserService.addUser(userDTO);
+        userService.addUser(userDTO);
         return Result.success();
     }
 
     @ApiOperation("用户修改接口")
     @PutMapping
     public Result<Void> modifyUser(@RequestBody @Validated({Default.class, UpdateGroup.class}) UserDTO userDTO) {
-        adminUserService.modifyUser(userDTO);
+        userService.modifyUser(userDTO);
         return Result.success();
     }
 
     @ApiOperation("用户删除接口")
     @DeleteMapping("{userId}")
     public Result<Void> deleteUser(@PathVariable Long userId) {
-        adminUserService.deleteUser(userId);
+        userService.deleteUser(userId);
         return Result.success();
     }
 
@@ -76,8 +76,15 @@ public class AdminUserController {
     @DeleteMapping
     public Result<Void> deleteBatchUser(@RequestParam List<Long> ids) {
         if(CollUtil.isNotEmpty(ids)) {
-            adminUserService.deleteBatchUser(ids);
+            userService.deleteBatchUser(ids);
         }
+        return Result.success();
+    }
+
+    @ApiOperation("修改用户状态")
+    @PatchMapping("/{userId}/state/{state}")
+    public Result<Void> modifyUserState(@PathVariable Long userId, @PathVariable Integer state) {
+        userService.modifyUserState(userId, state);
         return Result.success();
     }
 }

@@ -2,6 +2,7 @@ package com.libre.service.admin.impl;
 
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.libre.constant.RoleCode;
 import com.libre.mapper.RoleMapper;
 import com.libre.pojo.po.Role;
 import com.libre.service.admin.AdminRoleService;
@@ -32,7 +33,10 @@ public class AdminRoleServiceImpl extends ServiceImpl<RoleMapper, Role> implemen
         }
 
         // 缓存未命中，查询数据库
-        List<Role> roleList = list();
+        // 排除超管
+        List<Role> roleList = lambdaQuery()
+                .ne(Role::getId, RoleCode.SUPER_ADMIN)
+                .list();
 
         // 存入缓存，过期时间30分钟
         stringRedisTemplate.opsForValue().set(cacheKey, JSONUtil.toJsonStr(roleList), 30, TimeUnit.MINUTES);
