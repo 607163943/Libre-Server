@@ -1,6 +1,8 @@
 package com.libre.listener;
 
+import com.libre.constant.MessageState;
 import com.libre.constant.MessageType;
+import com.libre.constant.PlatformScope;
 import com.libre.pojo.dto.common.OverMessageInfo;
 import com.libre.pojo.event.BatchOverMessageEvent;
 import com.libre.pojo.po.Message;
@@ -36,7 +38,8 @@ public class OverMessageEventListener {
             m.setTitle("图书逾期提醒");
             m.setContent("您的《" + info.getBookName() + "》已逾期" + info.getOverDay() + "天");
             m.setType(MessageType.LEND);
-            m.setState(1);
+            m.setState(MessageState.SEND);
+            // 0表示系统发送
             m.setCreateUserId(0L);
             return m;
         }).collect(Collectors.toList());
@@ -50,6 +53,8 @@ public class OverMessageEventListener {
             um.setMessageId(messages.get(i).getId());
             um.setReceiverId(overMessageInfos.get(i).getUserId());
             um.setIsRead(0);
+            // 用户逾期借阅信息仅App可见
+            um.setPlatformScope(PlatformScope.APP);
             userMessages.add(um);
         }
 

@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.extension.toolkit.Db;
-import com.libre.constant.MessageStats;
+import com.libre.constant.MessageState;
 import com.libre.constant.PlatformScope;
 import com.libre.constant.Role;
 import com.libre.constant.UserMessageState;
@@ -152,7 +152,7 @@ public class AdminMessageServiceImpl extends ServiceImpl<MessageMapper, Message>
         LambdaQueryChainWrapper<UserRole> chainWrapper = userRoleService.lambdaQuery();
         Integer targetNumber = messageSendDTO.getTarget();
         if (!targetNumber.equals(PlatformScope.ALL)) {
-            if (targetNumber.equals(PlatformScope.ALL_ADMIN)) {
+            if (targetNumber.equals(PlatformScope.ADMIN)) {
                 chainWrapper.in(UserRole::getRoleId, Role.SUPER_ADMIN, Role.ADMIN);
             } else {
                 chainWrapper.eq(UserRole::getRoleId, Role.READER);
@@ -179,7 +179,7 @@ public class AdminMessageServiceImpl extends ServiceImpl<MessageMapper, Message>
         userMessageService.saveBatch(userMessages);
         // 更新消息状态为已发送
         messageService.lambdaUpdate()
-                .set(Message::getState, MessageStats.SEND)
+                .set(Message::getState, MessageState.SEND)
                 .eq(Message::getId, messageSendDTO.getId())
                 .update();
     }
@@ -199,7 +199,7 @@ public class AdminMessageServiceImpl extends ServiceImpl<MessageMapper, Message>
         userMessagePageDTO.setUserId(userId);
 
         // 设置查询端范围
-        userMessagePageDTO.setPlatformScopes(new ArrayList<>(Arrays.asList(PlatformScope.ALL, PlatformScope.ALL_ADMIN)));
+        userMessagePageDTO.setPlatformScopes(new ArrayList<>(Arrays.asList(PlatformScope.ALL, PlatformScope.ADMIN)));
 
         // 查询
         page = userMessageMapper.pageQueryUserMessage(page, userMessagePageDTO);

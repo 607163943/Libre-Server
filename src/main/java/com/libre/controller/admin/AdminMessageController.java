@@ -31,21 +31,21 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 public class AdminMessageController {
-    private final AdminMessageService adminMessageService;
+    private final AdminMessageService messageService;
 
     private final AdminUserMessageService userMessageService;
 
     @ApiOperation("分页查询管理员消息")
     @GetMapping("/user")
     public Result<PageResult<List<UserMessageVO>>> pageQueryAdminMessage(UserMessagePageDTO userMessagePageDTO) {
-        PageResult<List<UserMessageVO>> pageResult = adminMessageService.pageQueryAdminMessage(userMessagePageDTO);
+        PageResult<List<UserMessageVO>> pageResult = messageService.pageQueryAdminMessage(userMessagePageDTO);
         return Result.success(pageResult);
     }
 
     @ApiOperation("根据消息id查询用户具体消息")
     @GetMapping("/user/{messageId}")
     public Result<UserMessageDetailVO> getUserMessageDetail(@PathVariable Long messageId) {
-        UserMessageDetailVO messageDetail = adminMessageService.getUserMessageDetail(messageId);
+        UserMessageDetailVO messageDetail = messageService.getUserMessageDetail(messageId);
         return Result.success(messageDetail);
     }
 
@@ -56,17 +56,24 @@ public class AdminMessageController {
         return Result.success(count);
     }
 
+    @ApiOperation("标记全部已读")
+    @PutMapping("/read/all")
+    public Result<Void> markAllRead() {
+        userMessageService.markAllRead();
+        return Result.success();
+    }
+
     @ApiOperation("消息分页查询接口")
     @GetMapping
-    public Result<PageResult<List<MessagePageVO>>> pageQueryMessage(@Valid MessagePageDTO messagePageDTO) {
-        PageResult<List<MessagePageVO>> pageResult = adminMessageService.pageQueryMessage(messagePageDTO);
+    public Result<PageResult<List<MessagePageVO>>> pageQueryMessage(MessagePageDTO messagePageDTO) {
+        PageResult<List<MessagePageVO>> pageResult = messageService.pageQueryMessage(messagePageDTO);
         return Result.success(pageResult);
     }
 
     @ApiOperation("获取指定消息信息")
     @GetMapping("{messageId}")
     public Result<MessageVO> getMessage(@PathVariable Long messageId) {
-        Message message = adminMessageService.getById(messageId);
+        Message message = messageService.getById(messageId);
         MessageVO messageVO = BeanUtil.copyProperties(message, MessageVO.class);
         return Result.success(messageVO);
     }
@@ -74,21 +81,21 @@ public class AdminMessageController {
     @ApiOperation("消息添加接口")
     @PostMapping
     public Result<Void> addMessage(@RequestBody @Valid MessageDTO messageDTO) {
-        adminMessageService.addMessage(messageDTO);
+        messageService.addMessage(messageDTO);
         return Result.success();
     }
 
     @ApiOperation("消息修改接口")
     @PutMapping
     public Result<Void> modifyMessage(@RequestBody @Validated({Default.class, UpdateGroup.class}) MessageDTO messageDTO) {
-        adminMessageService.modifyMessage(messageDTO);
+        messageService.modifyMessage(messageDTO);
         return Result.success();
     }
 
     @ApiOperation("消息删除接口")
     @DeleteMapping("{messageId}")
     public Result<Void> deleteMessage(@PathVariable Long messageId) {
-        adminMessageService.deleteMessage(messageId);
+        messageService.deleteMessage(messageId);
         return Result.success();
     }
 
@@ -96,7 +103,7 @@ public class AdminMessageController {
     @DeleteMapping
     public Result<Void> deleteBatchMessage(@RequestParam List<Long> ids) {
         if (CollUtil.isNotEmpty(ids)) {
-            adminMessageService.deleteBatchMessage(ids);
+            messageService.deleteBatchMessage(ids);
         }
         return Result.success();
     }
@@ -104,7 +111,7 @@ public class AdminMessageController {
     @ApiOperation("发送消息")
     @PostMapping("/send")
     public Result<Void> sendMessage(@RequestBody MessageSendDTO messageSendDTO) {
-        adminMessageService.sendMessage(messageSendDTO);
+        messageService.sendMessage(messageSendDTO);
         return Result.success();
     }
 }

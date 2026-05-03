@@ -9,4 +9,9 @@ public interface AppUserMessageService extends IService<UserMessage> {
      * @return 未读消息数量
      */
     Long getUserUnreadMessageCount();
+
+    /**
+     * 标记所有消息为已读
+     */
+    void markAllRead();
 }

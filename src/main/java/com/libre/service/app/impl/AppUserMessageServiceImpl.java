@@ -23,7 +23,21 @@ public class AppUserMessageServiceImpl extends ServiceImpl<UserMessageMapper, Us
                 .eq(UserMessage::getIsRead, UserMessageState.UNREAD)
                 .eq(UserMessage::getReceiverId, StpUtil.getLoginIdAsLong())
                 // 仅统计App端可查看消息
-                .in(UserMessage::getPlatformScope, PlatformScope.ALL_READER,PlatformScope.ALL)
+                .in(UserMessage::getPlatformScope, PlatformScope.APP,PlatformScope.ALL)
                 .count();
+    }
+
+    /**
+     * 标记所有消息为已读
+     */
+    @Override
+    public void markAllRead() {
+        lambdaUpdate()
+                .set(UserMessage::getIsRead, UserMessageState.READ)
+                .eq(UserMessage::getIsRead, UserMessageState.UNREAD)
+                .eq(UserMessage::getReceiverId, StpUtil.getLoginIdAsLong())
+                // 仅修改App端可查看消息
+                .in(UserMessage::getPlatformScope, PlatformScope.APP,PlatformScope.ALL)
+                .update();
     }
 }

@@ -24,7 +24,21 @@ public class AdminUserMessageServiceImpl extends ServiceImpl<UserMessageMapper, 
                 .eq(UserMessage::getIsRead, UserMessageState.UNREAD)
                 .eq(UserMessage::getReceiverId, StpUtil.getLoginIdAsLong())
                 // 仅统计App端可查看消息
-                .in(UserMessage::getPlatformScope, PlatformScope.ALL_ADMIN, PlatformScope.ALL)
+                .in(UserMessage::getPlatformScope, PlatformScope.ADMIN, PlatformScope.ALL)
                 .count();
+    }
+
+    /**
+     * 标记所有消息为已读
+     */
+    @Override
+    public void markAllRead() {
+        lambdaUpdate()
+                .set(UserMessage::getIsRead, UserMessageState.READ)
+                .eq(UserMessage::getIsRead, UserMessageState.UNREAD)
+                .eq(UserMessage::getReceiverId, StpUtil.getLoginIdAsLong())
+                // 仅修改App端可查看消息
+                .in(UserMessage::getPlatformScope, PlatformScope.APP,PlatformScope.ALL)
+                .update();
     }
 }

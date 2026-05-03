@@ -1,6 +1,6 @@
 package com.libre.constant;
 
-public interface MessageStats {
+public interface MessageState {
     Integer SEND = 1;
     Integer NOT_SEND = 0;
 }

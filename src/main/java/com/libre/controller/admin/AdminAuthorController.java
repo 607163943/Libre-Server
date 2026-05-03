@@ -10,12 +10,15 @@ import com.libre.pojo.vo.admin.AuthorVO;
 import com.libre.result.PageResult;
 import com.libre.result.Result;
 import com.libre.service.admin.AdminAuthorService;
+import com.libre.validation.UpdateGroup;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.groups.Default;
 import java.util.List;
 
 @Api(tags = "作者管理接口")
@@ -56,7 +59,7 @@ public class AdminAuthorController {
 
     @ApiOperation("作者修改接口")
     @PutMapping
-    public Result<Void> modifyAuthor(@RequestBody @Valid AuthorDTO authorDTO) {
+    public Result<Void> modifyAuthor(@RequestBody @Validated({Default.class, UpdateGroup.class}) AuthorDTO authorDTO) {
         adminAuthorService.modifyAuthor(authorDTO);
         return Result.success();
     }

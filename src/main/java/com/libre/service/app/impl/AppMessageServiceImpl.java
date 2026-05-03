@@ -50,7 +50,7 @@ public class AppMessageServiceImpl extends ServiceImpl<MessageMapper, Message> i
         userMessagePageDTO.setUserId(userId);
 
         // 设置查询端范围
-        userMessagePageDTO.setPlatformScopes(new ArrayList<>(Arrays.asList(PlatformScope.ALL, PlatformScope.ALL_READER)));
+        userMessagePageDTO.setPlatformScopes(new ArrayList<>(Arrays.asList(PlatformScope.ALL, PlatformScope.APP)));
 
         // 查询
         page = userMessageMapper.pageQueryUserMessage(page, userMessagePageDTO);

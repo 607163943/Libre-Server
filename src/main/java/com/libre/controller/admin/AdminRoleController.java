@@ -10,12 +10,15 @@ import com.libre.pojo.vo.admin.RoleVO;
 import com.libre.result.PageResult;
 import com.libre.result.Result;
 import com.libre.service.admin.AdminRoleService;
+import com.libre.validation.UpdateGroup;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.groups.Default;
 import java.util.List;
 @Api(tags = "角色管理接口")
 @RequestMapping("/admin/role")
@@ -56,7 +59,7 @@ public class AdminRoleController {
 
     @ApiOperation("角色修改接口")
     @PutMapping
-    public Result<Void> modifyRole(@RequestBody @Valid RoleDTO roleDTO) {
+    public Result<Void> modifyRole(@RequestBody @Validated({Default.class, UpdateGroup.class}) RoleDTO roleDTO) {
         adminRoleService.modifyRole(roleDTO);
         return Result.success();
     }

@@ -10,12 +10,15 @@ import com.libre.pojo.vo.admin.UserVO;
 import com.libre.result.PageResult;
 import com.libre.result.Result;
 import com.libre.service.admin.AdminUserService;
+import com.libre.validation.UpdateGroup;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.groups.Default;
 import java.util.List;
 
 @Api(tags = "用户管理接口")
@@ -57,7 +60,7 @@ public class AdminUserController {
 
     @ApiOperation("用户修改接口")
     @PutMapping
-    public Result<Void> modifyUser(@RequestBody @Valid UserDTO userDTO) {
+    public Result<Void> modifyUser(@RequestBody @Validated({Default.class, UpdateGroup.class}) UserDTO userDTO) {
         adminUserService.modifyUser(userDTO);
         return Result.success();
     }
