@@ -1,12 +1,8 @@
 package com.libre.service.common.impl;
 
 import cn.dev33.satoken.stp.StpInterface;
-import cn.hutool.core.collection.CollUtil;
 import com.libre.pojo.po.Role;
-import com.libre.pojo.po.RolePermission;
 import com.libre.pojo.po.UserRole;
-import com.libre.service.common.CommonPermissionService;
-import com.libre.service.common.CommonRolePermissionService;
 import com.libre.service.common.CommonRoleService;
 import com.libre.service.common.CommonUserRoleService;
 import lombok.RequiredArgsConstructor;
@@ -25,41 +21,12 @@ public class StpInterfaceImpl implements StpInterface {
     private final CommonRoleService roleService;
 
     private final CommonUserRoleService userRoleService;
-
-    private final CommonPermissionService permissionService;
-
-    private final CommonRolePermissionService rolePermissionService;
-
     /**
      * 返回一个账号所拥有的权限码集合
      */
     @Override
     public List<String> getPermissionList(Object loginId, String loginType) {
-        // 查询用户拥有角色id集合
-        List<UserRole> userRoleList = userRoleService.lambdaQuery()
-                .eq(UserRole::getUserId, loginId)
-                .list();
-        if(CollUtil.isEmpty(userRoleList)) {
-            return Collections.emptyList();
-        }
-        List<Long> roleIds = userRoleList.stream().map(UserRole::getRoleId).collect(Collectors.toList());
-
-        // 查询角色拥有权限id集合
-        List<RolePermission> rolePermissionList = rolePermissionService.lambdaQuery()
-                .in(RolePermission::getRoleId, roleIds)
-                .list();
-        if(CollUtil.isEmpty(rolePermissionList)) {
-            return Collections.emptyList();
-        }
-        List<Long> permissionIds = rolePermissionList.stream().map(RolePermission::getPermissionId).collect(Collectors.toList());
-
-        // 获取权限码集合
-        List<String> permissionCodes = permissionService.getPermissionCodes(permissionIds);
-
-        return permissionCodes.stream()
-                // 集合去重
-                .distinct()
-                .collect(Collectors.toList());
+        return Collections.emptyList();
     }
 
     /**

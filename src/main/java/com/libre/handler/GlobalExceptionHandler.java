@@ -130,34 +130,6 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 自定义模块管理异常处理
-     *
-     * @param e 模块管理异常
-     * @return 错误信息
-     */
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(ModuleException.class)
-    public Result<Void> handleModuleException(ModuleException e) {
-        ExceptionEnums exceptionEnums = e.getExceptionEnums();
-        log.warn("模块管理异常：{}", exceptionEnums.getMsg());
-        return Result.error(exceptionEnums.getCode(), exceptionEnums.getMsg());
-    }
-
-    /**
-     * 自定义权限模块异常处理
-     *
-     * @param e 权限模块异常
-     * @return 错误信息
-     */
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(PermissionException.class)
-    public Result<Void> handlePermissionException(PermissionException e) {
-        ExceptionEnums exceptionEnums = e.getExceptionEnums();
-        log.warn("权限模块异常：{}", exceptionEnums.getMsg());
-        return Result.error(exceptionEnums.getCode(), exceptionEnums.getMsg());
-    }
-
-    /**
      * 自定义借阅模块异常处理
      *
      * @param e 借阅模块异常

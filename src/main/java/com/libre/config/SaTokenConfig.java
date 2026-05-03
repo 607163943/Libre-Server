@@ -57,7 +57,7 @@ public class SaTokenConfig implements WebMvcConfigurer {
                 try {
                     StpUtil.checkRoleOr("超级管理员","管理员");
                 } catch (Exception e) {
-                    throw new AuthorizeException(ExceptionEnums.PERMISSION_DENIED);
+                    throw new AuthorizeException(ExceptionEnums.NOT_HAS_ROLE);
                 }
             });
         })).addPathPatterns("/**");

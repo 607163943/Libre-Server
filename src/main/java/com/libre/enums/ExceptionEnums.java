@@ -11,11 +11,7 @@ public enum ExceptionEnums {
 
     BOOK_EXIST(10201, "图书已存在"),
 
-    MODULE_EXIST(10301, "模块已存在"),
-
-    PERMISSION_EXIST(10401, "权限已存在"),
-    PERMISSION_HAS_ROLE(10402, "存在该权限的角色关联，无法删除"),
-    PERMISSION_DENIED(10403, "权限不足"),
+    NOT_HAS_ROLE(10401, "角色权限不够"),
 
     LEND_USER_NOT_LEND(10501, "用户未借阅该图书"),
     LEND_USER_LEND_BOOK_EXIST(10502, "用户已借阅该图书且未归还"),
