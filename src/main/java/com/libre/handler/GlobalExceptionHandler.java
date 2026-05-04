@@ -186,6 +186,7 @@ public class GlobalExceptionHandler {
         for (FieldError fieldError : fieldErrors) {
             errorMsg.append(fieldError.getDefaultMessage()).append("; ");
         }
+        log.warn("参数校验错误：{}", errorMsg);
         return Result.error(400, errorMsg.toString());
     }
 
@@ -196,8 +197,8 @@ public class GlobalExceptionHandler {
      * @return 错误信息
      */
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(RuntimeException.class)
-    public Result<Void> handleRuntimeException(RuntimeException e, HttpServletRequest request) {
+    @ExceptionHandler(Exception.class)
+    public Result<Void> handleRuntimeException(Exception e, HttpServletRequest request) {
         // 获取原始请求路径（防止被 /error 覆盖）
         Object originalPath = request.getAttribute("javax.servlet.error.request_uri");
         String realPath = (originalPath != null) ? originalPath.toString() : request.getRequestURI();

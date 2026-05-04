@@ -38,6 +38,12 @@
         <if test="bookPageDTO.language != null and bookPageDTO.language != ''">
             and book.language = #{bookPageDTO.language}
         </if>
+        <if test="bookPageDTO.publishStartTime != null">
+            and book.publish_date &gt;= #{bookPageDTO.publishStartTime}
+        </if>
+        <if test="bookPageDTO.publishEndTime != null">
+            and book.publish_date &lt;= #{bookPageDTO.publishEndTime}
+        </if>
     </select>
     <!-- 查询最新添加的图书-->
     <select id="getHomeTopLatestBookList" resultType="com.libre.pojo.vo.app.HomeTopLatestBookItem">
