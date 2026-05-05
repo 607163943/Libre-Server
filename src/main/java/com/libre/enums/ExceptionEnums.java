@@ -19,6 +19,10 @@ public enum ExceptionEnums {
     LEND_RENEW_OVER_MAX_COUNT(10504, "续借次数超过最大值"),
     LEND_BOOK_NOT_EXIST(10505, "借阅书籍不存在"),
     LEND_USER_NOT_EXIST(10506, "借阅用户不存在"),
+    LEND_CURRENT_OVERDUE(10507, "当前存在借阅书籍逾期，无法借书"),
+    LEND_OVERDUE_COUNT_EXCEED(10508, "90天内逾期次数过多，借书数量受限"),
+    LEND_MAX_COUNT_EXCEED(10509, "已达到最大借书数量限制"),
+    LEND_RENEW_NOT_ALLOWED(10510, "当前用户不允许续借"),
 
     LOGIN_USER_NOT_LOGIN(10601, "用户未登录"),
     LOGIN_USER_NOT_EXIST(10602, "用户不存在"),
