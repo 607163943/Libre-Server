@@ -1,7 +1,9 @@
 package com.libre.service.common;
 
+import com.libre.pojo.dto.common.CaptchaDTO;
 import com.libre.pojo.dto.common.LoginDTO;
 import com.libre.pojo.dto.common.RegisterDTO;
+import com.libre.pojo.vo.common.CaptchaVO;
 import com.libre.pojo.vo.common.LoginVO;
 
 public interface CommonLoginService {
@@ -22,4 +24,11 @@ public interface CommonLoginService {
      * 登出
      */
     void logout();
+
+    /**
+     * 获取验证码
+     * @param captchaDTO 验证码DTO
+     * @return 验证码
+     */
+    CaptchaVO getCaptcha(CaptchaDTO captchaDTO);
 }

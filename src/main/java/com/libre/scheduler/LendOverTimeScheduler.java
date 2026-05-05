@@ -22,13 +22,13 @@ public class LendOverTimeScheduler {
 
     // 每天凌晨4点扫描当前处于借阅状态的借阅信息，将超时数据进行状态更改
     // 临时改成每10分钟
-    @Scheduled(cron = "* 0/10 * * * ? ")
+    @Scheduled(cron = "0 0/10 * * * ?")
     public void checkLendOverTime() {
         commonLendService.updateOverTimeLend();
     }
 
     // 每天下午3点分钟扫描一次超时借阅信息，并发送消息提醒
-    @Scheduled(cron = "* * 15 * * ?")
+    @Scheduled(cron = "0 0 15 * * ?")
     public void sendOverDueMessage() {
         List<OverLend> overLends = commonLendService.selectOverLend();
         // 构建事件集合

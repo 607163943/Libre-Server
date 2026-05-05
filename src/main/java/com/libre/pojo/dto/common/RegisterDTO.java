@@ -20,4 +20,10 @@ public class RegisterDTO {
     @ApiModelProperty("密码")
     @NotBlank(message = "密码不能为空")
     private String password;
+
+    @ApiModelProperty("验证码")
+    private String captchaCode;
+
+    @ApiModelProperty("验证码key")
+    private String captchaKey;
 }
