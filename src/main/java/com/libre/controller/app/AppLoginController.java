@@ -1,8 +1,6 @@
 package com.libre.controller.app;
 
-import com.libre.pojo.dto.common.CaptchaDTO;
-import com.libre.pojo.dto.common.LoginDTO;
-import com.libre.pojo.dto.common.RegisterDTO;
+import com.libre.pojo.dto.common.*;
 import com.libre.pojo.vo.common.CaptchaVO;
 import com.libre.pojo.vo.common.LoginVO;
 import com.libre.result.Result;
@@ -28,6 +26,13 @@ public class AppLoginController {
         return Result.success(loginVO);
     }
 
+    @ApiOperation("手机号登录")
+    @PostMapping("/login/phone")
+    public Result<LoginVO> loginByPhone(@RequestBody @Valid LoginByPhoneDTO loginByPhoneDTO) {
+        LoginVO loginVO = commonLoginService.loginByPhone(loginByPhoneDTO);
+        return Result.success(loginVO);
+    }
+
     @ApiOperation("用户注册")
     @PostMapping("/register")
     public Result<Void> register(@RequestBody @Valid RegisterDTO registerDTO) {
@@ -40,6 +45,13 @@ public class AppLoginController {
     public Result<CaptchaVO> getCaptcha(@RequestBody CaptchaDTO captchaDTO) {
         CaptchaVO captchaVO=commonLoginService.getCaptcha(captchaDTO);
         return Result.success(captchaVO);
+    }
+
+    @ApiOperation("获取手机短信验证码")
+    @PutMapping("/login/phone/captcha")
+    public Result<String> getPhoneCaptcha(@RequestBody @Valid CaptchaByPhoneDTO captchaByPhoneDTO) {
+        String captchaKey = commonLoginService.getPhoneCaptcha(captchaByPhoneDTO);
+        return Result.success(captchaKey);
     }
     @ApiOperation("用户登出")
     @PostMapping("/logout")

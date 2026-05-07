@@ -1,7 +1,5 @@
 package com.libre.service.common;
 
-import com.libre.result.SendMessageResult;
-
 import java.util.List;
 
 public interface CommonSendMessageService {
@@ -11,5 +9,5 @@ public interface CommonSendMessageService {
      * @param code  验证码内容
      * @param duration 有效时间（分钟）
      */
-    SendMessageResult sendLoginSms(List<String> phoneList, String code, int duration);
+    void sendLoginSms(List<String> phoneList, String code, int duration);
 }

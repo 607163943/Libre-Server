@@ -1,8 +1,6 @@
 package com.libre.service.common;
 
-import com.libre.pojo.dto.common.CaptchaDTO;
-import com.libre.pojo.dto.common.LoginDTO;
-import com.libre.pojo.dto.common.RegisterDTO;
+import com.libre.pojo.dto.common.*;
 import com.libre.pojo.vo.common.CaptchaVO;
 import com.libre.pojo.vo.common.LoginVO;
 
@@ -31,4 +29,18 @@ public interface CommonLoginService {
      * @return 验证码
      */
     CaptchaVO getCaptcha(CaptchaDTO captchaDTO);
+
+    /**
+     * 获取手机验证码
+     * @param captchaByPhoneDTO 手机验证码DTO
+     * @return 手机验证码
+     */
+    String getPhoneCaptcha(CaptchaByPhoneDTO captchaByPhoneDTO);
+
+    /**
+     * 手机登录
+     * @param loginByPhoneDTO 手机登录信息
+     * @return 登录信息
+     */
+    LoginVO loginByPhone(LoginByPhoneDTO loginByPhoneDTO);
 }
