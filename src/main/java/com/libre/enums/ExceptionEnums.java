@@ -45,6 +45,7 @@ public enum ExceptionEnums {
 
     MESSAGE_EXIST(11201, "消息已存在"),
     MESSAGE_NOT_EXIST(11202, "消息不存在"),
+    MESSAGE_SEND_ERROR(11203, "消息发送失败"),
 
     FILE_MD5_ERROR(11301, "文件MD5值异常");
 

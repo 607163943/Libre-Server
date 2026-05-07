@@ -29,3 +29,7 @@ business:
 # oss
 oss:
   platform_name: aliyun-oss-1
+
+# 短信
+sms:
+  url: "https://push.spug.cc/sms/${SMS_TEMPLATE}"
