@@ -21,6 +21,8 @@ public class BookVO {
     private Long authorId;
     @ApiModelProperty("出版社id")
     private Long publisherId;
+    @ApiModelProperty("封面文件id")
+    private Long fileId;
     @ApiModelProperty("封面图片")
     private String coverUrl;
     @ApiModelProperty("国际标准书号")

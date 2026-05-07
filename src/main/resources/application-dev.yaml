@@ -25,3 +25,7 @@ security:
 business:
   lend:
     max-lend-count: 3
+
+# oss
+oss:
+  platform_name: aliyun-oss-1

@@ -46,7 +46,7 @@ public class AppUserServiceImpl extends ServiceImpl<UserMapper, User> implements
         // 缓存未命中，查询数据库
         User user = getById(userId);
         if (user == null) {
-            throw new UserException(ExceptionEnums.LOGIN_USER_NOT_EXIST);
+            throw new UserException(ExceptionEnums.USER_NOT_EXIST);
         }
         UserProfileVO result = BeanUtil.copyProperties(user, UserProfileVO.class);
 
@@ -65,7 +65,7 @@ public class AppUserServiceImpl extends ServiceImpl<UserMapper, User> implements
         Long userId = StpUtil.getLoginIdAsLong();
         User user = getById(userId);
         if (user == null) {
-            throw new UserException(ExceptionEnums.LOGIN_USER_NOT_EXIST);
+            throw new UserException(ExceptionEnums.USER_NOT_EXIST);
         }
 
         // 更新姓名
@@ -88,7 +88,7 @@ public class AppUserServiceImpl extends ServiceImpl<UserMapper, User> implements
         Long userId = StpUtil.getLoginIdAsLong();
         User user = getById(userId);
         if (user == null) {
-            throw new UserException(ExceptionEnums.LOGIN_USER_NOT_EXIST);
+            throw new UserException(ExceptionEnums.USER_NOT_EXIST);
         }
 
         // 校验旧密码

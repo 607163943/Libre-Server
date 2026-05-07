@@ -38,8 +38,7 @@ public class AdminBookController {
     @ApiOperation("获取指定图书信息")
     @GetMapping("{bookId}")
     public Result<BookVO> getBook(@PathVariable Long bookId) {
-        Book book = adminBookService.getById(bookId);
-        BookVO bookVO = BeanUtil.copyProperties(book, BookVO.class);
+        BookVO bookVO = adminBookService.getBook(bookId);
         return Result.success(bookVO);
     }
 

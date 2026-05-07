@@ -40,7 +40,7 @@ public class CacheUtil {
     }
 
     /**
-     * 设置缓存值
+     * 设置/更新缓存值
      *
      * @param key        缓存key
      * @param value      缓存值

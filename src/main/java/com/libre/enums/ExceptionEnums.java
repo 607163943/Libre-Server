@@ -35,6 +35,7 @@ public enum ExceptionEnums {
     PUBLISHER_HAS_BOOK(10702, "存在该出版社出版图书，无法删除"),
 
     USER_EXIST(10801, "用户已存在"),
+    USER_NOT_EXIST(10802, "用户不存在"),
 
     ROLE_EXIST(10901, "角色已存在"),
 
@@ -43,7 +44,9 @@ public enum ExceptionEnums {
     UTIL_PASSWORD_MD5_ERROR(11101, "密码MD5值异常"),
 
     MESSAGE_EXIST(11201, "消息已存在"),
-    MESSAGE_NOT_EXIST(11202, "消息不存在");
+    MESSAGE_NOT_EXIST(11202, "消息不存在"),
+
+    FILE_MD5_ERROR(11301, "文件MD5值异常");
 
     private final Integer code;
     private final String msg;

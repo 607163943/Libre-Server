@@ -1,0 +1,22 @@
+spring:
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB      # 单个文件最大限制
+      max-request-size: 100MB  # 单次请求总大小限制
+
+dromara:
+  x-file-storage: #文件存储配置
+    default-platform: aliyun-oss-1 #默认使用的存储平台
+    thumbnail-suffix: ".min.jpg" #缩略图后缀，例如【.min.jpg】【.png】
+    #对应平台的配置写在这里，注意缩进要对齐
+    aliyun-oss:
+      - platform: aliyun-oss-1 # 存储平台标识
+        enable-storage: true  # 启用存储
+        access-key: ${ALIYUN_OSS_ID}
+        secret-key: ${ALIYUN_OSS_KEY}
+        end-point: oss-cn-beijing.aliyuncs.com
+        bucket-name: 607163943-libre
+        domain: https://607163943-libre.oss-cn-beijing.aliyuncs.com/
+        base-path: ""
+

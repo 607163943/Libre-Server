@@ -4,9 +4,12 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import com.libre.pojo.dto.admin.UserDTO;
 import com.libre.pojo.dto.admin.UserPageDTO;
+import com.libre.pojo.dto.admin.UserProfileDTO;
+import com.libre.pojo.dto.admin.UserPasswordDTO;
 import com.libre.pojo.po.User;
 import com.libre.pojo.vo.admin.UserPageVO;
 import com.libre.pojo.vo.admin.UserVO;
+import com.libre.pojo.vo.admin.UserProfileVO;
 import com.libre.result.PageResult;
 import com.libre.result.Result;
 import com.libre.service.admin.AdminUserService;
@@ -36,7 +39,7 @@ public class AdminUserController {
     }
 
     @ApiOperation("获取指定用户信息")
-    @GetMapping("{userId}")
+    @GetMapping("info/{userId}")
     public Result<UserVO> getUser(@PathVariable Long userId) {
         User user = userService.getById(userId);
         UserVO userVO = BeanUtil.copyProperties(user, UserVO.class);
@@ -73,7 +76,7 @@ public class AdminUserController {
     }
 
     @ApiOperation("用户批量删除接口")
-    @DeleteMapping
+    @DeleteMapping("batch")
     public Result<Void> deleteBatchUser(@RequestParam List<Long> ids) {
         if(CollUtil.isNotEmpty(ids)) {
             userService.deleteBatchUser(ids);
@@ -85,6 +88,27 @@ public class AdminUserController {
     @PatchMapping("/{userId}/state/{state}")
     public Result<Void> modifyUserState(@PathVariable Long userId, @PathVariable Integer state) {
         userService.modifyUserState(userId, state);
+        return Result.success();
+    }
+
+    @ApiOperation("获取指定用户个人信息")
+    @GetMapping("profile")
+    public Result<UserProfileVO> getUserProfile() {
+        UserProfileVO userProfileVO = userService.getUserProfile();
+        return Result.success(userProfileVO);
+    }
+
+    @ApiOperation("修改指定用户个人信息")
+    @PutMapping("profile")
+    public Result<Void> modifyUserProfile(@RequestBody @Valid UserProfileDTO userProfileDTO) {
+        userService.modifyUserProfile(userProfileDTO);
+        return Result.success();
+    }
+
+    @ApiOperation("修改指定用户密码")
+    @PatchMapping("/profile/password")
+    public Result<Void> modifyUserPassword(@RequestBody @Valid UserPasswordDTO userPasswordDTO) {
+        userService.modifyUserPassword(userPasswordDTO);
         return Result.success();
     }
 }

@@ -3,8 +3,11 @@ package com.libre.service.admin;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.libre.pojo.dto.admin.UserDTO;
 import com.libre.pojo.dto.admin.UserPageDTO;
+import com.libre.pojo.dto.admin.UserProfileDTO;
+import com.libre.pojo.dto.admin.UserPasswordDTO;
 import com.libre.pojo.po.User;
 import com.libre.pojo.vo.admin.UserPageVO;
+import com.libre.pojo.vo.admin.UserProfileVO;
 import com.libre.result.PageResult;
 
 import java.util.List;
@@ -47,4 +50,22 @@ public interface AdminUserService extends IService<User> {
      * @param state 状态
      */
     void modifyUserState(Long userId, Integer state);
+
+    /**
+     * 获取指定用户个人信息
+     * @return 用户个人信息
+     */
+    UserProfileVO getUserProfile();
+
+    /**
+     * 修改指定用户个人信息
+     * @param userProfileDTO 用户个人信息
+     */
+    void modifyUserProfile(UserProfileDTO userProfileDTO);
+
+    /**
+     * 修改指定用户密码
+     * @param userPasswordDTO 用户密码信息
+     */
+    void modifyUserPassword(UserPasswordDTO userPasswordDTO);
 }

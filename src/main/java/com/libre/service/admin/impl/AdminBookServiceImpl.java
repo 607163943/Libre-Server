@@ -3,6 +3,7 @@ package com.libre.service.admin.impl;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.libre.constant.ServiceType;
 import com.libre.enums.ExceptionEnums;
 import com.libre.exception.BookException;
 import com.libre.mapper.BookMapper;
@@ -10,15 +11,21 @@ import com.libre.pojo.doc.BookDoc;
 import com.libre.pojo.dto.admin.BookDTO;
 import com.libre.pojo.dto.admin.BookPageDTO;
 import com.libre.pojo.po.Book;
+import com.libre.pojo.po.UploadFileRef;
 import com.libre.pojo.vo.admin.BookPageVO;
+import com.libre.pojo.vo.admin.BookVO;
 import com.libre.result.PageResult;
 import com.libre.service.admin.AdminBookService;
+import com.libre.service.common.CommonUploadFileRefService;
 import com.libre.util.PageUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -27,6 +34,14 @@ public class AdminBookServiceImpl extends ServiceImpl<BookMapper, Book> implemen
     private final StringRedisTemplate stringRedisTemplate;
 
     private final ElasticsearchRestTemplate elasticsearchRestTemplate;
+
+    private final CommonUploadFileRefService uploadFileRefService;
+
+    // 解决事务失效
+    @Lazy
+    @Resource
+    private AdminBookService bookService;
+
     /**
      * 清除首页缓存
      */
@@ -60,6 +75,7 @@ public class AdminBookServiceImpl extends ServiceImpl<BookMapper, Book> implemen
      *
      * @param bookDTO 图书信息
      */
+    @Transactional
     @Override
     public void addBook(BookDTO bookDTO) {
         // 判断是否已存在相同ISBN的图书
@@ -86,13 +102,22 @@ public class AdminBookServiceImpl extends ServiceImpl<BookMapper, Book> implemen
         Book book = BeanUtil.copyProperties(bookDTO, Book.class);
         // 避免前端id残留数据影响
         if (book.getId() != null) book.setId(null);
-        save(book);
+
+        bookService.save(book);
+
+        // 记录文件引用关系
+        UploadFileRef uploadFileRef = UploadFileRef.builder()
+                .serviceId(book.getId())
+                .serviceType(ServiceType.BOOK_COVER)
+                .fileId(bookDTO.getFileId())
+                .build();
+        uploadFileRefService.save(uploadFileRef);
 
         // 清除首页缓存
         clearHomeCache();
 
-        BookDoc bookDoc = baseMapper.findBookDockById(book.getId());
-        elasticsearchRestTemplate.save(bookDoc);
+        // 同步到es
+        toEs(book);
     }
 
     /**
@@ -125,10 +150,44 @@ public class AdminBookServiceImpl extends ServiceImpl<BookMapper, Book> implemen
         }
 
         Book book = BeanUtil.copyProperties(bookDTO, Book.class);
-        updateById(book);
+        bookService.updateById(book);
+
+        // 更新文件引用关系
+        bookDTO.setId(bookDTO.getId());
+        updateUploadFileRef(bookDTO);
+
 
         // 清除首页缓存
         clearHomeCache();
+
+        // 同步到es
+        toEs(book);
+    }
+
+    private void updateUploadFileRef(BookDTO bookDTO) {
+        // 删除旧关系
+        uploadFileRefService.lambdaUpdate()
+                .set(UploadFileRef::getIsDelete, System.currentTimeMillis())
+                .eq(UploadFileRef::getServiceType, ServiceType.BOOK_COVER)
+                .eq(UploadFileRef::getServiceId, bookDTO.getId())
+                .update();
+
+        // 添加新关系
+        UploadFileRef uploadFileRef = UploadFileRef.builder()
+                .serviceType(ServiceType.BOOK_COVER)
+                .serviceId(bookDTO.getId())
+                .fileId(bookDTO.getFileId())
+                .build();
+
+        uploadFileRefService.save(uploadFileRef);
+    }
+
+    /**
+     * 同步图书信息到es
+     *
+     * @param book 图书信息
+     */
+    private void toEs(Book book) {
         BookDoc bookDoc = baseMapper.findBookDockById(book.getId());
         elasticsearchRestTemplate.save(bookDoc);
     }
@@ -148,6 +207,11 @@ public class AdminBookServiceImpl extends ServiceImpl<BookMapper, Book> implemen
 
         // 清除首页缓存
         clearHomeCache();
+        // 删除文件引用关系
+        uploadFileRefService.lambdaUpdate()
+                .eq(UploadFileRef::getServiceId, bookId)
+                .eq(UploadFileRef::getServiceType, ServiceType.BOOK_COVER)
+                .remove();
         elasticsearchRestTemplate.delete(bookId.toString(), BookDoc.class);
     }
 
@@ -165,6 +229,31 @@ public class AdminBookServiceImpl extends ServiceImpl<BookMapper, Book> implemen
 
         // 清除首页缓存
         clearHomeCache();
+        // 删除文件引用关系
+        uploadFileRefService.lambdaUpdate()
+                .in(UploadFileRef::getServiceId, ids)
+                .eq(UploadFileRef::getServiceType, ServiceType.BOOK_COVER)
+                .remove();
         ids.forEach(id -> elasticsearchRestTemplate.delete(id.toString(), BookDoc.class));
+    }
+
+    /**
+     * 获取图书信息
+     *
+     * @param bookId 图书id
+     * @return 图书信息
+     */
+    @Override
+    public BookVO getBook(Long bookId) {
+        Book Book = getById(bookId);
+        BookVO bookVO = BeanUtil.copyProperties(Book, BookVO.class);
+        UploadFileRef uploadFileRef = uploadFileRefService.lambdaQuery()
+                .eq(UploadFileRef::getServiceId, Book.getId())
+                .eq(UploadFileRef::getServiceType, ServiceType.BOOK_COVER)
+                .one();
+        if(uploadFileRef!=null) {
+            bookVO.setFileId(uploadFileRef.getFileId());
+        }
+        return bookVO;
     }
 }

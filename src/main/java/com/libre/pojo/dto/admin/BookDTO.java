@@ -32,6 +32,9 @@ public class BookDTO {
     @NotNull(message = "出版社ID不能为空")
     private Long publisherId;
 
+    @ApiModelProperty("封面文件ID")
+    private Long fileId;
+
     @ApiModelProperty("封面URL")
     private String coverUrl;
 

@@ -8,7 +8,7 @@ import java.time.LocalDate;
 
 @Data
 @Document(indexName = "idx_book")
-@Setting(shards = 1, replicas = 1)
+@Setting
 public class BookDoc {
     @Id
     private Long id;

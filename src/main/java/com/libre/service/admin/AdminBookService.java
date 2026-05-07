@@ -5,6 +5,7 @@ import com.libre.pojo.dto.admin.BookDTO;
 import com.libre.pojo.dto.admin.BookPageDTO;
 import com.libre.pojo.po.Book;
 import com.libre.pojo.vo.admin.BookPageVO;
+import com.libre.pojo.vo.admin.BookVO;
 import com.libre.result.PageResult;
 
 import java.util.List;
@@ -40,4 +41,11 @@ public interface AdminBookService extends IService<Book> {
      * @param ids 图书id列表
      */
     void deleteBatchBook(List<Long> ids);
+
+    /**
+     * 查询图书信息
+     * @param bookId 图书id
+     * @return 图书信息
+     */
+    BookVO getBook(Long bookId);
 }
