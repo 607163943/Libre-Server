@@ -18,4 +18,7 @@ public class CaptchaByPhoneDTO {
     private String phone;
     @ApiModelProperty("待删除验证码key")
     private String captchaKey;
+    @ApiModelProperty("滑块验证码参数")
+    @NotBlank(message = "滑块验证码参数不能为空")
+    private String captchaVerifyParam;
 }

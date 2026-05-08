@@ -13,8 +13,8 @@ dromara:
     aliyun-oss:
       - platform: aliyun-oss-1 # 存储平台标识
         enable-storage: true  # 启用存储
-        access-key: ${ALIYUN_OSS_ID}
-        secret-key: ${ALIYUN_OSS_KEY}
+        access-key: ${ALIYUN_ID}
+        secret-key: ${ALIYUN_KEY}
         end-point: oss-cn-beijing.aliyuncs.com
         bucket-name: 607163943-libre
         domain: https://607163943-libre.oss-cn-beijing.aliyuncs.com/

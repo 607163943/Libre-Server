@@ -8,6 +8,10 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
+import com.aliyun.captcha20230305.Client;
+import com.aliyun.captcha20230305.models.VerifyIntelligentCaptchaRequest;
+import com.aliyun.captcha20230305.models.VerifyIntelligentCaptchaResponse;
+import com.aliyun.teaopenapi.models.Config;
 import com.libre.constant.UserState;
 import com.libre.enums.ExceptionEnums;
 import com.libre.exception.LoginException;
@@ -24,14 +28,17 @@ import com.libre.service.common.CommonUserService;
 import com.libre.util.CacheUtil;
 import com.libre.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.elasticsearch.core.List;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class CommonLoginServiceImpl implements CommonLoginService {
@@ -46,9 +53,20 @@ public class CommonLoginServiceImpl implements CommonLoginService {
 
     private final CacheUtil cacheUtil;
 
+    @Value("${captcha.accessKey}")
+    private String accessKey;
+
+    @Value("${captcha.secretKey}")
+    private String secret;
+
+    @Value("${captcha.sceneId}")
+    private String sceneId;
+
     private static final String CAPTCHA_KEY_PREFIX = "captcha:key:";
+
     /**
      * 登录
+     *
      * @param loginDTO 登录参数
      */
     @Override
@@ -60,7 +78,7 @@ public class CommonLoginServiceImpl implements CommonLoginService {
         checkUser(user);
 
         // 检查密码是否正确
-        if(!securityUtil.checkPassword(loginDTO.getPassword(), user.getPassword())) {
+        if (!securityUtil.checkPassword(loginDTO.getPassword(), user.getPassword())) {
             throw new LoginException(ExceptionEnums.LOGIN_PASSWORD_ERROR);
         }
 
@@ -81,22 +99,24 @@ public class CommonLoginServiceImpl implements CommonLoginService {
 
     /**
      * 检查用户账号合法性
+     *
      * @param user 用户对象
      */
     private void checkUser(User user) {
         // 检查用户是否存在
-        if(user==null) {
+        if (user == null) {
             throw new LoginException(ExceptionEnums.LOGIN_USER_NOT_EXIST);
         }
 
         // 检查账号是否被禁用
-        if(user.getState().equals(UserState.DISABLE)) {
+        if (user.getState().equals(UserState.DISABLE)) {
             throw new LoginException(ExceptionEnums.LOGIN_USER_DISABLE);
         }
     }
 
     /**
-     *  用户注册
+     * 用户注册
+     *
      * @param registerDTO 注册信息
      */
     @Transactional
@@ -106,7 +126,7 @@ public class CommonLoginServiceImpl implements CommonLoginService {
         Long userCount = userService.lambdaQuery()
                 .eq(User::getUsername, registerDTO.getUsername())
                 .count();
-        if(userCount>0) {
+        if (userCount > 0) {
             throw new RegisterException(ExceptionEnums.LOGIN_REGISTER_USER_EXIST);
         }
         // 检查验证码完整性
@@ -125,6 +145,7 @@ public class CommonLoginServiceImpl implements CommonLoginService {
 
     /**
      * 添加新用户角色
+     *
      * @param userId 用户id
      */
     public void addUserRole(Long userId) {
@@ -138,14 +159,15 @@ public class CommonLoginServiceImpl implements CommonLoginService {
 
     /**
      * 检查验证码
-     * @param captchaKey 验证码key
+     *
+     * @param captchaKey  验证码key
      * @param captchaCode 验证码
      */
-    private void checkCaptcha(String captchaKey,String captchaCode) {
+    private void checkCaptcha(String captchaKey, String captchaCode) {
         // 获取验证码
         String key = CAPTCHA_KEY_PREFIX + captchaKey;
         String code = cacheUtil.get(key);
-        if(code==null||!code.equalsIgnoreCase(captchaCode)) {
+        if (code == null || !code.equalsIgnoreCase(captchaCode)) {
             throw new RegisterException(ExceptionEnums.LOGIN_REGISTER_CAPTCHA_ERROR);
         }
 
@@ -163,14 +185,15 @@ public class CommonLoginServiceImpl implements CommonLoginService {
 
     /**
      * 获取验证码
+     *
      * @param captchaDTO 验证码DTO
      * @return 验证码
      */
     @Override
     public CaptchaVO getCaptcha(CaptchaDTO captchaDTO) {
         // 更换图片时前端会带上旧key
-        if(StrUtil.isNotBlank(captchaDTO.getCaptchaKey())) {
-            cacheUtil.delete(CAPTCHA_KEY_PREFIX+captchaDTO.getCaptchaKey());
+        if (StrUtil.isNotBlank(captchaDTO.getCaptchaKey())) {
+            cacheUtil.delete(CAPTCHA_KEY_PREFIX + captchaDTO.getCaptchaKey());
         }
         // 1. 定义图形验证码的长和宽 (可以根据前端界面微调)
         // LineCaptcha 线条干扰，CircleCaptcha 圆圈干扰，ShearCaptcha 扭曲干扰
@@ -196,17 +219,22 @@ public class CommonLoginServiceImpl implements CommonLoginService {
 
     /**
      * 获取手机验证码
+     *
      * @param captchaByPhoneDTO 手机验证码DTO
      * @return 手机验证码key
      */
     @Override
     public String getPhoneCaptcha(CaptchaByPhoneDTO captchaByPhoneDTO) {
+        // 校验图形验证码合法性
+        if (!checkSlideCaptcha(captchaByPhoneDTO.getCaptchaVerifyParam())) {
+            throw new LoginException(ExceptionEnums.LOGIN_CAPTCHA_ERROR);
+        }
         // 更新验证码则删除旧验证码
-        if(StrUtil.isNotBlank(captchaByPhoneDTO.getCaptchaKey())) {
-            cacheUtil.delete(CAPTCHA_KEY_PREFIX+captchaByPhoneDTO.getCaptchaKey());
+        if (StrUtil.isNotBlank(captchaByPhoneDTO.getCaptchaKey())) {
+            cacheUtil.delete(CAPTCHA_KEY_PREFIX + captchaByPhoneDTO.getCaptchaKey());
         }
         // 生成6位数验证码
-        String captchaCode= RandomStringUtils.randomNumeric(6,6);
+        String captchaCode = RandomStringUtils.randomNumeric(6, 6);
 
         // 发送短信
         sendMessageService.sendLoginSms(List.of(captchaByPhoneDTO.getPhone()), captchaCode, 1);
@@ -220,6 +248,7 @@ public class CommonLoginServiceImpl implements CommonLoginService {
 
     /**
      * 手机登录
+     *
      * @param loginByPhoneDTO 手机登录信息
      * @return 登录信息
      */
@@ -234,18 +263,18 @@ public class CommonLoginServiceImpl implements CommonLoginService {
                 .one();
 
         // 用户存在但被禁用账号
-        if(user!=null&&user.getState().equals(UserState.DISABLE)) {
+        if (user != null && user.getState().equals(UserState.DISABLE)) {
             throw new LoginException(ExceptionEnums.LOGIN_USER_DISABLE);
         }
 
         // 用户存在走登录流程
-        if(user!=null) {
+        if (user != null) {
             user.setLastLoginTime(LocalDateTime.now());
             userService.updateById(user);
         }
 
         // 用户不存在走注册流程并自动登录
-        if(user==null) {
+        if (user == null) {
             // 创建账号
             user = User.builder()
                     .username(loginByPhoneDTO.getPhone())
@@ -276,12 +305,68 @@ public class CommonLoginServiceImpl implements CommonLoginService {
 
     /**
      * 创建手机注册用户的密码
+     *
      * @return 手机注册密码
      */
     private String createPhoneRegisterPassword() {
         // 直接使用用户手机密码+uuid作为登录密码，防止密码偶然泄露
         String frontMd5 = SecureUtil.md5(IdUtil.fastSimpleUUID());
         return securityUtil.generatePassword(frontMd5);
+    }
+
+
+    /**
+     * 阿里云滑块检查
+     */
+    public Boolean checkSlideCaptcha(String captchaVerifyParam) {
+        // 获取配置
+        Config config = getConfig();
+        Boolean captchaVerifyResult = true;
+        try {
+            // ====================== 2. 初始化客户端（实际生产代码中建议复用client） ======================
+            Client client = new Client(config);
+            // 创建APi请求
+            VerifyIntelligentCaptchaRequest request = new VerifyIntelligentCaptchaRequest();
+            // 本次验证的场景ID，建议传入，防止前端被篡改场景
+            request.sceneId = sceneId;
+            // 前端传来的验证参数 CaptchaVerifyParam
+            request.captchaVerifyParam = captchaVerifyParam;
+
+            // ====================== 3. 发起请求） ======================
+            VerifyIntelligentCaptchaResponse resp = client.verifyIntelligentCaptcha(request);
+            // 建议使用您系统中的日志组件，打印返回
+            // 获取验证码验证结果（请注意判空），将结果返回给前端。出现异常建议认为验证通过，优先保证业务可用，然后尽快排查异常原因。
+            captchaVerifyResult = resp.body.result.verifyResult;
+            // 原因code
+            String captchaVerifyCode = resp.body.result.verifyCode;
+            log.info("验证结果：{}，原因：{}", captchaVerifyResult, captchaVerifyCode);
+        } catch (Exception error) {
+            log.error("验证码验证异常：{}", error.getMessage(), error);
+            throw new LoginException(ExceptionEnums.LOGIN_CAPTCHA_ERROR);
+        }
+
+        return captchaVerifyResult;
+    }
+
+    /**
+     * 获取阿里云配置
+     *
+     * @return 阿里云配置
+     */
+    private Config getConfig() {
+        // ====================== 1. 初始化配置 ======================
+        Config config = new Config();
+        // 设置您的AccessKey ID 和 AccessKey Secret。
+        // getEnvProperty只是个示例方法，需要您自己实现AccessKey ID 和 AccessKey Secret安全的获取方式。
+        config.accessKeyId = accessKey;
+        config.accessKeySecret = secret;
+        config.endpoint = "captcha.cn-shanghai.aliyuncs.com";
+        // 设置连接超时为5000毫秒
+        config.connectTimeout = 5000;
+        // 设置读超时为5000毫秒
+        config.readTimeout = 5000;
+
+        return config;
     }
 
 

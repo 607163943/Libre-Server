@@ -33,3 +33,9 @@ oss:
 # 短信
 sms:
   url: "https://push.spug.cc/sms/${SMS_TEMPLATE}"
+
+# 滑块
+captcha:
+  sceneId: "ik529ev6"
+  accessKey: ${ALIYUN_ID}
+  secretKey: ${ALIYUN_KEY}
