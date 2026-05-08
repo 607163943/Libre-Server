@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.libre.mapper.LendReviewMapper">
+    <select id="selectPageWithCondition" resultType="com.libre.pojo.po.LendReview">
+        SELECT lr.* FROM tb_lend_review lr
+        LEFT JOIN tb_user u ON lr.user_id = u.id
+        LEFT JOIN tb_book b ON lr.book_id = b.id
+        <where>
+            ${ew.sqlSegment}
+        </where>
+    </select>
+    
+    <select id="selectPageWithRelations" resultType="com.libre.pojo.vo.admin.LendReviewPageWithRelationVO">
+        SELECT 
+            lr.id,
+            lr.user_id AS userId,
+            u.name AS userName,
+            lr.book_id AS bookId,
+            b.book_name AS bookName,
+            lr.apply_time,
+            lr.lend_days AS lendDays,
+            lr.apply_type AS applyType,
+            lr.state,
+            lr.operator_id AS operatorId,
+            op.name AS operatorName,
+            lr.create_time AS createTime,
+            lr.update_time AS updateTime
+        FROM tb_lend_review lr
+        LEFT JOIN tb_user u ON lr.user_id = u.id
+        LEFT JOIN tb_book b ON lr.book_id = b.id
+        LEFT JOIN tb_user op ON lr.operator_id = op.id
+        <where>
+            ${ew.sqlSegment}
+        </where>
+    </select>
+</mapper>
