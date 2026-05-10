@@ -173,13 +173,14 @@ public class AdminBookServiceImpl extends ServiceImpl<BookMapper, Book> implemen
                 .update();
 
         // 添加新关系
-        UploadFileRef uploadFileRef = UploadFileRef.builder()
-                .serviceType(ServiceType.BOOK_COVER)
-                .serviceId(bookDTO.getId())
-                .fileId(bookDTO.getFileId())
-                .build();
-
-        uploadFileRefService.save(uploadFileRef);
+        if(bookDTO.getFileId()!=null) {
+            UploadFileRef uploadFileRef = UploadFileRef.builder()
+                    .serviceType(ServiceType.BOOK_COVER)
+                    .serviceId(bookDTO.getId())
+                    .fileId(bookDTO.getFileId())
+                    .build();
+            uploadFileRefService.save(uploadFileRef);
+        }
     }
 
     /**

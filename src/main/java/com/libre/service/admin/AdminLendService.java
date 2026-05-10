@@ -61,4 +61,17 @@ public interface AdminLendService extends IService<Lend> {
      * @return 首页热门借阅图书
      */
     List<HomeTopLendBookItem> getHomeTopLendBookList();
+
+    /**
+     * 用户借阅图书
+     *
+     * @param bookId 借阅的图书id
+     */
+    void userLendBook(Long bookId,Long userId);
+
+    /**
+     * 用户续借图书
+     * @param bookId 续借的图书id
+     */
+    void userRenewBook(Long bookId,Long userId);
 }

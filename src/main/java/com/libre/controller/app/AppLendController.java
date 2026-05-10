@@ -25,20 +25,6 @@ import java.util.List;
 public class AppLendController {
     private final AppLendService lendService;
 
-    @ApiOperation("借阅图书")
-    @PostMapping("/{bookId}")
-    public Result<Void> userLendBook(@PathVariable Long bookId) {
-        lendService.userLendBook(bookId);
-        return Result.success();
-    }
-
-    @ApiOperation("续借图书")
-    @PatchMapping("/renew/{bookId}")
-    public Result<Void> userRenewBook(@PathVariable Long bookId) {
-        lendService.userRenewBook(bookId);
-        return Result.success();
-    }
-
     @ApiOperation("归还图书")
     @PatchMapping("/return/{bookId}")
     public Result<Void> userReturnBook(@PathVariable Long bookId) {

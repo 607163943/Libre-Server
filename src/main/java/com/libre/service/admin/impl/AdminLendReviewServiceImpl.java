@@ -5,6 +5,7 @@ import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.libre.constant.LendReviewApplyType;
 import com.libre.constant.LendReviewState;
 import com.libre.mapper.LendReviewMapper;
 import com.libre.pojo.dto.admin.LendReviewApproveDTO;
@@ -18,6 +19,7 @@ import com.libre.pojo.vo.admin.LendReviewPageWithRelationVO;
 import com.libre.result.PageResult;
 import com.libre.service.admin.AdminBookService;
 import com.libre.service.admin.AdminLendReviewService;
+import com.libre.service.admin.AdminLendService;
 import com.libre.service.admin.AdminUserService;
 import com.libre.util.PageUtil;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +34,7 @@ import java.util.stream.Collectors;
 public class AdminLendReviewServiceImpl extends ServiceImpl<LendReviewMapper, LendReview> implements AdminLendReviewService {
     private final AdminUserService adminUserService;
     private final AdminBookService adminBookService;
+    private final AdminLendService lendService;
 
     /**
      * 分页查询借阅审核信息
@@ -185,10 +188,21 @@ public class AdminLendReviewServiceImpl extends ServiceImpl<LendReviewMapper, Le
      */
     @Override
     public void approveLendReview(LendReviewApproveDTO lendReviewApproveDTO) {
-        lambdaUpdate()
-                .set(LendReview::getState, lendReviewApproveDTO.getState())
-                .set(LendReview::getOperatorId, StpUtil.getLoginIdAsLong())
+        LendReview lendReview = lambdaQuery()
                 .eq(LendReview::getId, lendReviewApproveDTO.getId())
-                .update();
+                .one();
+        lendReview.setOperatorId(StpUtil.getLoginIdAsLong());
+        lendReview.setState(lendReviewApproveDTO.getState());
+
+
+        updateById(lendReview);
+        // 通过则添加用户借阅数据
+        if(lendReviewApproveDTO.getState().equals(LendReviewState.PASS)) {
+            if(lendReview.getApplyType().equals(LendReviewApplyType.LEND)) {
+                lendService.userLendBook(lendReview.getBookId(),lendReview.getUserId());
+            }else {
+                lendService.userRenewBook(lendReview.getBookId(),lendReview.getUserId());
+            }
+        }
     }
 }

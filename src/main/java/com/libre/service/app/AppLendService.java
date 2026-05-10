@@ -13,6 +13,13 @@ import java.util.List;
 
 public interface AppLendService extends IService<Lend> {
     /**
+     * 检查用户借阅权限规则
+     *
+     * @param userId  用户ID
+     * @param isRenew 是否为续借操作
+     */
+    void checkLendPermission(Long userId, boolean isRenew);
+    /**
      * 获取最近借阅趋势
      * @return 最近借阅趋势
      */

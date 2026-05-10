@@ -37,7 +37,7 @@ public class AppLendServiceImpl extends ServiceImpl<LendMapper, Lend> implements
      * @param userId  用户ID
      * @param isRenew 是否为续借操作
      */
-    private void checkLendPermission(Long userId, boolean isRenew) {
+    public void checkLendPermission(Long userId, boolean isRenew) {
         // 1. 检查当前是否有逾期记录
         Long currentOverdueCount = lambdaQuery()
                 .eq(Lend::getUserId, userId)

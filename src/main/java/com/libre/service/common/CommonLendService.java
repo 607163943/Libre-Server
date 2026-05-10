@@ -17,4 +17,17 @@ public interface CommonLendService extends IService<Lend> {
      * @return 借阅信息
      */
     List<OverLend> selectOverLend();
+
+    /**
+     * 用户借阅图书
+     *
+     * @param bookId 借阅的图书id
+     */
+    void userLendBook(Long bookId,Long userId);
+
+    /**
+     * 用户续借图书
+     * @param bookId 续借的图书id
+     */
+    void userRenewBook(Long bookId,Long userId);
 }

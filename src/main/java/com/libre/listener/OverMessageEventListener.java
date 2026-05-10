@@ -11,10 +11,10 @@ import com.libre.service.common.CommonMessageService;
 import com.libre.service.common.CommonUserMessageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.event.TransactionalEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +28,7 @@ public class OverMessageEventListener {
     private final CommonMessageService messageService;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    @TransactionalEventListener
+    @EventListener
     public void handleBatchOverdueEvent(BatchOverMessageEvent batchOverMessageEvent) {
         log.info("开始批量通知逾期消息");
         List<OverMessageInfo> overMessageInfos = batchOverMessageEvent.getOverMessageInfos();

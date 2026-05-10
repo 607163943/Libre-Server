@@ -14,8 +14,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Message extends BasePO {
-    // id
-    private Long id;
     // 标题
     private String title;
     // 内容

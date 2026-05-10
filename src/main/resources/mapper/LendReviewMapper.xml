@@ -35,4 +35,21 @@
             ${ew.sqlSegment}
         </where>
     </select>
+    
+    <!--分页查询用户借阅申请记录-->
+    <select id="pageQueryMyLendReview" resultType="com.libre.pojo.vo.app.LendReviewPageVO">
+        SELECT
+            lr.id,
+            lr.book_id AS bookId,
+            b.book_name AS bookName,
+            lr.apply_type AS applyType,
+            lr.lend_days AS lendDays,
+            lr.apply_time AS applyTime,
+            lr.state
+        FROM tb_lend_review lr
+        JOIN tb_book b ON lr.book_id = b.id
+        WHERE lr.is_delete = 0
+        AND lr.user_id = #{pageDTO.userId}
+        ORDER BY lr.apply_time DESC
+    </select>
 </mapper>
