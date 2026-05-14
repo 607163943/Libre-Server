@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 public class AppHomeServiceImpl implements AppHomeService {
     private final AppBookService appBookService;
 
-    private final AppLendService appLendService;
+    private final AppLendService lendService;
 
     private final CacheUtil cacheUtil;
 
@@ -35,18 +35,18 @@ public class AppHomeServiceImpl implements AppHomeService {
         Long userId = StpUtil.getLoginIdAsLong();
 
         // 借阅统计
-        Long lendCount = appLendService.lambdaQuery()
+        Long lendCount = lendService.lambdaQuery()
                 .eq(Lend::getUserId, userId)
                 .eq(Lend::getState, LendStatus.LEND)
                 .count();
         // 即将逾期统计(3天内属于即将逾期)
-        Long soonOverdueCount = appLendService.lambdaQuery()
+        Long soonOverdueCount = lendService.lambdaQuery()
                 .eq(Lend::getUserId, userId)
                 .eq(Lend::getState, LendStatus.LEND)
                 .ge(Lend::getReturnTime, LocalDateTime.now().plusDays(3))
                 .count();
         // 逾期统计
-        Long overdueCount = appLendService.lambdaQuery()
+        Long overdueCount = lendService.lambdaQuery()
                 .eq(Lend::getUserId, userId)
                 .eq(Lend::getState, LendStatus.OVERDUE)
                 .count();
@@ -73,7 +73,7 @@ public class AppHomeServiceImpl implements AppHomeService {
         }
 
         // 缓存未命中，查询数据库
-        List<HomeTopLendBookItem> homeTopLendBookItemList = appLendService.getHomeTopLendBookList();
+        List<HomeTopLendBookItem> homeTopLendBookItemList = lendService.getHomeTopLendBookList();
         HomeTopLendBookVO result = HomeTopLendBookVO.builder()
                 .homeTopLendBookItemList(homeTopLendBookItemList)
                 .build();

@@ -1,4 +1,4 @@
-package com.libre.pojo.dto.admin;
+package com.libre.pojo.dto.common;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 
-@ApiModel("管理端修改密码DTO")
+@ApiModel("用户端修改密码DTO")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

@@ -169,15 +169,4 @@
         where lend.is_delete = 0
           and lend.state = 3
     </select>
-    <!--统计指定时间段内的逾期记录数（已归还但曾经逾期的记录）-->
-    <select id="countOverdueLendInPeriod" resultType="java.lang.Long">
-        SELECT COUNT(*)
-        FROM tb_lend
-        WHERE is_delete = 0
-          AND user_id = #{userId}
-          AND state = 2  -- 已归还
-          AND return_time IS NOT NULL
-          AND due_time &lt; return_time  -- 归还时间晚于应还时间，说明曾经逾期
-          AND return_time &gt;= #{startDate}
-    </select>
 </mapper>

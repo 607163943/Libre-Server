@@ -3,6 +3,7 @@ package com.libre.service.admin.impl;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.extension.toolkit.Db;
 import com.libre.constant.ServiceType;
 import com.libre.enums.ExceptionEnums;
 import com.libre.exception.BookException;
@@ -11,6 +12,7 @@ import com.libre.pojo.doc.BookDoc;
 import com.libre.pojo.dto.admin.BookDTO;
 import com.libre.pojo.dto.admin.BookPageDTO;
 import com.libre.pojo.po.Book;
+import com.libre.pojo.po.Lend;
 import com.libre.pojo.po.UploadFileRef;
 import com.libre.pojo.vo.admin.BookPageVO;
 import com.libre.pojo.vo.admin.BookVO;
@@ -49,6 +51,9 @@ public class AdminBookServiceImpl extends ServiceImpl<BookMapper, Book> implemen
         cacheUtil.delete("admin:home:total-card");
         cacheUtil.delete("admin:home:recent-lend-trend");
         cacheUtil.delete("admin:home:top-book");
+
+        cacheUtil.delete("user:home:top-latest-book");
+        cacheUtil.delete("user:home:top-lend-book");
     }
 
     /**
@@ -202,6 +207,14 @@ public class AdminBookServiceImpl extends ServiceImpl<BookMapper, Book> implemen
      */
     @Override
     public void deleteBook(Long bookId) {
+        // 存在该图书的借阅则无法删除
+        Long lendCount = Db.lambdaQuery(Lend.class)
+                .eq(Lend::getBookId, bookId)
+                .count();
+
+        if(lendCount>0) {
+            throw new BookException(ExceptionEnums.BOOK_HAS_LEND);
+        }
         lambdaUpdate()
                 // 使用时间戳标记逻辑删除，避免唯一键冲突
                 .set(Book::getIsDelete, System.currentTimeMillis())
@@ -212,9 +225,10 @@ public class AdminBookServiceImpl extends ServiceImpl<BookMapper, Book> implemen
         clearHomeCache();
         // 删除文件引用关系
         uploadFileRefService.lambdaUpdate()
+                .set(UploadFileRef::getIsDelete, System.currentTimeMillis())
                 .eq(UploadFileRef::getServiceId, bookId)
                 .eq(UploadFileRef::getServiceType, ServiceType.BOOK_COVER)
-                .remove();
+                .update();
         elasticsearchRestTemplate.delete(bookId.toString(), BookDoc.class);
     }
 
@@ -225,6 +239,15 @@ public class AdminBookServiceImpl extends ServiceImpl<BookMapper, Book> implemen
      */
     @Override
     public void deleteBatchBook(List<Long> ids) {
+        // 存在该图书的借阅则无法删除
+        Long lendCount = Db.lambdaQuery(Lend.class)
+                .in(Lend::getBookId, ids)
+                .count();
+
+        if(lendCount>0) {
+            throw new BookException(ExceptionEnums.BOOK_HAS_LEND);
+        }
+
         lambdaUpdate()
                 .set(Book::getIsDelete, System.currentTimeMillis())
                 .in(Book::getId, ids)
@@ -234,9 +257,10 @@ public class AdminBookServiceImpl extends ServiceImpl<BookMapper, Book> implemen
         clearHomeCache();
         // 删除文件引用关系
         uploadFileRefService.lambdaUpdate()
+                .set(UploadFileRef::getIsDelete, System.currentTimeMillis())
                 .in(UploadFileRef::getServiceId, ids)
                 .eq(UploadFileRef::getServiceType, ServiceType.BOOK_COVER)
-                .remove();
+                .update();
         ids.forEach(id -> elasticsearchRestTemplate.delete(id.toString(), BookDoc.class));
     }
 

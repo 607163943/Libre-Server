@@ -1,12 +1,13 @@
 package com.libre.controller.app;
 
 import com.libre.pojo.dto.common.UserMessagePageDTO;
-import com.libre.pojo.vo.app.UserMessageDetailVO;
+import com.libre.pojo.vo.common.UserMessageDetailVO;
 import com.libre.pojo.vo.common.UserMessageVO;
 import com.libre.result.PageResult;
 import com.libre.result.Result;
 import com.libre.service.app.AppMessageService;
 import com.libre.service.app.AppUserMessageService;
+import com.libre.service.common.CommonMessageService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AppMessageController {
     private final AppMessageService messageService;
+
+    private final CommonMessageService commonMessageService;
     private final AppUserMessageService userMessageService;
 
     @ApiOperation("分页查询用户消息")
@@ -35,7 +38,7 @@ public class AppMessageController {
     @ApiOperation("根据消息id查询用户具体消息")
     @GetMapping("/{messageId}")
     public Result<UserMessageDetailVO> getUserMessageDetail(@PathVariable Long messageId) {
-        UserMessageDetailVO messageDetail = messageService.getUserMessageDetail(messageId);
+        UserMessageDetailVO messageDetail = commonMessageService.getUserMessageDetail(messageId);
         return Result.success(messageDetail);
     }
 

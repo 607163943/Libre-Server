@@ -9,12 +9,13 @@ import com.libre.pojo.dto.common.UserMessagePageDTO;
 import com.libre.pojo.po.Message;
 import com.libre.pojo.vo.admin.MessagePageVO;
 import com.libre.pojo.vo.admin.MessageVO;
-import com.libre.pojo.vo.app.UserMessageDetailVO;
+import com.libre.pojo.vo.common.UserMessageDetailVO;
 import com.libre.pojo.vo.common.UserMessageVO;
 import com.libre.result.PageResult;
 import com.libre.result.Result;
 import com.libre.service.admin.AdminMessageService;
 import com.libre.service.admin.AdminUserMessageService;
+import com.libre.service.common.CommonMessageService;
 import com.libre.validation.UpdateGroup;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -33,6 +34,8 @@ import java.util.List;
 public class AdminMessageController {
     private final AdminMessageService messageService;
 
+    private final CommonMessageService commonMessageService;
+
     private final AdminUserMessageService userMessageService;
 
     @ApiOperation("分页查询管理员消息")
@@ -45,7 +48,7 @@ public class AdminMessageController {
     @ApiOperation("根据消息id查询用户具体消息")
     @GetMapping("/user/{messageId}")
     public Result<UserMessageDetailVO> getUserMessageDetail(@PathVariable Long messageId) {
-        UserMessageDetailVO messageDetail = messageService.getUserMessageDetail(messageId);
+        UserMessageDetailVO messageDetail = commonMessageService.getUserMessageDetail(messageId);
         return Result.success(messageDetail);
     }
 

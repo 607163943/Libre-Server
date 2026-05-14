@@ -13,13 +13,6 @@ import java.util.List;
 
 public interface AppLendService extends IService<Lend> {
     /**
-     * 检查用户借阅权限规则
-     *
-     * @param userId  用户ID
-     * @param isRenew 是否为续借操作
-     */
-    void checkLendPermission(Long userId, boolean isRenew);
-    /**
      * 获取最近借阅趋势
      * @return 最近借阅趋势
      */
@@ -36,12 +29,6 @@ public interface AppLendService extends IService<Lend> {
      * @return 首页热门借阅图书
      */
     List<HomeTopLendBookItem> getHomeTopLendBookList();
-
-    /**
-     * 借阅图书
-     * @param bookId 借阅的图书id
-     */
-    void userLendBook(Long bookId);
 
     /**
      * 归还图书
@@ -62,11 +49,6 @@ public interface AppLendService extends IService<Lend> {
      */
     PageResult<List<MyLendBookVO>> pageQueryMyLend(MyLendPageDTO myLendPageDTO);
 
-    /**
-     * 用户续借图书
-     * @param bookId 续借的图书id
-     */
-    void userRenewBook(Long bookId);
 
     /**
      * 获取用户借阅历史数据统计

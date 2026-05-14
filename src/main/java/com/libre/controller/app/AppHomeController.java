@@ -17,26 +17,26 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/app/home")
 @RestController
 public class AppHomeController {
-    private final AppHomeService appHomeService;
+    private final AppHomeService homeService;
 
     @ApiOperation("获取首页用户借阅信息")
     @GetMapping("/user/lend/total")
     public Result<HomeUserTotalVO> getHomeUserTotal() {
-        HomeUserTotalVO homeUserTotalVO = appHomeService.getHomeUserTotal();
+        HomeUserTotalVO homeUserTotalVO = homeService.getHomeUserTotal();
         return Result.success(homeUserTotalVO);
     }
 
     @ApiOperation("获取首页热门借阅书籍")
     @GetMapping("/top/lend/book")
     public Result<HomeTopLendBookVO> getHomeTopLendBook() {
-        HomeTopLendBookVO homeTopLendBookVO = appHomeService.getHomeTopLendBook();
+        HomeTopLendBookVO homeTopLendBookVO = homeService.getHomeTopLendBook();
         return Result.success(homeTopLendBookVO);
     }
 
     @ApiOperation("获取首页最新入馆书籍")
     @GetMapping("/top/latest/book")
     public Result<HomeTopLatestBookVO> getHomeTopLatestBook() {
-        HomeTopLatestBookVO homeTopLatestBookVO = appHomeService.getHomeTopLatestBook();
+        HomeTopLatestBookVO homeTopLatestBookVO = homeService.getHomeTopLatestBook();
         return Result.success(homeTopLatestBookVO);
     }
 }

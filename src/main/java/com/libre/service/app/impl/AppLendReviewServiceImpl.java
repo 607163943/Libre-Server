@@ -5,11 +5,13 @@ import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.extension.toolkit.Db;
 import com.libre.constant.LendReviewApplyType;
 import com.libre.constant.LendReviewState;
 import com.libre.constant.LendStatus;
 import com.libre.enums.ExceptionEnums;
 import com.libre.exception.LendReviewException;
+import com.libre.exception.LibreException;
 import com.libre.mapper.BookMapper;
 import com.libre.mapper.LendReviewMapper;
 import com.libre.pojo.dto.app.LendReviewPageDTO;
@@ -22,7 +24,7 @@ import com.libre.pojo.vo.admin.LendReviewVO;
 import com.libre.pojo.vo.app.AppLendReviewVO;
 import com.libre.pojo.vo.app.LendReviewPageVO;
 import com.libre.service.app.AppLendReviewService;
-import com.libre.service.app.AppLendService;
+import com.libre.service.common.CommonLendService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -35,7 +37,8 @@ public class AppLendReviewServiceImpl extends ServiceImpl<LendReviewMapper, Lend
 
     private final LendReviewMapper lendReviewMapper;
     private final BookMapper bookMapper;
-    private final AppLendService lendService;
+
+    private final CommonLendService commonLendService;
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
@@ -68,16 +71,11 @@ public class AppLendReviewServiceImpl extends ServiceImpl<LendReviewMapper, Lend
             throw new LendReviewException(ExceptionEnums.LEND_REVIEW_APPLY_TYPE_ERROR);
         }
 
-        // 如果是借阅，查看库存是否充足
-        if(submitDTO.getApplyType().equals(LendReviewApplyType.LEND)) {
-            //TODO
-        }
-
         // 如果是续借，需要检查是否有正在进行的借阅记录
         if (submitDTO.getApplyType().equals(LendReviewApplyType.RENEW)) {
             // 这里可以添加续借的逻辑检查，比如检查是否有未归还的借阅记录
             // 暂时简化处理
-            boolean exists = lendService.lambdaQuery()
+            boolean exists = commonLendService.lambdaQuery()
                     .eq(Lend::getUserId, userId)
                     .eq(Lend::getBookId, submitDTO.getBookId())
                     .eq(Lend::getState, LendStatus.LEND)
@@ -86,6 +84,10 @@ public class AppLendReviewServiceImpl extends ServiceImpl<LendReviewMapper, Lend
                 throw new LendReviewException(ExceptionEnums.LEND_REVIEW_USER_NOT_LEND);
             }
         }
+
+        // 检查是否满足借阅权限
+        boolean isRenew = submitDTO.getApplyType().equals(LendReviewApplyType.RENEW);
+        commonLendService.checkLendPermission(userId, isRenew);
 
         // 创建借阅申请记录
         LendReview lendReview = BeanUtil.copyProperties(submitDTO, LendReview.class);
@@ -97,15 +99,51 @@ public class AppLendReviewServiceImpl extends ServiceImpl<LendReviewMapper, Lend
         // 保存申请记录
         save(lendReview);
 
-        // 发布审核事件
-        LendReviewEvent lendReviewEvent = new LendReviewEvent(this,
-                lendReview.getId(),
-                StpUtil.getLoginIdAsLong(),
-                lendReview.getBookId(),
-                lendReview.getApplyType());
-        applicationEventPublisher.publishEvent(lendReviewEvent);
+        // 获取书籍可借数量
+        Long usingCount = Db.lambdaQuery(Lend.class)
+                .eq(Lend::getBookId, book.getId())
+                .in(Lend::getState, LendStatus.LEND, LendStatus.OVERDUE)
+                .count();
+        // 数量高于3本直接通过
+        if ((book.getNumber() - usingCount) > 3) {
+            SystemLendReview(book, lendReview);
+        } else {
+            // 人工审核
+            // 发布审核事件
+            LendReviewEvent lendReviewEvent = new LendReviewEvent(this,
+                    lendReview.getId(),
+                    StpUtil.getLoginIdAsLong(),
+                    lendReview.getBookId(),
+                    lendReview.getApplyType());
+            applicationEventPublisher.publishEvent(lendReviewEvent);
+        }
 
         return BeanUtil.copyProperties(lendReview, AppLendReviewVO.class);
+    }
+
+    /**
+     * 系统审核
+     */
+    private void SystemLendReview(Book book, LendReview lendReview) {
+        Integer finalState;
+        try {
+            finalState = LendReviewState.PASS;
+            // 尝试借阅
+            Long userId = StpUtil.getLoginIdAsLong();
+            if (lendReview.getApplyType().equals(LendReviewApplyType.LEND)) {
+                commonLendService.userLendBook(book.getId(), userId);
+            } else {
+                commonLendService.userRenewBook(book.getId(), userId);
+            }
+        } catch (LibreException libreException) {
+            // 标记为驳回
+            finalState = LendReviewState.NOT_PASS;
+        }
+
+        Db.lambdaUpdate(LendReview.class)
+                .set(LendReview::getState, finalState)
+                .eq(LendReview::getId, lendReview.getId())
+                .update();
     }
 
     /**

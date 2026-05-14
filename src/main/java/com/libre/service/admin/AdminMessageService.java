@@ -7,7 +7,6 @@ import com.libre.pojo.dto.admin.MessageSendDTO;
 import com.libre.pojo.dto.common.UserMessagePageDTO;
 import com.libre.pojo.po.Message;
 import com.libre.pojo.vo.admin.MessagePageVO;
-import com.libre.pojo.vo.app.UserMessageDetailVO;
 import com.libre.pojo.vo.common.UserMessageVO;
 import com.libre.result.PageResult;
 
@@ -57,11 +56,4 @@ public interface AdminMessageService extends IService<Message> {
      * @return 查询结果
      */
     PageResult<List<UserMessageVO>> pageQueryAdminMessage(UserMessagePageDTO userMessagePageDTO);
-
-    /**
-     * 根据消息id查询用户具体消息
-     * @param messageId 消息id
-     * @return 消息详情
-     */
-    UserMessageDetailVO getUserMessageDetail(Long messageId);
 }

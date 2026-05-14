@@ -19,8 +19,15 @@ public interface CommonLendService extends IService<Lend> {
     List<OverLend> selectOverLend();
 
     /**
-     * 用户借阅图书
+     * 检查用户借阅权限规则
      *
+     * @param userId  用户ID
+     * @param isRenew 是否为续借操作
+     */
+    void checkLendPermission(Long userId, boolean isRenew);
+
+    /**
+     * 借阅图书
      * @param bookId 借阅的图书id
      */
     void userLendBook(Long bookId,Long userId);

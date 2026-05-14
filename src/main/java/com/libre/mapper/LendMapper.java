@@ -6,8 +6,8 @@ import com.libre.pojo.dto.admin.LendPageDTO;
 import com.libre.pojo.dto.app.MyLendPageDTO;
 import com.libre.pojo.dto.common.OverLend;
 import com.libre.pojo.po.Lend;
-import com.libre.pojo.vo.admin.LendPageVO;
 import com.libre.pojo.vo.admin.HomeTopBookItem;
+import com.libre.pojo.vo.admin.LendPageVO;
 import com.libre.pojo.vo.admin.RecentLendTrendItem;
 import com.libre.pojo.vo.app.HomeTopLendBookItem;
 import com.libre.pojo.vo.app.MyLendBookDetailVO;
@@ -15,7 +15,6 @@ import com.libre.pojo.vo.app.MyLendBookVO;
 import com.libre.pojo.vo.app.MyLendHistoryBookVO;
 import org.apache.ibatis.annotations.Param;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface LendMapper extends BaseMapper<Lend> {
@@ -86,12 +85,4 @@ public interface LendMapper extends BaseMapper<Lend> {
      * @return 超时借阅
      */
     List<OverLend> selectOverLend();
-
-    /**
-     * 统计指定时间段内的逾期记录数（已归还但曾经逾期的记录）
-     * @param userId 用户ID
-     * @param startDate 开始时间
-     * @return 逾期记录数
-     */
-    Long countOverdueLendInPeriod(@Param("userId") Long userId, @Param("startDate") LocalDateTime startDate);
 }

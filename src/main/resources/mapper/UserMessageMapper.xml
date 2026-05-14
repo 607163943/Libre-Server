@@ -22,7 +22,7 @@
         ORDER BY um.create_time DESC
     </select>
 
-    <select id="getUserMessageDetail" resultType="com.libre.pojo.vo.app.UserMessageDetailVO">
+    <select id="getUserMessageDetail" resultType="com.libre.pojo.vo.common.UserMessageDetailVO">
         SELECT m.id, m.content, m.title, m.create_time AS createTime, m.type
         FROM tb_user_message um
                  JOIN tb_message m ON um.message_id = m.id

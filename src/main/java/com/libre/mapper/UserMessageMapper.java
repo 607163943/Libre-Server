@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.libre.pojo.dto.common.UserMessagePageDTO;
 import com.libre.pojo.po.UserMessage;
-import com.libre.pojo.vo.app.UserMessageDetailVO;
+import com.libre.pojo.vo.common.UserMessageDetailVO;
 import com.libre.pojo.vo.common.UserMessageVO;
 import org.apache.ibatis.annotations.Param;
 

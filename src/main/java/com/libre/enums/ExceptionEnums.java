@@ -10,6 +10,7 @@ public enum ExceptionEnums {
     AUTHOR_HAS_BOOK(10102, "存在该作者的图书，无法删除"),
 
     BOOK_EXIST(10201, "图书已存在"),
+    BOOK_HAS_LEND(10202, "图书存在借阅，无法删除"),
 
     NOT_HAS_ROLE(10401, "角色权限不够"),
 
@@ -37,6 +38,8 @@ public enum ExceptionEnums {
 
     USER_EXIST(10801, "用户已存在"),
     USER_NOT_EXIST(10802, "用户不存在"),
+    USER_EMAIL_ALREADY_EXIST(10803, "邮箱已被使用"),
+    USER_PHONE_ALREADY_EXIST(10804, "手机号码已被使用"),
 
     ROLE_EXIST(10901, "角色已存在"),
 

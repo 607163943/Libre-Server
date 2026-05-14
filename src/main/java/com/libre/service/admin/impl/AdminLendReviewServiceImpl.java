@@ -5,25 +5,21 @@ import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.libre.constant.LendReviewApplyType;
-import com.libre.constant.LendReviewState;
+import com.libre.constant.*;
 import com.libre.mapper.LendReviewMapper;
 import com.libre.pojo.dto.admin.LendReviewApproveDTO;
 import com.libre.pojo.dto.admin.LendReviewDTO;
 import com.libre.pojo.dto.admin.LendReviewPageDTO;
-import com.libre.pojo.po.Book;
-import com.libre.pojo.po.LendReview;
-import com.libre.pojo.po.User;
+import com.libre.pojo.po.*;
 import com.libre.pojo.vo.admin.LendReviewPageVO;
 import com.libre.pojo.vo.admin.LendReviewPageWithRelationVO;
 import com.libre.result.PageResult;
-import com.libre.service.admin.AdminBookService;
-import com.libre.service.admin.AdminLendReviewService;
-import com.libre.service.admin.AdminLendService;
-import com.libre.service.admin.AdminUserService;
+import com.libre.service.admin.*;
+import com.libre.service.common.CommonLendService;
 import com.libre.util.PageUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
@@ -34,7 +30,11 @@ import java.util.stream.Collectors;
 public class AdminLendReviewServiceImpl extends ServiceImpl<LendReviewMapper, LendReview> implements AdminLendReviewService {
     private final AdminUserService adminUserService;
     private final AdminBookService adminBookService;
-    private final AdminLendService lendService;
+
+    private final CommonLendService commonLendService;
+
+    private final AdminMessageService messageService;
+    private final AdminUserMessageService userMessageService;
 
     /**
      * 分页查询借阅审核信息
@@ -186,6 +186,7 @@ public class AdminLendReviewServiceImpl extends ServiceImpl<LendReviewMapper, Le
      * 审批借阅审核信息
      * @param lendReviewApproveDTO 审批信息
      */
+    @Transactional
     @Override
     public void approveLendReview(LendReviewApproveDTO lendReviewApproveDTO) {
         LendReview lendReview = lambdaQuery()
@@ -199,10 +200,39 @@ public class AdminLendReviewServiceImpl extends ServiceImpl<LendReviewMapper, Le
         // 通过则添加用户借阅数据
         if(lendReviewApproveDTO.getState().equals(LendReviewState.PASS)) {
             if(lendReview.getApplyType().equals(LendReviewApplyType.LEND)) {
-                lendService.userLendBook(lendReview.getBookId(),lendReview.getUserId());
+                commonLendService.userLendBook(lendReview.getBookId(),lendReview.getUserId());
             }else {
-                lendService.userRenewBook(lendReview.getBookId(),lendReview.getUserId());
+                commonLendService.userRenewBook(lendReview.getBookId(),lendReview.getUserId());
             }
+
+            // 发送消息
+            sendLendReviewMessage(lendReview);
         }
+    }
+
+    /**
+     * 发送消息
+     * @param lendReview 借阅审核信息
+     */
+    private void sendLendReviewMessage(LendReview lendReview) {
+        // 给用户发送消息通知
+        // 创建消息
+        Message message = Message.builder()
+                .title("借阅审核结果通知")
+                .content("您申请的借阅审核已通过")
+                .type(MessageType.LEND)
+                .state(MessageState.SEND)
+                .createUserId(0L)
+                .build();
+
+        messageService.save(message);
+
+        UserMessage userMessage = UserMessage.builder()
+                .receiverId(lendReview.getUserId())
+                .messageId(message.getId())
+                .platformScope(PlatformScope.APP)
+                .build();
+
+        userMessageService.save(userMessage);
     }
 }

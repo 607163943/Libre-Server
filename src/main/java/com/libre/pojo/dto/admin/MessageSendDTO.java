@@ -3,11 +3,13 @@ package com.libre.pojo.dto.admin;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 
+@Builder
 @ApiModel("消息发送DTO")
 @Data
 @NoArgsConstructor
