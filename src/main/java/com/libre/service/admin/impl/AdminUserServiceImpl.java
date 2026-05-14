@@ -73,6 +73,26 @@ public class AdminUserServiceImpl extends ServiceImpl<UserMapper, User> implemen
             user.setName(user.getUsername());
         }
 
+        // 判断邮箱是否绑定
+        if(StrUtil.isNotBlank(user.getEmail())) {
+            Long emailCount = lambdaQuery()
+                    .eq(User::getEmail, user.getEmail())
+                    .count();
+            if(emailCount>0) {
+                throw new UserException(ExceptionEnums.USER_EMAIL_ALREADY_EXIST);
+            }
+        }
+
+        // 判断手机号是否绑定
+        if(StrUtil.isNotBlank(user.getPhone())) {
+            Long phoneCount = lambdaQuery()
+                    .eq(User::getPhone, user.getPhone())
+                    .count();
+            if(phoneCount>0) {
+                throw new UserException(ExceptionEnums.USER_PHONE_ALREADY_EXIST);
+            }
+        }
+
         user.setPassword(securityUtil.generatePassword(user.getPassword()));
         save(user);
     }
@@ -98,6 +118,29 @@ public class AdminUserServiceImpl extends ServiceImpl<UserMapper, User> implemen
         if (StrUtil.isBlank(user.getName())) {
             user.setName(user.getUsername());
         }
+
+        // 判断邮箱是否绑定
+        if(StrUtil.isNotBlank(user.getEmail())) {
+            Long emailCount = lambdaQuery()
+                    .eq(User::getEmail, user.getEmail())
+                    .ne(User::getId, userDTO.getId())
+                    .count();
+            if(emailCount>0) {
+                throw new UserException(ExceptionEnums.USER_EMAIL_ALREADY_EXIST);
+            }
+        }
+
+        // 判断手机号是否绑定
+        if(StrUtil.isNotBlank(user.getPhone())) {
+            Long phoneCount = lambdaQuery()
+                    .eq(User::getPhone, user.getPhone())
+                    .ne(User::getId, userDTO.getId())
+                    .count();
+            if(phoneCount>0) {
+                throw new UserException(ExceptionEnums.USER_PHONE_ALREADY_EXIST);
+            }
+        }
+
         user.setPassword(securityUtil.generatePassword(user.getPassword()));
         updateById(user);
     }

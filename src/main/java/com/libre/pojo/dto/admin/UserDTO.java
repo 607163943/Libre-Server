@@ -29,4 +29,10 @@ public class UserDTO {
 
     @ApiModelProperty("姓名")
     private String name;
+
+    @ApiModelProperty("邮箱")
+    private String email;
+
+    @ApiModelProperty("手机号")
+    private String phone;
 }
