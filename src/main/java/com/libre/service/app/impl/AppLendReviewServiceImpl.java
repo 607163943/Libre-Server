@@ -5,6 +5,7 @@ import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.libre.constant.LendReviewApplyType;
 import com.libre.constant.LendReviewState;
 import com.libre.constant.LendStatus;
 import com.libre.enums.ExceptionEnums;
@@ -67,8 +68,13 @@ public class AppLendReviewServiceImpl extends ServiceImpl<LendReviewMapper, Lend
             throw new LendReviewException(ExceptionEnums.LEND_REVIEW_APPLY_TYPE_ERROR);
         }
 
+        // 如果是借阅，查看库存是否充足
+        if(submitDTO.getApplyType().equals(LendReviewApplyType.LEND)) {
+            //TODO
+        }
+
         // 如果是续借，需要检查是否有正在进行的借阅记录
-        if (submitDTO.getApplyType() == 2) {
+        if (submitDTO.getApplyType().equals(LendReviewApplyType.RENEW)) {
             // 这里可以添加续借的逻辑检查，比如检查是否有未归还的借阅记录
             // 暂时简化处理
             boolean exists = lendService.lambdaQuery()

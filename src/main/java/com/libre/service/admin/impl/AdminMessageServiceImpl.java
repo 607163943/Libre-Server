@@ -40,6 +40,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -162,7 +163,8 @@ public class AdminMessageServiceImpl extends ServiceImpl<MessageMapper, Message>
                 .list();
 
         // 获取用户id集合
-        List<Long> targetUserIds = userRoleList.stream().map(UserRole::getUserId).collect(Collectors.toList());
+        // 一个用户可以有多个角色，也就是多条用户角色数据
+        Set<Long> targetUserIds = userRoleList.stream().map(UserRole::getUserId).collect(Collectors.toSet());
         // 构建消息发送数据
         List<UserMessage> userMessages = new ArrayList<>(targetUserIds.size());
         for (Long targetUserId : targetUserIds) {

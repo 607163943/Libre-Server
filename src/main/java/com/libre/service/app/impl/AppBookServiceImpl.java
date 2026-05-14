@@ -2,6 +2,7 @@ package com.libre.service.app.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.extension.toolkit.Db;
@@ -17,6 +18,7 @@ import com.libre.pojo.vo.app.SearchBookVO;
 import com.libre.result.PageResult;
 import com.libre.service.app.AppBookService;
 import com.libre.service.app.AppLendService;
+import com.libre.util.CacheUtil;
 import com.libre.util.PageUtil;
 import lombok.RequiredArgsConstructor;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -28,7 +30,6 @@ import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -42,7 +43,7 @@ import java.util.stream.Collectors;
 public class AppBookServiceImpl extends ServiceImpl<BookMapper, Book> implements AppBookService {
     private final AppLendService appLendService;
 
-    private final StringRedisTemplate stringRedisTemplate;
+    private final CacheUtil cacheUtil;
 
     private final ElasticsearchRestTemplate elasticsearchRestTemplate;
 
@@ -57,19 +58,19 @@ public class AppBookServiceImpl extends ServiceImpl<BookMapper, Book> implements
         String cacheKey = "user:book:detail:" + bookId;
 
         // 尝试从缓存中获取
-        String cachedData = stringRedisTemplate.opsForValue().get(cacheKey);
+        String cachedData = cacheUtil.get(cacheKey);
 
         BookDetailVO bookDetail;
-        if(cachedData!=null) {
+        if (cachedData != null) {
             // 已登录状态，查询数据库获取实时信息
             bookDetail = JSONUtil.toBean(cachedData, BookDetailVO.class);
-        }else {
+        } else {
             // 查询数据库，建立缓存
             bookDetail = baseMapper.getBookDetail(bookId);
-            stringRedisTemplate.opsForValue().set(cacheKey, JSONUtil.toJsonStr(bookDetail),1, TimeUnit.HOURS);
+            cacheUtil.set(cacheKey, JSONUtil.toJsonStr(bookDetail), 1, TimeUnit.HOURS);
         }
 
-        if(!StpUtil.isLogin()) {
+        if (!StpUtil.isLogin()) {
             return bookDetail;
         }
 
@@ -108,42 +109,37 @@ public class AppBookServiceImpl extends ServiceImpl<BookMapper, Book> implements
     @Override
     public PageResult<List<SearchBookVO>> search(SearchDTO searchDTO) {
         // 初始化分页参数
-        PageUtil.createPage(searchDTO);
-        // 1. 执行 ES 查询
-        SearchHits<BookDoc> hits = searchFromEs(searchDTO);
+        IPage<SearchBookVO> page = PageUtil.createPage(searchDTO);
+        long total;
+        List<SearchBookVO> searchBookVOS;
+        // 指定非es业务状态(需要登录)走数据库查询
+        if (StpUtil.isLogin()&&searchDTO.getState() != null) {
+            searchDTO.setUserId(StpUtil.getLoginIdAsLong());
+            page = baseMapper.search(page, searchDTO);
+            total=page.getTotal();
+            searchBookVOS=page.getRecords();
+        } else {
+            // 常规走es查询
+            // 1. 执行 ES 查询
+            SearchHits<BookDoc> hits = searchFromEs(searchDTO);
 
-        // 2. 转换结果
-        List<SearchBookVO> searchBookVOS = hits.getSearchHits().stream()
-                .map(hit -> {
-                    BookDoc doc = hit.getContent();
-                    SearchBookVO vo = new SearchBookVO();
-                    BeanUtils.copyProperties(doc, vo); // 属性名一致可直接拷贝
-                    return vo;
-                }).collect(Collectors.toList());
+            // 2. 转换结果
+            searchBookVOS = hits.getSearchHits().stream()
+                    .map(hit -> {
+                        BookDoc doc = hit.getContent();
+                        SearchBookVO vo = new SearchBookVO();
+                        BeanUtils.copyProperties(doc, vo); // 属性名一致可直接拷贝
+                        return vo;
+                    }).collect(Collectors.toList());
 
-        long total = hits.getTotalHits();
-        // 登录状态下额外提供借阅书籍标注、借阅状态查询功能
-        if (StpUtil.isLogin()) {
-            LambdaQueryChainWrapper<Lend> chainWrapper = appLendService.lambdaQuery()
-                    .eq(Lend::getUserId, StpUtil.getLoginIdAsLong());
+            total = hits.getTotalHits();
+            // 登录状态下额外提供借阅书籍标注、借阅状态查询功能
+            if (StpUtil.isLogin()) {
+                LambdaQueryChainWrapper<Lend> chainWrapper = appLendService.lambdaQuery()
+                        .eq(Lend::getUserId, StpUtil.getLoginIdAsLong());
 
-            // 借阅书籍查询
-            List<Lend> lendList;
-            if (searchDTO.getState() != null) {
-                lendList = chainWrapper
-                        .eq(Lend::getState, searchDTO.getState())
-                        .list();
-                // 获取借阅书籍id
-                List<Long> bookIds = lendList.stream().map(Lend::getBookId).collect(Collectors.toList());
-                searchBookVOS = searchBookVOS.stream()
-                        .filter(searchBookVO -> bookIds.contains(searchBookVO.getId()))
-                        .peek(searchBookVO -> searchBookVO.setState(searchDTO.getState()))
-                        .collect(Collectors.toList());
-                // 带状态的借阅查询下，总条数根有效借阅总数一致
-                total = lendList.size();
-            } else {
                 // 借阅书籍标记
-                lendList = chainWrapper
+                List<Lend> lendList = chainWrapper
                         .in(Lend::getState, LendStatus.LEND, LendStatus.OVERDUE)
                         .list();
                 // 借阅书籍标注

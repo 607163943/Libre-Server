@@ -8,8 +8,8 @@ import com.libre.pojo.vo.app.*;
 import com.libre.service.app.AppBookService;
 import com.libre.service.app.AppHomeService;
 import com.libre.service.app.AppLendService;
+import com.libre.util.CacheUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -23,7 +23,7 @@ public class AppHomeServiceImpl implements AppHomeService {
 
     private final AppLendService appLendService;
 
-    private final StringRedisTemplate stringRedisTemplate;
+    private final CacheUtil cacheUtil;
 
     /**
      * 获取用户借阅数据
@@ -67,7 +67,7 @@ public class AppHomeServiceImpl implements AppHomeService {
         String cacheKey = "user:home:top-lend-book";
 
         // 尝试从缓存中获取
-        String cachedData = stringRedisTemplate.opsForValue().get(cacheKey);
+        String cachedData = cacheUtil.get(cacheKey);
         if (cachedData != null) {
             return JSONUtil.toBean(cachedData, HomeTopLendBookVO.class);
         }
@@ -79,7 +79,7 @@ public class AppHomeServiceImpl implements AppHomeService {
                 .build();
 
         // 存入缓存，过期时间30分钟
-        stringRedisTemplate.opsForValue().set(cacheKey, JSONUtil.toJsonStr(result), 30, TimeUnit.MINUTES);
+        cacheUtil.set(cacheKey, JSONUtil.toJsonStr(result), 30, TimeUnit.MINUTES);
 
         return result;
     }
@@ -94,7 +94,7 @@ public class AppHomeServiceImpl implements AppHomeService {
         String cacheKey = "user:home:top-latest-book";
 
         // 尝试从缓存中获取
-        String cachedData = stringRedisTemplate.opsForValue().get(cacheKey);
+        String cachedData = cacheUtil.get(cacheKey);
         if (cachedData != null) {
             return JSONUtil.toBean(cachedData, HomeTopLatestBookVO.class);
         }
@@ -106,7 +106,7 @@ public class AppHomeServiceImpl implements AppHomeService {
                 .build();
 
         // 存入缓存，过期时间30分钟
-        stringRedisTemplate.opsForValue().set(cacheKey, JSONUtil.toJsonStr(result), 30, TimeUnit.MINUTES);
+        cacheUtil.set(cacheKey, JSONUtil.toJsonStr(result), 30, TimeUnit.MINUTES);
 
         return result;
     }

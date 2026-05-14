@@ -9,8 +9,8 @@ import com.libre.service.admin.AdminBookService;
 import com.libre.service.admin.AdminHomeService;
 import com.libre.service.admin.AdminLendService;
 import com.libre.service.admin.AdminUserRoleService;
+import com.libre.util.CacheUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -28,7 +28,7 @@ public class AdminHomeServiceImpl implements AdminHomeService {
 
     private final AdminLendService adminLendService;
 
-    private final StringRedisTemplate stringRedisTemplate;
+    private final CacheUtil cacheUtil;
 
     /**
      * 获取首页卡片数据
@@ -40,7 +40,7 @@ public class AdminHomeServiceImpl implements AdminHomeService {
         String cacheKey = "admin:home:total-card";
 
         // 尝试从缓存中获取
-        String cachedData = stringRedisTemplate.opsForValue().get(cacheKey);
+        String cachedData = cacheUtil.get(cacheKey);
         if (cachedData != null) {
             return JSONUtil.toBean(cachedData, HomeTotalCardVO.class);
         }
@@ -62,7 +62,7 @@ public class AdminHomeServiceImpl implements AdminHomeService {
                 .build();
 
         // 存入缓存，过期时间5分钟
-        stringRedisTemplate.opsForValue().set(cacheKey, JSONUtil.toJsonStr(result), 5, TimeUnit.MINUTES);
+        cacheUtil.set(cacheKey, JSONUtil.toJsonStr(result), 5, TimeUnit.MINUTES);
 
         return result;
     }
@@ -77,7 +77,7 @@ public class AdminHomeServiceImpl implements AdminHomeService {
         String cacheKey = "admin:home:recent-lend-trend";
 
         // 尝试从缓存中获取
-        String cachedData = stringRedisTemplate.opsForValue().get(cacheKey);
+        String cachedData = cacheUtil.get(cacheKey);
         if (cachedData != null) {
             return JSONUtil.toBean(cachedData, HomeRecentLendTrendVO.class);
         }
@@ -89,7 +89,7 @@ public class AdminHomeServiceImpl implements AdminHomeService {
                 .build();
 
         // 存入缓存，过期时间10分钟
-        stringRedisTemplate.opsForValue().set(cacheKey, JSONUtil.toJsonStr(result), 10, TimeUnit.MINUTES);
+        cacheUtil.set(cacheKey, JSONUtil.toJsonStr(result), 10, TimeUnit.MINUTES);
 
         return result;
     }
@@ -104,7 +104,7 @@ public class AdminHomeServiceImpl implements AdminHomeService {
         String cacheKey = "admin:home:top-book";
 
         // 尝试从缓存中获取
-        String cachedData = stringRedisTemplate.opsForValue().get(cacheKey);
+        String cachedData = cacheUtil.get(cacheKey);
         if (cachedData != null) {
             return JSONUtil.toBean(cachedData, HomeTopBookVO.class);
         }
@@ -116,7 +116,7 @@ public class AdminHomeServiceImpl implements AdminHomeService {
                 .build();
 
         // 存入缓存，过期时间15分钟
-        stringRedisTemplate.opsForValue().set(cacheKey, JSONUtil.toJsonStr(result), 15, TimeUnit.MINUTES);
+        cacheUtil.set(cacheKey, JSONUtil.toJsonStr(result), 15, TimeUnit.MINUTES);
 
         return result;
     }

@@ -19,10 +19,10 @@ import com.libre.pojo.vo.admin.RecentLendTrendItem;
 import com.libre.pojo.vo.app.HomeTopLendBookItem;
 import com.libre.result.PageResult;
 import com.libre.service.admin.AdminLendService;
+import com.libre.util.CacheUtil;
 import com.libre.util.PageUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -35,7 +35,7 @@ public class AdminLendServiceImpl extends ServiceImpl<LendMapper, Lend> implemen
     @Value("${business.lend.max-lend-count}")
     private Integer maxRenewCount;
 
-    private final StringRedisTemplate stringRedisTemplate;
+    private final CacheUtil cacheUtil;
 
     /**
      * 分页查询借阅信息
@@ -225,9 +225,9 @@ public class AdminLendServiceImpl extends ServiceImpl<LendMapper, Lend> implemen
      * 清除首页缓存
      */
     private void clearHomeCache() {
-        stringRedisTemplate.delete("admin:home:total-card");
-        stringRedisTemplate.delete("admin:home:recent-lend-trend");
-        stringRedisTemplate.delete("admin:home:top-book");
+        cacheUtil.delete("admin:home:total-card");
+        cacheUtil.delete("admin:home:recent-lend-trend");
+        cacheUtil.delete("admin:home:top-book");
     }
 
     /**

@@ -16,9 +16,9 @@ import com.libre.pojo.vo.admin.PublisherPageVO;
 import com.libre.result.PageResult;
 import com.libre.service.admin.AdminBookService;
 import com.libre.service.admin.AdminPublisherService;
+import com.libre.util.CacheUtil;
 import com.libre.util.PageUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 public class AdminPublisherServiceImpl extends ServiceImpl<PublisherMapper, Publisher> implements AdminPublisherService {
     private final AdminBookService adminBookService;
 
-    private final StringRedisTemplate stringRedisTemplate;
+    private final CacheUtil cacheUtil;
 
     /**
      * 分页查询出版社信息
@@ -75,7 +75,7 @@ public class AdminPublisherServiceImpl extends ServiceImpl<PublisherMapper, Publ
         save(publisher);
 
         // 清除缓存
-        stringRedisTemplate.delete("admin:publisher:all");
+        cacheUtil.delete("admin:publisher:all");
     }
 
     /**
@@ -97,7 +97,7 @@ public class AdminPublisherServiceImpl extends ServiceImpl<PublisherMapper, Publ
         updateById(publisher);
 
         // 清除缓存
-        stringRedisTemplate.delete("admin:publisher:all");
+        cacheUtil.delete("admin:publisher:all");
     }
 
     /**
@@ -122,7 +122,7 @@ public class AdminPublisherServiceImpl extends ServiceImpl<PublisherMapper, Publ
                 .update();
 
         // 清除缓存
-        stringRedisTemplate.delete("admin:publisher:all");
+        cacheUtil.delete("admin:publisher:all");
     }
 
     /**
@@ -138,7 +138,7 @@ public class AdminPublisherServiceImpl extends ServiceImpl<PublisherMapper, Publ
                 .update();
 
         // 清除缓存
-        stringRedisTemplate.delete("admin:publisher:all");
+        cacheUtil.delete("admin:publisher:all");
     }
 
     /**
@@ -150,7 +150,7 @@ public class AdminPublisherServiceImpl extends ServiceImpl<PublisherMapper, Publ
         String cacheKey = "admin:publisher:all";
 
         // 尝试从缓存中获取
-        String cachedData = stringRedisTemplate.opsForValue().get(cacheKey);
+        String cachedData = cacheUtil.get(cacheKey);
         if (cachedData != null) {
             return JSONUtil.toList(cachedData, Publisher.class);
         }
@@ -159,7 +159,7 @@ public class AdminPublisherServiceImpl extends ServiceImpl<PublisherMapper, Publ
         List<Publisher> publisherList = list();
 
         // 存入缓存，过期时间30分钟
-        stringRedisTemplate.opsForValue().set(cacheKey, JSONUtil.toJsonStr(publisherList), 30, TimeUnit.MINUTES);
+        cacheUtil.set(cacheKey, JSONUtil.toJsonStr(publisherList), 30, TimeUnit.MINUTES);
 
         return publisherList;
     }

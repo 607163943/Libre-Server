@@ -14,6 +14,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SearchDTO extends BasePageDTO {
+    @ApiModelProperty("用户id 系统自带")
+    private Long userId;
     @ApiModelProperty("搜索关键字")
     private String keyword;
     @ApiModelProperty("是否按照日期排序")

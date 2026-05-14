@@ -6,8 +6,8 @@ import com.libre.constant.RoleCode;
 import com.libre.mapper.RoleMapper;
 import com.libre.pojo.po.Role;
 import com.libre.service.admin.AdminRoleService;
+import com.libre.util.CacheUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 @Service
 public class AdminRoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements AdminRoleService {
-    private final StringRedisTemplate stringRedisTemplate;
+    private final CacheUtil cacheUtil;
 
     /**
      * 获取所有角色列表（带缓存）
@@ -27,7 +27,7 @@ public class AdminRoleServiceImpl extends ServiceImpl<RoleMapper, Role> implemen
         String cacheKey = "admin:role:all";
 
         // 尝试从缓存中获取
-        String cachedData = stringRedisTemplate.opsForValue().get(cacheKey);
+        String cachedData = cacheUtil.get(cacheKey);
         if (cachedData != null) {
             return JSONUtil.toList(cachedData, Role.class);
         }
@@ -39,7 +39,7 @@ public class AdminRoleServiceImpl extends ServiceImpl<RoleMapper, Role> implemen
                 .list();
 
         // 存入缓存，过期时间30分钟
-        stringRedisTemplate.opsForValue().set(cacheKey, JSONUtil.toJsonStr(roleList), 30, TimeUnit.MINUTES);
+        cacheUtil.set(cacheKey, JSONUtil.toJsonStr(roleList), 30, TimeUnit.MINUTES);
 
         return roleList;
     }

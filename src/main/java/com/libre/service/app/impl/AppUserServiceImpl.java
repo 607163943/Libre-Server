@@ -13,9 +13,9 @@ import com.libre.pojo.dto.app.UserProfileDTO;
 import com.libre.pojo.po.User;
 import com.libre.pojo.vo.app.UserProfileVO;
 import com.libre.service.app.AppUserService;
+import com.libre.util.CacheUtil;
 import com.libre.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 public class AppUserServiceImpl extends ServiceImpl<UserMapper, User> implements AppUserService {
     private final SecurityUtil securityUtil;
 
-    private final StringRedisTemplate stringRedisTemplate;
+    private final CacheUtil cacheUtil;
 
     /**
      * 获取当前用户个人信息
@@ -38,7 +38,7 @@ public class AppUserServiceImpl extends ServiceImpl<UserMapper, User> implements
         String cacheKey = "user:profile:" + userId;
 
         // 尝试从缓存中获取
-        String cachedData = stringRedisTemplate.opsForValue().get(cacheKey);
+        String cachedData = cacheUtil.get(cacheKey);
         if (cachedData != null) {
             return JSONUtil.toBean(cachedData, UserProfileVO.class);
         }
@@ -51,7 +51,7 @@ public class AppUserServiceImpl extends ServiceImpl<UserMapper, User> implements
         UserProfileVO result = BeanUtil.copyProperties(user, UserProfileVO.class);
 
         // 存入缓存，过期时间30分钟
-        stringRedisTemplate.opsForValue().set(cacheKey, JSONUtil.toJsonStr(result), 30, TimeUnit.MINUTES);
+        cacheUtil.set(cacheKey, JSONUtil.toJsonStr(result), 30, TimeUnit.MINUTES);
 
         return result;
     }
@@ -76,7 +76,7 @@ public class AppUserServiceImpl extends ServiceImpl<UserMapper, User> implements
 
         // 清除缓存
         String cacheKey = "user:profile:" + userId;
-        stringRedisTemplate.delete(cacheKey);
+        cacheUtil.delete(cacheKey);
     }
 
     /**

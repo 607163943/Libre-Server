@@ -17,11 +17,11 @@ import com.libre.pojo.vo.admin.BookVO;
 import com.libre.result.PageResult;
 import com.libre.service.admin.AdminBookService;
 import com.libre.service.common.CommonUploadFileRefService;
+import com.libre.util.CacheUtil;
 import com.libre.util.PageUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +31,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class AdminBookServiceImpl extends ServiceImpl<BookMapper, Book> implements AdminBookService {
-    private final StringRedisTemplate stringRedisTemplate;
+    private final CacheUtil cacheUtil;
 
     private final ElasticsearchRestTemplate elasticsearchRestTemplate;
 
@@ -46,9 +46,9 @@ public class AdminBookServiceImpl extends ServiceImpl<BookMapper, Book> implemen
      * 清除首页缓存
      */
     private void clearHomeCache() {
-        stringRedisTemplate.delete("admin:home:total-card");
-        stringRedisTemplate.delete("admin:home:recent-lend-trend");
-        stringRedisTemplate.delete("admin:home:top-book");
+        cacheUtil.delete("admin:home:total-card");
+        cacheUtil.delete("admin:home:recent-lend-trend");
+        cacheUtil.delete("admin:home:top-book");
     }
 
     /**
@@ -105,13 +105,15 @@ public class AdminBookServiceImpl extends ServiceImpl<BookMapper, Book> implemen
 
         bookService.save(book);
 
-        // 记录文件引用关系
-        UploadFileRef uploadFileRef = UploadFileRef.builder()
-                .serviceId(book.getId())
-                .serviceType(ServiceType.BOOK_COVER)
-                .fileId(bookDTO.getFileId())
-                .build();
-        uploadFileRefService.save(uploadFileRef);
+        if(bookDTO.getFileId()!=null) {
+            // 记录文件引用关系
+            UploadFileRef uploadFileRef = UploadFileRef.builder()
+                    .serviceId(book.getId())
+                    .serviceType(ServiceType.BOOK_COVER)
+                    .fileId(bookDTO.getFileId())
+                    .build();
+            uploadFileRefService.save(uploadFileRef);
+        }
 
         // 清除首页缓存
         clearHomeCache();

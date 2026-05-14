@@ -11,17 +11,17 @@ import com.libre.exception.UserException;
 import com.libre.mapper.UserMapper;
 import com.libre.pojo.dto.admin.UserDTO;
 import com.libre.pojo.dto.admin.UserPageDTO;
-import com.libre.pojo.dto.admin.UserProfileDTO;
 import com.libre.pojo.dto.admin.UserPasswordDTO;
+import com.libre.pojo.dto.admin.UserProfileDTO;
 import com.libre.pojo.po.User;
 import com.libre.pojo.vo.admin.UserPageVO;
 import com.libre.pojo.vo.admin.UserProfileVO;
 import com.libre.result.PageResult;
 import com.libre.service.admin.AdminUserService;
+import com.libre.util.CacheUtil;
 import com.libre.util.PageUtil;
 import com.libre.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,7 +31,8 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class AdminUserServiceImpl extends ServiceImpl<UserMapper, User> implements AdminUserService {
     private final SecurityUtil securityUtil;
-    private final StringRedisTemplate stringRedisTemplate;
+
+    private final CacheUtil cacheUtil;
 
     /**
      * 分页查询用户信息
@@ -161,7 +162,7 @@ public class AdminUserServiceImpl extends ServiceImpl<UserMapper, User> implemen
         String cacheKey = "user:profile:" + userId;
 
         // 尝试从缓存中获取
-        String cachedData = stringRedisTemplate.opsForValue().get(cacheKey);
+        String cachedData = cacheUtil.get(cacheKey);
         if (cachedData != null) {
             return JSONUtil.toBean(cachedData, UserProfileVO.class);
         }
@@ -174,7 +175,7 @@ public class AdminUserServiceImpl extends ServiceImpl<UserMapper, User> implemen
         UserProfileVO result = BeanUtil.copyProperties(user, UserProfileVO.class);
 
         // 存入缓存，过期时间30分钟
-        stringRedisTemplate.opsForValue().set(cacheKey, JSONUtil.toJsonStr(result), 30, TimeUnit.MINUTES);
+        cacheUtil.set(cacheKey, JSONUtil.toJsonStr(result), 30, TimeUnit.MINUTES);
 
         return result;
     }
@@ -205,7 +206,7 @@ public class AdminUserServiceImpl extends ServiceImpl<UserMapper, User> implemen
 
         // 清除缓存
         String cacheKey = "user:profile:" + userId;
-        stringRedisTemplate.delete(cacheKey);
+        cacheUtil.delete(cacheKey);
     }
 
     /**

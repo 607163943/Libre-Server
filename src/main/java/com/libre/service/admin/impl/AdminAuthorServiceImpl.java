@@ -16,9 +16,9 @@ import com.libre.pojo.vo.admin.AuthorPageVO;
 import com.libre.result.PageResult;
 import com.libre.service.admin.AdminAuthorService;
 import com.libre.service.admin.AdminBookService;
+import com.libre.util.CacheUtil;
 import com.libre.util.PageUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,8 +27,9 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 @Service
 public class AdminAuthorServiceImpl extends ServiceImpl<AuthorMapper, Author> implements AdminAuthorService {
-    private final StringRedisTemplate stringRedisTemplate;
     private final AdminBookService adminBookService;
+
+    private final CacheUtil cacheUtil;
 
     /**
      * 分页查询作者信息
@@ -76,7 +77,7 @@ public class AdminAuthorServiceImpl extends ServiceImpl<AuthorMapper, Author> im
         save(author);
 
         // 清除缓存
-        stringRedisTemplate.delete("admin:author:all");
+        cacheUtil.delete("admin:author:all");
     }
 
     /**
@@ -99,7 +100,7 @@ public class AdminAuthorServiceImpl extends ServiceImpl<AuthorMapper, Author> im
         updateById(author);
 
         // 清除缓存
-        stringRedisTemplate.delete("admin:author:all");
+        cacheUtil.delete("admin:author:all");
     }
 
     /**
@@ -125,7 +126,7 @@ public class AdminAuthorServiceImpl extends ServiceImpl<AuthorMapper, Author> im
                 .update();
 
         // 清除缓存
-        stringRedisTemplate.delete("admin:author:all");
+        cacheUtil.delete("admin:author:all");
     }
 
     /**
@@ -147,7 +148,7 @@ public class AdminAuthorServiceImpl extends ServiceImpl<AuthorMapper, Author> im
                 .update();
 
         // 清除缓存
-        stringRedisTemplate.delete("admin:author:all");
+        cacheUtil.delete("admin:author:all");
     }
 
     /**
@@ -159,7 +160,7 @@ public class AdminAuthorServiceImpl extends ServiceImpl<AuthorMapper, Author> im
         String cacheKey = "admin:author:all";
 
         // 尝试从缓存中获取
-        String cachedData = stringRedisTemplate.opsForValue().get(cacheKey);
+        String cachedData = cacheUtil.get(cacheKey);
         if (cachedData != null) {
             return JSONUtil.toList(cachedData, Author.class);
         }
@@ -168,7 +169,7 @@ public class AdminAuthorServiceImpl extends ServiceImpl<AuthorMapper, Author> im
         List<Author> authorList = list();
 
         // 存入缓存，过期时间30分钟
-        stringRedisTemplate.opsForValue().set(cacheKey, JSONUtil.toJsonStr(authorList), 30, TimeUnit.MINUTES);
+        cacheUtil.set(cacheKey, JSONUtil.toJsonStr(authorList), 30, TimeUnit.MINUTES);
 
         return authorList;
     }

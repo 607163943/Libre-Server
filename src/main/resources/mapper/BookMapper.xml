@@ -35,9 +35,6 @@
         <if test="bookPageDTO.publisherId != null">
             and book.publisher_id = #{bookPageDTO.publisherId}
         </if>
-        <if test="bookPageDTO.language != null and bookPageDTO.language != ''">
-            and book.language = #{bookPageDTO.language}
-        </if>
         <if test="bookPageDTO.publishStartTime != null">
             and book.publish_date &gt;= #{bookPageDTO.publishStartTime}
         </if>
@@ -102,5 +99,44 @@
                  JOIN tb_author author ON book.author_id = author.id
                  JOIN tb_publisher publisher ON book.publisher_id = publisher.id
         WHERE book.id = #{bookId} and book.is_delete = 0
+    </select>
+    <!--带个人业务状态的图书查询-->
+    <select id="search" resultType="com.libre.pojo.vo.app.SearchBookVO">
+        select book.id,
+        book.book_name,
+        author.author_name,
+        publisher.publisher_name,
+        book.isbn,
+        book.cover_url,
+        book.publish_date,
+        lend.state,
+        lend.due_time
+        from tb_book book
+        join tb_author author on book.author_id = author.id
+        join tb_publisher publisher on book.publisher_id = publisher.id
+        join tb_lend lend on book.id = lend.book_id
+        and lend.user_id = #{searchDTO.userId}
+        and lend.state in (1, 3)
+        and lend.is_delete = 0
+        where book.is_delete = 0 and lend.user_id=#{searchDTO.userId}
+        <if test="searchDTO.keyword != null and searchDTO.keyword != ''">
+            and (
+            book.book_name like concat('%', #{searchDTO.keyword}, '%')
+            or author.author_name like concat('%', #{searchDTO.keyword}, '%')
+            or publisher.publisher_name like concat('%', #{searchDTO.keyword}, '%')
+            or book.isbn like concat('%', #{searchDTO.keyword}, '%')
+            )
+        </if>
+        <if test="searchDTO.state != null">
+            and lend.state = #{searchDTO.state}
+        </if>
+        <choose>
+            <when test="searchDTO.isDateSort != null and searchDTO.isDateSort == 1">
+                order by book.publish_date desc
+            </when>
+            <otherwise>
+                order by book.create_time desc
+            </otherwise>
+        </choose>
     </select>
 </mapper>
