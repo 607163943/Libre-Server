@@ -22,7 +22,7 @@ public class AppLoginController {
     @ApiOperation("用户登录")
     @PostMapping("/login")
     public Result<LoginVO> login(@RequestBody @Valid LoginDTO loginDTO) {
-        LoginVO loginVO = commonLoginService.login(loginDTO);
+        LoginVO loginVO = commonLoginService.login(loginDTO, false);
         return Result.success(loginVO);
     }
 
@@ -43,7 +43,7 @@ public class AppLoginController {
     @ApiOperation("获取验证码")
     @PutMapping("/register/captcha")
     public Result<CaptchaVO> getCaptcha(@RequestBody CaptchaDTO captchaDTO) {
-        CaptchaVO captchaVO=commonLoginService.getCaptcha(captchaDTO);
+        CaptchaVO captchaVO = commonLoginService.getCaptcha(captchaDTO);
         return Result.success(captchaVO);
     }
 
@@ -53,6 +53,7 @@ public class AppLoginController {
         String captchaKey = commonLoginService.getPhoneCaptcha(captchaByPhoneDTO);
         return Result.success(captchaKey);
     }
+
     @ApiOperation("用户登出")
     @PostMapping("/logout")
     public Result<Void> logout() {

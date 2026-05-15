@@ -30,13 +30,14 @@ import com.libre.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.elasticsearch.core.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -70,7 +71,7 @@ public class CommonLoginServiceImpl implements CommonLoginService {
      * @param loginDTO 登录参数
      */
     @Override
-    public LoginVO login(LoginDTO loginDTO) {
+    public LoginVO login(LoginDTO loginDTO, boolean isAdmin) {
         User user = userService.lambdaQuery()
                 .eq(User::getUsername, loginDTO.getUsername())
                 .one();
@@ -80,6 +81,26 @@ public class CommonLoginServiceImpl implements CommonLoginService {
         // 检查密码是否正确
         if (!securityUtil.checkPassword(loginDTO.getPassword(), user.getPassword())) {
             throw new LoginException(ExceptionEnums.LOGIN_PASSWORD_ERROR);
+        }
+
+        // 后台需要管理员或者超管才能访问
+        if (isAdmin) {
+            List<UserRole> userRoleList = userRoleService.lambdaQuery()
+                    .eq(UserRole::getUserId, user.getId())
+                    .list();
+
+            List<Long> roleIds = userRoleList.stream().map(UserRole::getRoleId).collect(Collectors.toList());
+
+            // 2. 判断是否包含 超管(1L) 或 管理员(2L)
+            boolean hasPermission = roleIds.stream().anyMatch(id ->
+                    com.libre.enums.UserRole.SUPER_ADMIN.getId().equals(id) ||
+                            com.libre.enums.UserRole.ADMIN.getId().equals(id)
+            );
+
+            if(!hasPermission) {
+                throw new LoginException(ExceptionEnums.LOGIN_USER_NOT_ADMIN);
+            }
+
         }
 
         // 更新登录时间
@@ -237,7 +258,8 @@ public class CommonLoginServiceImpl implements CommonLoginService {
         String captchaCode = RandomStringUtils.randomNumeric(6, 6);
 
         // 发送短信
-        sendMessageService.sendLoginSms(List.of(captchaByPhoneDTO.getPhone()), captchaCode, 1);
+        List<String> phoneList = org.elasticsearch.core.List.of(captchaByPhoneDTO.getPhone());
+        sendMessageService.sendLoginSms(phoneList, captchaCode, 1);
         // 3. 生成唯一标识符 uuid
         String uuid = IdUtil.fastSimpleUUID();
         String redisKey = CAPTCHA_KEY_PREFIX + uuid;

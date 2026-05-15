@@ -32,6 +32,7 @@ public enum ExceptionEnums {
     LOGIN_USER_DISABLE(10605, "用户已禁用"),
     LOGIN_REGISTER_CAPTCHA_ERROR(10606, "验证码错误"),
     LOGIN_CAPTCHA_ERROR(10607, "验证码认证失败"),
+    LOGIN_USER_NOT_ADMIN(10608, "该用户不具备登录权限"),
 
     PUBLISHER_EXIST(10701, "出版社已存在"),
     PUBLISHER_HAS_BOOK(10702, "存在该出版社出版图书，无法删除"),

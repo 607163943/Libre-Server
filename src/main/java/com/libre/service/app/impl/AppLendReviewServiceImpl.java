@@ -10,6 +10,7 @@ import com.libre.constant.LendReviewApplyType;
 import com.libre.constant.LendReviewState;
 import com.libre.constant.LendStatus;
 import com.libre.enums.ExceptionEnums;
+import com.libre.exception.LendException;
 import com.libre.exception.LendReviewException;
 import com.libre.exception.LibreException;
 import com.libre.mapper.BookMapper;
@@ -109,6 +110,10 @@ public class AppLendReviewServiceImpl extends ServiceImpl<LendReviewMapper, Lend
             SystemLendReview(book, lendReview);
         } else {
             // 人工审核
+            // 没有库存了
+            if((book.getNumber()-usingCount==0)) {
+                throw new LendException(ExceptionEnums.LEND_BOOK_EMPTY);
+            }
             // 发布审核事件
             LendReviewEvent lendReviewEvent = new LendReviewEvent(this,
                     lendReview.getId(),

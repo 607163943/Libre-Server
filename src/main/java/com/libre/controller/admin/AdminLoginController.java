@@ -23,7 +23,7 @@ public class AdminLoginController {
     @ApiOperation("登录接口")
     @PostMapping("/login")
     public Result<LoginVO> login(@RequestBody @Valid LoginDTO loginDTO) {
-        LoginVO loginVO = commonLoginService.login(loginDTO);
+        LoginVO loginVO = commonLoginService.login(loginDTO,true);
         return Result.success(loginVO);
     }
 

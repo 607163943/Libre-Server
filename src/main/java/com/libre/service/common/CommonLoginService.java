@@ -10,7 +10,7 @@ public interface CommonLoginService {
      * 登录
      * @param loginDTO 登录参数
      */
-    LoginVO login(LoginDTO loginDTO);
+    LoginVO login(LoginDTO loginDTO,boolean isAdmin);
 
     /**
      *  用户注册
