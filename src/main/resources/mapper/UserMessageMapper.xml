@@ -9,6 +9,7 @@
         FROM tb_user_message um
         JOIN tb_message m ON um.message_id = m.id
         WHERE um.receiver_id = #{userMessagePageDTO.userId}
+        AND um.is_delete = 0
         AND um.platform_scope in
         <foreach collection="userMessagePageDTO.platformScopes" separator="," open="(" close=")" item="platformScope">
             #{platformScope}
@@ -28,6 +29,7 @@
                  JOIN tb_message m ON um.message_id = m.id
         WHERE um.message_id = #{messageId}
           AND um.receiver_id = #{userId}
+          AND um.is_delete = 0
     </select>
 
 </mapper>

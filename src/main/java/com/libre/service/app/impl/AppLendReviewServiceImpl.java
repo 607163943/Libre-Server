@@ -105,13 +105,15 @@ public class AppLendReviewServiceImpl extends ServiceImpl<LendReviewMapper, Lend
                 .eq(Lend::getBookId, book.getId())
                 .in(Lend::getState, LendStatus.LEND, LendStatus.OVERDUE)
                 .count();
-        // 数量高于3本直接通过
-        if ((book.getNumber() - usingCount) > 3) {
+
+        Long price = book.getPrice();
+        // 数量高于3本且价格低于100元直接通过
+        if (price < 10000 && (book.getNumber() - usingCount) > 3) {
             SystemLendReview(book, lendReview);
         } else {
             // 人工审核
             // 没有库存了
-            if((book.getNumber()-usingCount==0)) {
+            if ((book.getNumber() - usingCount == 0)) {
                 throw new LendException(ExceptionEnums.LEND_BOOK_EMPTY);
             }
             // 发布审核事件

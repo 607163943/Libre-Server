@@ -2,6 +2,7 @@ package com.libre.service.admin.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
@@ -115,8 +116,17 @@ public class AdminMessageServiceImpl extends ServiceImpl<MessageMapper, Message>
      *
      * @param messageId 消息id
      */
+    @Transactional
     @Override
     public void deleteMessage(Long messageId) {
+        if(messageId==null) {
+            return;
+        }
+        // 删除该消息对应的所有用户发送记录
+        userMessageService.lambdaUpdate()
+                .set(UserMessage::getIsDelete, System.currentTimeMillis())
+                .eq(UserMessage::getMessageId, messageId)
+                .update();
         lambdaUpdate()
                 // 使用时间戳标记逻辑删除，避免唯一键冲突
                 .set(Message::getIsDelete, System.currentTimeMillis())
@@ -129,8 +139,17 @@ public class AdminMessageServiceImpl extends ServiceImpl<MessageMapper, Message>
      *
      * @param ids 消息id集合
      */
+    @Transactional
     @Override
     public void deleteBatchMessage(List<Long> ids) {
+        if(CollUtil.isEmpty(ids)) {
+            return;
+        }
+        // 删除该消息对应的所有用户发送记录
+        userMessageService.lambdaUpdate()
+                .set(UserMessage::getIsDelete, System.currentTimeMillis())
+                .in(UserMessage::getMessageId, ids)
+                .update();
         lambdaUpdate()
                 .set(Message::getIsDelete, System.currentTimeMillis())
                 .in(Message::getId, ids)

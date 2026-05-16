@@ -56,7 +56,9 @@ public enum ExceptionEnums {
 
     LEND_REVIEW_BOOK_NOT_EXIST(11401, "借阅审核图书不存在"),
     LEND_REVIEW_APPLY_TYPE_ERROR(11402, "借阅审核申请类型错误"),
-    LEND_REVIEW_USER_NOT_LEND(11403, "用户未借阅该图书");
+    LEND_REVIEW_USER_NOT_LEND(11403, "用户未借阅该图书"),
+
+    USER_PERMISSION_DENIED(11501, "权限不足，无法修改该用户信息");
 
     private final Integer code;
     private final String msg;

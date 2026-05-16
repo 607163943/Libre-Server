@@ -23,7 +23,7 @@ public class AdminUserMessageServiceImpl extends ServiceImpl<UserMessageMapper, 
         return lambdaQuery()
                 .eq(UserMessage::getIsRead, UserMessageState.UNREAD)
                 .eq(UserMessage::getReceiverId, StpUtil.getLoginIdAsLong())
-                // 仅统计App端可查看消息
+                // 仅统计Admin端可查看消息
                 .in(UserMessage::getPlatformScope, PlatformScope.ADMIN, PlatformScope.ALL)
                 .count();
     }
@@ -38,7 +38,7 @@ public class AdminUserMessageServiceImpl extends ServiceImpl<UserMessageMapper, 
                 .eq(UserMessage::getIsRead, UserMessageState.UNREAD)
                 .eq(UserMessage::getReceiverId, StpUtil.getLoginIdAsLong())
                 // 仅修改App端可查看消息
-                .in(UserMessage::getPlatformScope, PlatformScope.APP,PlatformScope.ALL)
+                .in(UserMessage::getPlatformScope, PlatformScope.ADMIN,PlatformScope.ALL)
                 .update();
     }
 }

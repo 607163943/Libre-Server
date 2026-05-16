@@ -2,7 +2,6 @@ package com.libre.service.admin.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.libre.constant.*;
@@ -10,7 +9,9 @@ import com.libre.mapper.LendReviewMapper;
 import com.libre.pojo.dto.admin.LendReviewApproveDTO;
 import com.libre.pojo.dto.admin.LendReviewDTO;
 import com.libre.pojo.dto.admin.LendReviewPageDTO;
-import com.libre.pojo.po.*;
+import com.libre.pojo.po.LendReview;
+import com.libre.pojo.po.Message;
+import com.libre.pojo.po.UserMessage;
 import com.libre.pojo.vo.admin.LendReviewPageVO;
 import com.libre.pojo.vo.admin.LendReviewPageWithRelationVO;
 import com.libre.result.PageResult;
@@ -20,8 +21,8 @@ import com.libre.util.PageUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,86 +48,20 @@ public class AdminLendReviewServiceImpl extends ServiceImpl<LendReviewMapper, Le
         // 构建分页条件
         IPage<LendReview> page = PageUtil.createPage(lendReviewPageDTO);
         
-        // 构建查询条件
-        QueryWrapper<LendReview> wrapper = new QueryWrapper<>();
-        wrapper.eq(lendReviewPageDTO.getUserId() != null, "lr.user_id", lendReviewPageDTO.getUserId())
-                .eq(lendReviewPageDTO.getBookId() != null, "lr.book_id", lendReviewPageDTO.getBookId())
-                .eq(lendReviewPageDTO.getApplyType() != null, "lr.apply_type", lendReviewPageDTO.getApplyType())
-                .eq(lendReviewPageDTO.getState() != null, "lr.state", lendReviewPageDTO.getState())
-                .ge(lendReviewPageDTO.getStartTime() != null, "lr.apply_time", lendReviewPageDTO.getStartTime())
-                .le(lendReviewPageDTO.getEndTime() != null, "lr.apply_time", lendReviewPageDTO.getEndTime());
+        // 使用自定义的Mapper方法进行关联查询，所有查询条件在XML中实现
+        IPage<LendReviewPageWithRelationVO> resultPage = baseMapper.selectAdminPageWithRelations(page, lendReviewPageDTO);
         
-        // 如果需要按申请人姓名或图书名称模糊查询，则需要关联查询
-        if (StringUtils.hasText(lendReviewPageDTO.getUserName()) || StringUtils.hasText(lendReviewPageDTO.getBookName())) {
-            // 使用自定义SQL进行关联查询
-            if (StringUtils.hasText(lendReviewPageDTO.getUserName())) {
-                wrapper.like("u.name", lendReviewPageDTO.getUserName());
-            }
-            if (StringUtils.hasText(lendReviewPageDTO.getBookName())) {
-                wrapper.like("b.book_name", lendReviewPageDTO.getBookName());
-            }
-            
-            // 这里需要使用自定义的Mapper方法进行关联查询
-            IPage<LendReviewPageWithRelationVO> resultPage = baseMapper.selectPageWithRelations(page, wrapper);
-            
-            // 转换为LendReviewPageVO
-            List<LendReviewPageVO> lendReviewPageVOS = resultPage.getRecords().stream().map(vo -> {
-                LendReviewPageVO pageVO = new LendReviewPageVO();
-                BeanUtil.copyProperties(vo, pageVO);
-                return pageVO;
-            }).collect(Collectors.toList());
+        // 转换为LendReviewPageVO
+        List<LendReviewPageVO> lendReviewPageVOS = resultPage.getRecords().stream().map(vo -> {
+            LendReviewPageVO pageVO = new LendReviewPageVO();
+            BeanUtil.copyProperties(vo, pageVO);
+            return pageVO;
+        }).collect(Collectors.toList());
 
-            return PageResult.<List<LendReviewPageVO>>builder()
-                    .total(resultPage.getTotal())
-                    .data(lendReviewPageVOS)
-                    .build();
-        } else {
-            // 否则使用默认的lambda查询
-            page = lambdaQuery()
-                    .eq(lendReviewPageDTO.getUserId() != null, LendReview::getUserId, lendReviewPageDTO.getUserId())
-                    .eq(lendReviewPageDTO.getBookId() != null, LendReview::getBookId, lendReviewPageDTO.getBookId())
-                    .eq(lendReviewPageDTO.getApplyType() != null, LendReview::getApplyType, lendReviewPageDTO.getApplyType())
-                    .eq(lendReviewPageDTO.getState() != null, LendReview::getState, lendReviewPageDTO.getState())
-                    .ge(lendReviewPageDTO.getStartTime() != null, LendReview::getApplyTime, lendReviewPageDTO.getStartTime())
-                    .le(lendReviewPageDTO.getEndTime() != null, LendReview::getApplyTime, lendReviewPageDTO.getEndTime())
-                    .page(page);
-            
-            // 构建VO数据，需要关联查询用户和图书信息
-            List<LendReviewPageVO> lendReviewPageVOS = page.getRecords().stream().map(lendReview -> {
-                LendReviewPageVO vo = BeanUtil.copyProperties(lendReview, LendReviewPageVO.class);
-                
-                // 获取用户信息
-                if (lendReview.getUserId() != null) {
-                    User user = adminUserService.getById(lendReview.getUserId());
-                    if (user != null) {
-                        vo.setUserName(user.getName());
-                    }
-                }
-                
-                // 获取图书信息
-                if (lendReview.getBookId() != null) {
-                    Book book = adminBookService.getById(lendReview.getBookId());
-                    if (book != null) {
-                        vo.setBookName(book.getBookName());
-                    }
-                }
-                
-                // 获取操作人信息
-                if (lendReview.getOperatorId() != null) {
-                    User operator = adminUserService.getById(lendReview.getOperatorId());
-                    if (operator != null) {
-                        vo.setOperatorName(operator.getName());
-                    }
-                }
-                
-                return vo;
-            }).collect(Collectors.toList());
-
-            return PageResult.<List<LendReviewPageVO>>builder()
-                    .total(page.getTotal())
-                    .data(lendReviewPageVOS)
-                    .build();
-        }
+        return PageResult.<List<LendReviewPageVO>>builder()
+                .total(resultPage.getTotal())
+                .data(lendReviewPageVOS)
+                .build();
     }
 
     /**
@@ -223,6 +158,8 @@ public class AdminLendReviewServiceImpl extends ServiceImpl<LendReviewMapper, Le
                 .type(MessageType.LEND)
                 .state(MessageState.SEND)
                 .createUserId(0L)
+                .createTime(LocalDateTime.now())
+                .updateTime(LocalDateTime.now())
                 .build();
 
         messageService.save(message);
@@ -231,6 +168,8 @@ public class AdminLendReviewServiceImpl extends ServiceImpl<LendReviewMapper, Le
                 .receiverId(lendReview.getUserId())
                 .messageId(message.getId())
                 .platformScope(PlatformScope.APP)
+                .createTime(LocalDateTime.now())
+                .updateTime(LocalDateTime.now())
                 .build();
 
         userMessageService.save(userMessage);

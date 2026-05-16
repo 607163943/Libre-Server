@@ -3,16 +3,25 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.libre.mapper.LendReviewMapper">
-    <select id="selectPageWithCondition" resultType="com.libre.pojo.po.LendReview">
-        SELECT lr.* FROM tb_lend_review lr
-        LEFT JOIN tb_user u ON lr.user_id = u.id
-        LEFT JOIN tb_book b ON lr.book_id = b.id
-        <where>
-            ${ew.sqlSegment}
-        </where>
+    <!--分页查询用户借阅申请记录-->
+    <select id="pageQueryMyLendReview" resultType="com.libre.pojo.vo.app.LendReviewPageVO">
+        SELECT
+            lr.id,
+            lr.book_id AS bookId,
+            b.book_name AS bookName,
+            lr.apply_type AS applyType,
+            lr.lend_days AS lendDays,
+            lr.apply_time AS applyTime,
+            lr.state
+        FROM tb_lend_review lr
+        JOIN tb_book b ON lr.book_id = b.id
+        WHERE lr.is_delete = 0
+        AND lr.user_id = #{pageDTO.userId}
+        ORDER BY lr.apply_time DESC
     </select>
     
-    <select id="selectPageWithRelations" resultType="com.libre.pojo.vo.admin.LendReviewPageWithRelationVO">
+    <!--管理端分页查询借阅审核信息（带关联查询）-->
+    <select id="selectAdminPageWithRelations" resultType="com.libre.pojo.vo.admin.LendReviewPageWithRelationVO">
         SELECT 
             lr.id,
             lr.user_id AS userId,
@@ -32,24 +41,32 @@
         LEFT JOIN tb_book b ON lr.book_id = b.id
         LEFT JOIN tb_user op ON lr.operator_id = op.id
         <where>
-            ${ew.sqlSegment}
+            lr.is_delete = 0
+            <if test="pageDTO.userId != null">
+                AND lr.user_id = #{pageDTO.userId}
+            </if>
+            <if test="pageDTO.bookId != null">
+                AND lr.book_id = #{pageDTO.bookId}
+            </if>
+            <if test="pageDTO.applyType != null">
+                AND lr.apply_type = #{pageDTO.applyType}
+            </if>
+            <if test="pageDTO.state != null">
+                AND lr.state = #{pageDTO.state}
+            </if>
+            <if test="pageDTO.startTime != null">
+                AND lr.apply_time &gt;= #{pageDTO.startTime}
+            </if>
+            <if test="pageDTO.endTime != null">
+                AND lr.apply_time &lt;= #{pageDTO.endTime}
+            </if>
+            <if test="pageDTO.userName != null and pageDTO.userName != ''">
+                AND u.name LIKE CONCAT('%', #{pageDTO.userName}, '%')
+            </if>
+            <if test="pageDTO.bookName != null and pageDTO.bookName != ''">
+                AND b.book_name LIKE CONCAT('%', #{pageDTO.bookName}, '%')
+            </if>
         </where>
-    </select>
-    
-    <!--分页查询用户借阅申请记录-->
-    <select id="pageQueryMyLendReview" resultType="com.libre.pojo.vo.app.LendReviewPageVO">
-        SELECT
-            lr.id,
-            lr.book_id AS bookId,
-            b.book_name AS bookName,
-            lr.apply_type AS applyType,
-            lr.lend_days AS lendDays,
-            lr.apply_time AS applyTime,
-            lr.state
-        FROM tb_lend_review lr
-        JOIN tb_book b ON lr.book_id = b.id
-        WHERE lr.is_delete = 0
-        AND lr.user_id = #{pageDTO.userId}
         ORDER BY lr.apply_time DESC
     </select>
 </mapper>

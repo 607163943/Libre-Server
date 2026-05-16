@@ -79,7 +79,7 @@ public class AdminUserController {
     }
 
     @ApiOperation("用户批量删除接口")
-    @DeleteMapping("batch")
+    @DeleteMapping
     public Result<Void> deleteBatchUser(@RequestParam List<Long> ids) {
         if(CollUtil.isNotEmpty(ids)) {
             userService.deleteBatchUser(ids);
