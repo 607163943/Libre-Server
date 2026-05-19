@@ -58,4 +58,12 @@ public interface BookMapper extends BaseMapper<Book> {
      * @return 搜索结果
      */
     IPage<SearchBookVO> search(@Param("page") IPage<SearchBookVO> page,@Param("searchDTO") SearchDTO searchDTO);
+
+    /**
+     * 分页查询图书文档
+     * @param offset 偏移量
+     * @param size 每页数量
+     * @return 图书文档列表
+     */
+    List<BookDoc> findBookDocPage(@Param("offset") Integer offset,@Param("size") Integer size);
 }

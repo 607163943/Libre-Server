@@ -25,6 +25,7 @@ import java.util.List;
 public class AppLendController {
     private final AppLendService lendService;
 
+
     @ApiOperation("归还图书")
     @PatchMapping("/return/{bookId}")
     public Result<Void> userReturnBook(@PathVariable Long bookId) {
@@ -58,5 +59,19 @@ public class AppLendController {
     public Result<PageResult<List<MyLendHistoryBookVO>>> pageQueryMyLendHistory(MyLendPageDTO myLendPageDTO) {
         PageResult<List<MyLendHistoryBookVO>> pageResult = lendService.pageQueryMyLendHistory(myLendPageDTO);
         return Result.success(pageResult);
+    }
+
+    @ApiOperation("借阅图书")
+    @PostMapping("/{bookId}")
+    public Result<Void> lendBook(@PathVariable Long bookId) {
+        lendService.lendBook(bookId);
+        return Result.success();
+    }
+
+    @ApiOperation("续借图书")
+    @PutMapping("/renew/{bookId}")
+    public Result<Void> renewBook(@PathVariable Long bookId) {
+        lendService.renewBook(bookId);
+        return Result.success();
     }
 }

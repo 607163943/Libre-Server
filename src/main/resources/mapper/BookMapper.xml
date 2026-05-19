@@ -139,4 +139,18 @@
             </otherwise>
         </choose>
     </select>
+
+    <select id="findBookDocPage" resultType="com.libre.pojo.doc.BookDoc">
+        SELECT
+            b.id AS id,
+            b.book_name AS bookName,
+            a.author_name AS authorName,      p.publisher_name AS publisherName,b.isbn AS isbn,
+            b.cover_url AS coverUrl,
+            b.publish_date AS publishDate,
+            b.is_delete AS isDelete
+        FROM tb_book b
+                 LEFT JOIN tb_author a ON b.author_id = a.id
+                 LEFT JOIN tb_publisher p ON b.publisher_id = p.id
+        WHERE b.is_delete = 0                LIMIT #{offset}, #{size}
+    </select>
 </mapper>

@@ -21,9 +21,8 @@ public enum ExceptionEnums {
     LEND_BOOK_NOT_EXIST(10505, "借阅书籍不存在"),
     LEND_USER_NOT_EXIST(10506, "借阅用户不存在"),
     LEND_CURRENT_OVERDUE(10507, "当前存在借阅书籍逾期，无法借书"),
-    LEND_OVERDUE_COUNT_EXCEED(10508, "90天内逾期次数过多，借书数量受限"),
     LEND_MAX_COUNT_EXCEED(10509, "已达到最大借书数量限制"),
-    LEND_RENEW_NOT_ALLOWED(10510, "当前用户不允许续借"),
+    LEND_ALREADY_LEND(10511, "该图书已被借阅且未归还"),
 
     LOGIN_USER_NOT_LOGIN(10601, "用户未登录"),
     LOGIN_USER_NOT_EXIST(10602, "用户不存在"),
@@ -53,10 +52,6 @@ public enum ExceptionEnums {
     MESSAGE_SEND_ERROR(11203, "消息发送失败"),
 
     FILE_MD5_ERROR(11301, "文件MD5值异常"),
-
-    LEND_REVIEW_BOOK_NOT_EXIST(11401, "借阅审核图书不存在"),
-    LEND_REVIEW_APPLY_TYPE_ERROR(11402, "借阅审核申请类型错误"),
-    LEND_REVIEW_USER_NOT_LEND(11403, "用户未借阅该图书"),
 
     USER_PERMISSION_DENIED(11501, "权限不足，无法修改该用户信息");
 

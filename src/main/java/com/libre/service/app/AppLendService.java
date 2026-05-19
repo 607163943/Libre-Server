@@ -69,4 +69,16 @@ public interface AppLendService extends IService<Lend> {
      * @return 分页结果
      */
     PageResult<List<MyLendBookDetailVO>> pageQueryMyLendDetail(BasePageDTO basePageDTO);
+
+    /**
+     * 借阅图书
+     * @param bookId 图书ID
+     */
+    void lendBook(Long bookId);
+
+    /**
+     * 续借图书
+     * @param bookId 图书ID
+     */
+    void renewBook(Long bookId);
 }

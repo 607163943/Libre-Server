@@ -3,12 +3,14 @@ package com.libre.service.app.impl;
 import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.extension.toolkit.Db;
 import com.libre.constant.LendStatus;
 import com.libre.enums.ExceptionEnums;
 import com.libre.exception.LendException;
 import com.libre.mapper.LendMapper;
 import com.libre.pojo.dto.app.MyLendPageDTO;
 import com.libre.pojo.dto.common.BasePageDTO;
+import com.libre.pojo.po.Book;
 import com.libre.pojo.po.Lend;
 import com.libre.pojo.vo.admin.HomeTopBookItem;
 import com.libre.pojo.vo.admin.RecentLendTrendItem;
@@ -196,5 +198,99 @@ public class AppLendServiceImpl extends ServiceImpl<LendMapper, Lend> implements
                 .total(myLendPage.getTotal())
                 .data(myLendPage.getRecords())
                 .build();
+    }
+
+    /**
+     * 借阅图书
+     *
+     * @param bookId 图书ID
+     */
+    @Override
+    public void lendBook(Long bookId) {
+        Long userId = StpUtil.getLoginIdAsLong();
+
+        // 检查图书是否存在
+        Book book = Db.lambdaQuery(Book.class)
+                .eq(Book::getId, bookId)
+                .one();
+
+        if(book==null) {
+            throw new LendException(ExceptionEnums.LEND_BOOK_NOT_EXIST);
+        }
+
+        // 检查该书是否已被当前用户借阅且未归还
+        Long existingLendCount = lambdaQuery()
+                .eq(Lend::getBookId, bookId)
+                .eq(Lend::getUserId, userId)
+                .in(Lend::getState, LendStatus.LEND, LendStatus.OVERDUE)
+                .count();
+        if (existingLendCount > 0) {
+            throw new LendException(ExceptionEnums.LEND_ALREADY_LEND);
+        }
+
+        // 检查该书库存是否为空
+        Long count = lambdaQuery()
+                .eq(Lend::getBookId, bookId)
+                .in(Lend::getState, LendStatus.LEND, LendStatus.OVERDUE)
+                .count();
+
+        if(count.equals(book.getPrice())) {
+            throw new LendException(ExceptionEnums.LEND_BOOK_EMPTY);
+        }
+
+        // 创建新的借阅记录
+        Lend lend = new Lend();
+        lend.setUserId(userId);
+        lend.setBookId(bookId);
+        lend.setState(LendStatus.LEND);
+        lend.setLendTime(LocalDateTime.now());
+        lend.setRenewCount(0);
+        lend.setDueTime(LocalDateTime.now().plusDays(7)); // 默认借阅期限7天
+        
+        save(lend);
+    }
+
+    /**
+     * 续借图书
+     *
+     * @param bookId 图书ID
+     */
+    @Override
+    public void renewBook(Long bookId) {
+        Long userId = StpUtil.getLoginIdAsLong();
+
+        // 检查图书是否存在
+        Book book = Db.lambdaQuery(Book.class)
+                .eq(Book::getId, bookId)
+                .one();
+
+        if(book==null) {
+            throw new LendException(ExceptionEnums.LEND_BOOK_NOT_EXIST);
+        }
+        
+        // 查找该用户的借阅记录
+        Lend lend = lambdaQuery()
+                .eq(Lend::getBookId, bookId)
+                .eq(Lend::getUserId, userId)
+                .in(Lend::getState, LendStatus.LEND, LendStatus.OVERDUE)
+                .one();
+                
+        if (lend == null) {
+            throw new LendException(ExceptionEnums.LEND_USER_NOT_LEND);
+        }
+
+        // 检查用户续借是否到达上限
+        if(lend.getRenewCount().equals(3)) {
+            throw new LendException(ExceptionEnums.LEND_RENEW_OVER_MAX_COUNT);
+        }
+        
+        // 更新续借次数和到期时间
+        LocalDateTime newDueTime = lend.getDueTime().plusDays(7); // 每次续借延长7天
+        
+        lambdaUpdate()
+                .set(Lend::getRenewCount, lend.getRenewCount() + 1)
+                .set(Lend::getDueTime, newDueTime)
+                .eq(Lend::getId, lend.getId())
+                .update();
     }
 }
