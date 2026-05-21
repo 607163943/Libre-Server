@@ -31,6 +31,8 @@ public class AdminAuthorServiceImpl extends ServiceImpl<AuthorMapper, Author> im
 
     private final CacheUtil cacheUtil;
 
+    private static final String AUTHOR_CACHE_KEY = "admin:author:all";
+
     /**
      * 分页查询作者信息
      *
@@ -72,12 +74,11 @@ public class AdminAuthorServiceImpl extends ServiceImpl<AuthorMapper, Author> im
         }
 
         Author author = BeanUtil.copyProperties(authorDTO, Author.class);
-        // 避免前端id残留数据影响
-        if (author.getId() != null) author.setId(null);
+
         save(author);
 
         // 清除缓存
-        cacheUtil.delete("admin:author:all");
+        cacheUtil.delete(AUTHOR_CACHE_KEY);
     }
 
     /**
@@ -100,7 +101,7 @@ public class AdminAuthorServiceImpl extends ServiceImpl<AuthorMapper, Author> im
         updateById(author);
 
         // 清除缓存
-        cacheUtil.delete("admin:author:all");
+        cacheUtil.delete(AUTHOR_CACHE_KEY);
     }
 
     /**
@@ -126,7 +127,7 @@ public class AdminAuthorServiceImpl extends ServiceImpl<AuthorMapper, Author> im
                 .update();
 
         // 清除缓存
-        cacheUtil.delete("admin:author:all");
+        cacheUtil.delete(AUTHOR_CACHE_KEY);
     }
 
     /**
@@ -135,6 +136,7 @@ public class AdminAuthorServiceImpl extends ServiceImpl<AuthorMapper, Author> im
      */
     @Override
     public void deleteBatchAuthor(List<Long> ids) {
+        // 判断是否存在删除作者的图书
         Long bookCount = adminBookService.lambdaQuery()
                 .in(Book::getAuthorId, ids)
                 .count();
@@ -148,7 +150,7 @@ public class AdminAuthorServiceImpl extends ServiceImpl<AuthorMapper, Author> im
                 .update();
 
         // 清除缓存
-        cacheUtil.delete("admin:author:all");
+        cacheUtil.delete(AUTHOR_CACHE_KEY);
     }
 
     /**
@@ -157,10 +159,9 @@ public class AdminAuthorServiceImpl extends ServiceImpl<AuthorMapper, Author> im
      */
     @Override
     public List<Author> getAllAuthor() {
-        String cacheKey = "admin:author:all";
 
         // 尝试从缓存中获取
-        String cachedData = cacheUtil.get(cacheKey);
+        String cachedData = cacheUtil.get(AUTHOR_CACHE_KEY);
         if (cachedData != null) {
             return JSONUtil.toList(cachedData, Author.class);
         }
@@ -169,7 +170,7 @@ public class AdminAuthorServiceImpl extends ServiceImpl<AuthorMapper, Author> im
         List<Author> authorList = list();
 
         // 存入缓存，过期时间30分钟
-        cacheUtil.set(cacheKey, JSONUtil.toJsonStr(authorList), 30, TimeUnit.MINUTES);
+        cacheUtil.set(AUTHOR_CACHE_KEY, JSONUtil.toJsonStr(authorList), 30, TimeUnit.MINUTES);
 
         return authorList;
     }

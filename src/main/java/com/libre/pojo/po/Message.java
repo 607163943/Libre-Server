@@ -20,10 +20,14 @@ public class Message extends BasePO {
     private String title;
     // 内容
     private String content;
-    // 类型
+    // 消息类型(1系统公告 2系统通知 3逾期警告 4借阅成功通知)
     private Integer type;
-    // 状态(0未发送 1已发送)
-    private Integer state;
+    // 负责端(1用户端 2管理端 3全站)
+    private Integer clientType;
+    // 是否发送(0未发送 1已发送)
+    private Integer isSend;
+    // 发送时间
+    private LocalDateTime sendTime;
     // 创建者id
     private Long createUserId;
     // 更新时间

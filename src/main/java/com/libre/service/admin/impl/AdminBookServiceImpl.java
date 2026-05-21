@@ -97,7 +97,6 @@ public class AdminBookServiceImpl extends ServiceImpl<BookMapper, Book> implemen
                 .eq(Book::getBookName, bookDTO.getBookName())
                 .eq(Book::getAuthorId, bookDTO.getAuthorId())
                 .eq(Book::getPublisherId, bookDTO.getPublisherId())
-                .eq(Book::getLanguage, bookDTO.getLanguage())
                 .eq(Book::getPublishDate, bookDTO.getPublishDate())
                 .count();
         if (bookCount > 0) {
@@ -148,7 +147,6 @@ public class AdminBookServiceImpl extends ServiceImpl<BookMapper, Book> implemen
                 .eq(Book::getBookName, bookDTO.getBookName())
                 .eq(Book::getAuthorId, bookDTO.getAuthorId())
                 .eq(Book::getPublisherId, bookDTO.getPublisherId())
-                .eq(Book::getLanguage, bookDTO.getLanguage())
                 .eq(Book::getPublishDate, bookDTO.getPublishDate())
                 .ne(Book::getId, bookDTO.getId())
                 .count();

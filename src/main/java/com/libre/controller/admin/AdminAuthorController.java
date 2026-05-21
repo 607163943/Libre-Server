@@ -30,7 +30,7 @@ public class AdminAuthorController {
 
     @ApiOperation("作者分页查询接口")
     @GetMapping
-    public Result<PageResult<List<AuthorPageVO>>> pageQueryAuthor(@Valid AuthorPageDTO authorPageDTO) {
+    public Result<PageResult<List<AuthorPageVO>>> pageQueryAuthor(AuthorPageDTO authorPageDTO) {
         PageResult<List<AuthorPageVO>> pageResult = adminAuthorService.pageQueryAuthor(authorPageDTO);
         return Result.success(pageResult);
     }

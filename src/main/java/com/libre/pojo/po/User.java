@@ -20,16 +20,16 @@ public class User extends BasePO {
     private String username;
     // 密码
     private String password;
-    // 手机号
-    private String phone;
+    // 昵称
+    private String nickName;
     // 邮箱
     private String email;
-    // 状态 0-正常 1-禁用
-    private Integer state;
-    // 姓名
-    private String name;
+    // 手机号
+    private String phone;
     // 上次登录时间
     private LocalDateTime lastLoginTime;
+    // 状态(1启用 2借阅逾期冻结 3管理员冻结)
+    private Integer state;
     // 修改时间
     private LocalDateTime updateTime;
 }

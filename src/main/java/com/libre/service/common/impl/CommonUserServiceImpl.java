@@ -67,7 +67,7 @@ public class CommonUserServiceImpl extends ServiceImpl<UserMapper, User> impleme
             // 5. 写入数据库
             user = new User();
             user.setUsername("admin");
-            user.setName("admin");
+            user.setNickName("admin");
             user.setPassword(passwordString);
 
             userService.save(user);
@@ -122,7 +122,7 @@ public class CommonUserServiceImpl extends ServiceImpl<UserMapper, User> impleme
 
         // 更新姓名
         if (StrUtil.isNotBlank(userProfileDTO.getName())) {
-            user.setName(userProfileDTO.getName());
+            user.setNickName(userProfileDTO.getName());
         }
 
         // 更新邮箱

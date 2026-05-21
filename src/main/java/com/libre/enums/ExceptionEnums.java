@@ -9,6 +9,8 @@ public enum ExceptionEnums {
     AUTHOR_EXIST(10101, "作者已存在"),
     AUTHOR_HAS_BOOK(10102, "存在该作者的图书，无法删除"),
 
+    CLASS_EXIST(10301, "分类已存在"),
+
     BOOK_EXIST(10201, "图书已存在"),
     BOOK_HAS_LEND(10202, "图书存在借阅，无法删除"),
 

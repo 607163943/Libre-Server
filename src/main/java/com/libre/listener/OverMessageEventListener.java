@@ -38,7 +38,9 @@ public class OverMessageEventListener {
             m.setTitle("图书逾期提醒");
             m.setContent("您的《" + info.getBookName() + "》已逾期" + info.getOverDay() + "天");
             m.setType(MessageType.LEND);
-            m.setState(MessageState.SEND);
+            m.setIsSend(MessageState.SEND);
+            // 用户逾期借阅信息仅App可见
+            m.setClientType(PlatformScope.APP);
             // 0表示系统发送
             m.setCreateUserId(0L);
             return m;
@@ -51,10 +53,8 @@ public class OverMessageEventListener {
         for (int i = 0; i < messages.size(); i++) {
             UserMessage um = new UserMessage();
             um.setMessageId(messages.get(i).getId());
-            um.setReceiverId(overMessageInfos.get(i).getUserId());
+            um.setUserId(overMessageInfos.get(i).getUserId());
             um.setIsRead(0);
-            // 用户逾期借阅信息仅App可见
-            um.setPlatformScope(PlatformScope.APP);
             userMessages.add(um);
         }
 

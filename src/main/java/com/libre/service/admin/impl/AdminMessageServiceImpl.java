@@ -184,9 +184,8 @@ public class AdminMessageServiceImpl extends ServiceImpl<MessageMapper, Message>
         List<UserMessage> userMessages = new ArrayList<>(targetUserIds.size());
         for (Long targetUserId : targetUserIds) {
             UserMessage userMessage = UserMessage.builder()
-                    .receiverId(targetUserId)
+                    .userId(targetUserId)
                     .messageId(messageSendDTO.getId())
-                    .platformScope(targetNumber)
                     .isRead(UserMessageState.UNREAD)
                     .build();
             userMessages.add(userMessage);
@@ -196,7 +195,7 @@ public class AdminMessageServiceImpl extends ServiceImpl<MessageMapper, Message>
         userMessageService.saveBatch(userMessages);
         // 更新消息状态为已发送
         messageService.lambdaUpdate()
-                .set(Message::getState, MessageState.SEND)
+                .set(Message::getIsSend, MessageState.SEND)
                 .eq(Message::getId, messageSendDTO.getId())
                 .update();
     }

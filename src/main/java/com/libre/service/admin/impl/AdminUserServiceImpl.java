@@ -46,7 +46,7 @@ public class AdminUserServiceImpl extends ServiceImpl<UserMapper, User> implemen
                 .like(StrUtil.isNotBlank(userPageDTO.getUsername())
                         , User::getUsername, userPageDTO.getUsername())
                 .like(StrUtil.isNotBlank(userPageDTO.getName())
-                        , User::getName, userPageDTO.getName())
+                        , User::getNickName, userPageDTO.getName())
                 .page(page);
         // 构建VO数据
         List<UserPageVO> userPageVOS = BeanUtil.copyToList(page.getRecords(), UserPageVO.class);
@@ -75,8 +75,8 @@ public class AdminUserServiceImpl extends ServiceImpl<UserMapper, User> implemen
 
         User user = BeanUtil.copyProperties(userDTO, User.class);
         // 没设置姓名则默认使用用户名
-        if (StrUtil.isBlank(user.getName())) {
-            user.setName(user.getUsername());
+        if (StrUtil.isBlank(user.getNickName())) {
+            user.setNickName(user.getUsername());
         }
 
         // 判断邮箱是否绑定
@@ -124,8 +124,8 @@ public class AdminUserServiceImpl extends ServiceImpl<UserMapper, User> implemen
 
         User user = BeanUtil.copyProperties(userDTO, User.class);
         // 没设置姓名则默认使用用户名
-        if (StrUtil.isBlank(user.getName())) {
-            user.setName(user.getUsername());
+        if (StrUtil.isBlank(user.getNickName())) {
+            user.setNickName(user.getUsername());
         }
 
         // 判断邮箱是否绑定

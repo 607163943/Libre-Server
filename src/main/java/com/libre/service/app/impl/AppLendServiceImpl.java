@@ -234,7 +234,7 @@ public class AppLendServiceImpl extends ServiceImpl<LendMapper, Lend> implements
                 .in(Lend::getState, LendStatus.LEND, LendStatus.OVERDUE)
                 .count();
 
-        if(count.equals(book.getPrice())) {
+        if(count.equals(book.getNumber())) {
             throw new LendException(ExceptionEnums.LEND_BOOK_EMPTY);
         }
 

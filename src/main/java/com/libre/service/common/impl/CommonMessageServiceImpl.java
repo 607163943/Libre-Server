@@ -43,7 +43,7 @@ public class CommonMessageServiceImpl extends ServiceImpl<MessageMapper, Message
 
         UserMessage userMessage = userMessageService.lambdaQuery()
                 .eq(UserMessage::getMessageId, messageId)
-                .eq(UserMessage::getReceiverId, userId)
+                .eq(UserMessage::getUserId, userId)
                 .one();
 
         // 查询未读取消息=阅读消息
@@ -52,7 +52,7 @@ public class CommonMessageServiceImpl extends ServiceImpl<MessageMapper, Message
                     .set(UserMessage::getIsRead, UserMessageState.READ)
                     .set(UserMessage::getReadTime, LocalDateTime.now())
                     .eq(UserMessage::getMessageId, messageId)
-                    .eq(UserMessage::getReceiverId, userId)
+                    .eq(UserMessage::getUserId, userId)
                     .update();
         }
 

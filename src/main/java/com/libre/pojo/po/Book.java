@@ -21,20 +21,22 @@ public class Book extends BasePO {
     private Long authorId;
     // 出版社id
     private Long publisherId;
+    // 分类id
+    private Long classId;
+    // 书架
+    private String bookShelf;
     // 封面图片
     private String coverUrl;
     // 国际标准书号
     private String isbn;
     // 图书简介
     private String introduction;
-    // 语言
-    private String language;
     // 页数
     private LocalDate publishDate;
-    // 价格
-    private Long price;
     // 数量
     private Long number;
+    // 可借数量
+    private Long availableNumber;
     // 修改时间
     private LocalDateTime updateTime;
 }

@@ -112,7 +112,7 @@ public class CommonLoginServiceImpl implements CommonLoginService {
         SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
 
         return LoginVO.builder()
-                .name(user.getName())
+                .name(user.getNickName())
                 .tokenName(tokenInfo.getTokenName())
                 .tokenValue(tokenInfo.getTokenValue())
                 .build();
@@ -157,7 +157,7 @@ public class CommonLoginServiceImpl implements CommonLoginService {
         // 密码加密
         user.setPassword(securityUtil.generatePassword(registerDTO.getPassword()));
         // 首次注册使用用户名代替姓名
-        user.setName(registerDTO.getUsername());
+        user.setNickName(registerDTO.getUsername());
         userService.save(user);
 
         // 首次注册用户拥有读者角色
@@ -304,7 +304,7 @@ public class CommonLoginServiceImpl implements CommonLoginService {
                     .password(createPhoneRegisterPassword())
                     .phone(loginByPhoneDTO.getPhone())
                     .state(UserState.NORMAL)
-                    .name(loginByPhoneDTO.getPhone())
+                    .nickName(loginByPhoneDTO.getPhone())
                     .lastLoginTime(LocalDateTime.now())
                     .build();
 
@@ -319,7 +319,7 @@ public class CommonLoginServiceImpl implements CommonLoginService {
         SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
 
         return LoginVO.builder()
-                .name(user.getName())
+                .name(user.getNickName())
                 .tokenName(tokenInfo.getTokenName())
                 .tokenValue(tokenInfo.getTokenValue())
                 .build();
@@ -343,7 +343,7 @@ public class CommonLoginServiceImpl implements CommonLoginService {
     public Boolean checkSlideCaptcha(String captchaVerifyParam) {
         // 获取配置
         Config config = getConfig();
-        Boolean captchaVerifyResult = true;
+        Boolean captchaVerifyResult;
         try {
             // ====================== 2. 初始化客户端（实际生产代码中建议复用client） ======================
             Client client = new Client(config);

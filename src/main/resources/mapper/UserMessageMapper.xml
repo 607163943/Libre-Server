@@ -3,6 +3,44 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.libre.mapper.UserMessageMapper">
+    <!--统计用户指定端的未读消息数-->
+    <select id="countUnreadMessages" resultType="java.lang.Long">
+        SELECT COUNT(um.id)
+        FROM tb_user_message um
+        INNER JOIN tb_message m ON um.message_id = m.id
+        WHERE um.user_id = #{userId}
+        AND um.is_read = 0
+        AND um.is_delete = 0
+        AND m.is_delete = 0
+        AND m.is_send = 1
+        <if test="clientTypeList != null and clientTypeList.size() > 0">
+            AND m.client_type IN
+            <foreach collection="clientTypeList" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <!--标记用户指定端的所有消息为已读-->
+    <update id="markMessagesAsRead">
+        UPDATE tb_user_message um
+        INNER JOIN tb_message m ON um.message_id = m.id
+        SET
+        um.is_read = 1,
+        um.read_time = NOW(),
+        um.update_time = NOW()
+        WHERE
+        um.user_id = #{userId}
+        AND um.is_read = 0
+        AND um.is_delete = 0
+        AND m.is_delete = 0
+        <if test="clientTypeList != null and clientTypeList.size() > 0">
+            AND m.client_type IN
+            <foreach collection="clientTypeList" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </update>
 
     <select id="pageQueryUserMessage" resultType="com.libre.pojo.vo.common.UserMessageVO">
         SELECT m.id,m.content, m.title, um.create_time AS createTime,um.is_read,m.type
@@ -28,7 +66,7 @@
         FROM tb_user_message um
                  JOIN tb_message m ON um.message_id = m.id
         WHERE um.message_id = #{messageId}
-          AND um.receiver_id = #{userId}
+          AND um.user_id = #{userId}
           AND um.is_delete = 0
     </select>
 
