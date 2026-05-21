@@ -26,48 +26,48 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 public class AdminPublisherController {
-    private final AdminPublisherService adminPublisherService;
+    private final AdminPublisherService publisherService;
 
     @ApiOperation("出版社分页查询接口")
     @GetMapping
     public Result<PageResult<List<PublisherPageVO>>> pageQueryPublisher(PublisherPageDTO publisherPageDTO) {
-        PageResult<List<PublisherPageVO>> pageResult = adminPublisherService.pageQueryPublisher(publisherPageDTO);
+        PageResult<List<PublisherPageVO>> pageResult = publisherService.pageQueryPublisher(publisherPageDTO);
         return Result.success(pageResult);
     }
 
     @ApiOperation("获取指定出版社信息")
-    @GetMapping("{publisherId}")
+    @GetMapping("/{publisherId}")
     public Result<PublisherVO> getPublisher(@PathVariable Long publisherId) {
-        Publisher publisher = adminPublisherService.getById(publisherId);
+        Publisher publisher = publisherService.getById(publisherId);
         PublisherVO publisherVO = BeanUtil.copyProperties(publisher, PublisherVO.class);
         return Result.success(publisherVO);
     }
 
     @ApiOperation("获取所有出版社")
-    @GetMapping("all")
+    @GetMapping("/all")
     public Result<List<PublisherVO>> getAllPublishers() {
-        List<Publisher> publisherList = adminPublisherService.getAllPublisher();
+        List<Publisher> publisherList = publisherService.getAllPublisher();
         List<PublisherVO> publisherVOList = BeanUtil.copyToList(publisherList, PublisherVO.class);
         return Result.success(publisherVOList);
     }
     @ApiOperation("出版社添加接口")
     @PostMapping
     public Result<Void> addPublisher(@RequestBody @Valid PublisherDTO publisherDTO) {
-        adminPublisherService.addPublisher(publisherDTO);
+        publisherService.addPublisher(publisherDTO);
         return Result.success();
     }
 
     @ApiOperation("出版社修改接口")
     @PutMapping
     public Result<Void> modifyPublisher(@RequestBody @Validated({Default.class, UpdateGroup.class}) PublisherDTO publisherDTO) {
-        adminPublisherService.modifyPublisher(publisherDTO);
+        publisherService.modifyPublisher(publisherDTO);
         return Result.success();
     }
 
     @ApiOperation("出版社删除接口")
-    @DeleteMapping("{publisherId}")
+    @DeleteMapping("/{publisherId}")
     private Result<Void> deletePublisher(@PathVariable Long publisherId) {
-        adminPublisherService.deletePublisher(publisherId);
+        publisherService.deletePublisher(publisherId);
         return Result.success();
     }
 
@@ -75,7 +75,7 @@ public class AdminPublisherController {
     @DeleteMapping
     public Result<Void> deleteBatchPublisher(@RequestParam List<Long> ids) {
         if(CollUtil.isNotEmpty(ids)) {
-            adminPublisherService.deleteBatchPublisher(ids);
+            publisherService.deleteBatchPublisher(ids);
         }
         return Result.success();
     }

@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ClassPageDTO extends BasePageDTO {
+public class CategoryPageDTO extends BasePageDTO {
     @ApiModelProperty("分类名称")
-    private String className;
+    private String categoryName;
 }

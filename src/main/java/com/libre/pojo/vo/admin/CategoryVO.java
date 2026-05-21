@@ -10,9 +10,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ClassVO {
+public class CategoryVO {
     @ApiModelProperty("分类id")
     private Long id;
     @ApiModelProperty("分类名")
-    private String className;
+    private String categoryName;
 }

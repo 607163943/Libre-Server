@@ -36,7 +36,7 @@ public class AdminAuthorController {
     }
 
     @ApiOperation("获取指定作者信息")
-    @GetMapping("{authorId}")
+    @GetMapping("/{authorId}")
     public Result<AuthorVO> getAuthor(@PathVariable Long authorId) {
         Author author = authorService.getById(authorId);
         AuthorVO authorVO = BeanUtil.copyProperties(author, AuthorVO.class);
@@ -44,7 +44,7 @@ public class AdminAuthorController {
     }
 
     @ApiOperation("获取所有作者")
-    @GetMapping("all")
+    @GetMapping("/all")
     public Result<List<AuthorVO>> getAllAuthors() {
         List<Author> authorList = authorService.getAllAuthor();
         List<AuthorVO> authorVOList = BeanUtil.copyToList(authorList, AuthorVO.class);
@@ -65,7 +65,7 @@ public class AdminAuthorController {
     }
 
     @ApiOperation("作者删除接口")
-    @DeleteMapping("{authorId}")
+    @DeleteMapping("/{authorId}")
     private Result<Void> deleteAuthor(@PathVariable Long authorId) {
         authorService.deleteAuthor(authorId);
         return Result.success();

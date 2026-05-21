@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @ApiModel("作者分页视图对象")
 @Data
 @NoArgsConstructor
@@ -15,4 +17,10 @@ public class AuthorPageVO {
     private Long id;
     @ApiModelProperty("作者名称")
     private String authorName;
+
+    @ApiModelProperty("创建时间")
+    private LocalDateTime createTime;
+
+    @ApiModelProperty("更新时间")
+    private LocalDateTime updateTime;
 }

@@ -9,13 +9,13 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @EqualsAndHashCode(callSuper = true)
-@TableName("tb_class")
+@TableName("tb_category")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Class extends BasePO {
+public class Category extends BasePO {
     // 分类名
-    private String className;
+    private String categoryName;
     // 修改时间
     private LocalDateTime updateTime;
 }

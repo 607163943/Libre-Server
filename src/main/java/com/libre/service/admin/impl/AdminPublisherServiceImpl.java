@@ -31,6 +31,8 @@ public class AdminPublisherServiceImpl extends ServiceImpl<PublisherMapper, Publ
 
     private final CacheUtil cacheUtil;
 
+    private static final String PUBLISHER_CACHE_KEY = "admin:publisher:all";
+
     /**
      * 分页查询出版社信息
      * @param publisherPageDTO 查询参数
@@ -75,7 +77,7 @@ public class AdminPublisherServiceImpl extends ServiceImpl<PublisherMapper, Publ
         save(publisher);
 
         // 清除缓存
-        cacheUtil.delete("admin:publisher:all");
+        cacheUtil.delete(PUBLISHER_CACHE_KEY);
     }
 
     /**
@@ -97,7 +99,7 @@ public class AdminPublisherServiceImpl extends ServiceImpl<PublisherMapper, Publ
         updateById(publisher);
 
         // 清除缓存
-        cacheUtil.delete("admin:publisher:all");
+        cacheUtil.delete(PUBLISHER_CACHE_KEY);
     }
 
     /**
@@ -122,7 +124,7 @@ public class AdminPublisherServiceImpl extends ServiceImpl<PublisherMapper, Publ
                 .update();
 
         // 清除缓存
-        cacheUtil.delete("admin:publisher:all");
+        cacheUtil.delete(PUBLISHER_CACHE_KEY);
     }
 
     /**
@@ -138,7 +140,7 @@ public class AdminPublisherServiceImpl extends ServiceImpl<PublisherMapper, Publ
                 .update();
 
         // 清除缓存
-        cacheUtil.delete("admin:publisher:all");
+        cacheUtil.delete(PUBLISHER_CACHE_KEY);
     }
 
     /**
@@ -147,10 +149,8 @@ public class AdminPublisherServiceImpl extends ServiceImpl<PublisherMapper, Publ
      */
     @Override
     public List<Publisher> getAllPublisher() {
-        String cacheKey = "admin:publisher:all";
-
         // 尝试从缓存中获取
-        String cachedData = cacheUtil.get(cacheKey);
+        String cachedData = cacheUtil.get(PUBLISHER_CACHE_KEY);
         if (cachedData != null) {
             return JSONUtil.toList(cachedData, Publisher.class);
         }
@@ -159,7 +159,7 @@ public class AdminPublisherServiceImpl extends ServiceImpl<PublisherMapper, Publ
         List<Publisher> publisherList = list();
 
         // 存入缓存，过期时间30分钟
-        cacheUtil.set(cacheKey, JSONUtil.toJsonStr(publisherList), 30, TimeUnit.MINUTES);
+        cacheUtil.set(PUBLISHER_CACHE_KEY, JSONUtil.toJsonStr(publisherList), 30, TimeUnit.MINUTES);
 
         return publisherList;
     }

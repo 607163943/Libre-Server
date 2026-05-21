@@ -14,12 +14,12 @@ import javax.validation.constraints.NotNull;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ClassDTO {
+public class CategoryDTO {
     @ApiModelProperty("分类ID")
     @NotNull(message = "分类ID不能为空", groups = UpdateGroup.class)
     private Long id;
 
     @ApiModelProperty("分类名称")
     @NotBlank(message = "分类名称不能为空")
-    private String className;
+    private String categoryName;
 }
