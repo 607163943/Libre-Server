@@ -26,19 +26,19 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 public class AdminAuthorController {
-    private final AdminAuthorService adminAuthorService;
+    private final AdminAuthorService authorService;
 
     @ApiOperation("作者分页查询接口")
     @GetMapping
     public Result<PageResult<List<AuthorPageVO>>> pageQueryAuthor(AuthorPageDTO authorPageDTO) {
-        PageResult<List<AuthorPageVO>> pageResult = adminAuthorService.pageQueryAuthor(authorPageDTO);
+        PageResult<List<AuthorPageVO>> pageResult = authorService.pageQueryAuthor(authorPageDTO);
         return Result.success(pageResult);
     }
 
     @ApiOperation("获取指定作者信息")
     @GetMapping("{authorId}")
     public Result<AuthorVO> getAuthor(@PathVariable Long authorId) {
-        Author author = adminAuthorService.getById(authorId);
+        Author author = authorService.getById(authorId);
         AuthorVO authorVO = BeanUtil.copyProperties(author, AuthorVO.class);
         return Result.success(authorVO);
     }
@@ -46,28 +46,28 @@ public class AdminAuthorController {
     @ApiOperation("获取所有作者")
     @GetMapping("all")
     public Result<List<AuthorVO>> getAllAuthors() {
-        List<Author> authorList = adminAuthorService.getAllAuthor();
+        List<Author> authorList = authorService.getAllAuthor();
         List<AuthorVO> authorVOList = BeanUtil.copyToList(authorList, AuthorVO.class);
         return Result.success(authorVOList);
     }
     @ApiOperation("作者添加接口")
     @PostMapping
     public Result<Void> addAuthor(@RequestBody @Valid AuthorDTO authorDTO) {
-        adminAuthorService.addAuthor(authorDTO);
+        authorService.addAuthor(authorDTO);
         return Result.success();
     }
 
     @ApiOperation("作者修改接口")
     @PutMapping
     public Result<Void> modifyAuthor(@RequestBody @Validated({Default.class, UpdateGroup.class}) AuthorDTO authorDTO) {
-        adminAuthorService.modifyAuthor(authorDTO);
+        authorService.modifyAuthor(authorDTO);
         return Result.success();
     }
 
     @ApiOperation("作者删除接口")
     @DeleteMapping("{authorId}")
     private Result<Void> deleteAuthor(@PathVariable Long authorId) {
-        adminAuthorService.deleteAuthor(authorId);
+        authorService.deleteAuthor(authorId);
         return Result.success();
     }
 
@@ -75,7 +75,7 @@ public class AdminAuthorController {
     @DeleteMapping
     public Result<Void> deleteBatchAuthor(@RequestParam List<Long> ids) {
         if(CollUtil.isNotEmpty(ids)) {
-            adminAuthorService.deleteBatchAuthor(ids);
+            authorService.deleteBatchAuthor(ids);
         }
         return Result.success();
     }
