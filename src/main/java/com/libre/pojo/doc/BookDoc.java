@@ -22,6 +22,12 @@ public class BookDoc {
     @Field(type = FieldType.Text, analyzer = "ik_max_word")
     private String publisherName;
 
+    @Field(type = FieldType.Text, analyzer = "ik_max_word")
+    private String categoryName;
+
+    @Field(type = FieldType.Keyword)
+    private String bookshelf;
+
     @Field(type = FieldType.Keyword)
     private String isbn;
 
@@ -30,7 +36,4 @@ public class BookDoc {
 
     @Field(type = FieldType.Date, format = DateFormat.year_month_day)
     private LocalDate publishDate;
-
-    @Field(type = FieldType.Long)
-    private Long isDelete;
 }

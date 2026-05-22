@@ -12,7 +12,9 @@ public enum ExceptionEnums {
     CATEGORY_EXIST(10301, "分类已存在"),
 
     BOOK_EXIST(10201, "图书已存在"),
-    BOOK_HAS_LEND(10202, "图书存在借阅，无法删除"),
+    BOOK_HAS_LEND(10202, "图书存在借阅记录，无法删除"),
+    BOOK_NUMBER_OVER_ERROR(10203, "可借图书数量超过库存"),
+    BOOK_NUMBER_ERROR(10204, "图书数量库存错误，可用库存低于0！"),
 
     NOT_HAS_ROLE(10401, "角色权限不够"),
 

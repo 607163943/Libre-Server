@@ -64,7 +64,7 @@ public class AppLendServiceImpl extends ServiceImpl<LendMapper, Lend> implements
         Long lendCount = lambdaQuery()
                 .eq(Lend::getBookId, bookId)
                 .eq(Lend::getUserId, StpUtil.getLoginIdAsLong())
-                .in(Lend::getState, LendStatus.LEND, LendStatus.OVERDUE)
+                .in(Lend::getState, LendStatus.LEND, LendStatus.OVERTIME)
                 .count();
         if (lendCount == 0) {
             throw new LendException(ExceptionEnums.LEND_USER_NOT_LEND);
@@ -92,13 +92,13 @@ public class AppLendServiceImpl extends ServiceImpl<LendMapper, Lend> implements
         // 统计当前借阅数(借阅状态 + 逾期状态)
         Long currentLendCount = lambdaQuery()
                 .eq(Lend::getUserId, userId)
-                .in(Lend::getState, LendStatus.LEND, LendStatus.OVERDUE)
+                .in(Lend::getState, LendStatus.LEND, LendStatus.OVERTIME)
                 .count();
 
         // 统计逾期借阅数
         Long overdueLendCount = lambdaQuery()
                 .eq(Lend::getUserId, userId)
-                .eq(Lend::getState, LendStatus.OVERDUE)
+                .eq(Lend::getState, LendStatus.OVERTIME)
                 .count();
 
         // 统计即将逾期借阅数(3天之内，且状态为借阅中)
@@ -222,7 +222,7 @@ public class AppLendServiceImpl extends ServiceImpl<LendMapper, Lend> implements
         Long existingLendCount = lambdaQuery()
                 .eq(Lend::getBookId, bookId)
                 .eq(Lend::getUserId, userId)
-                .in(Lend::getState, LendStatus.LEND, LendStatus.OVERDUE)
+                .in(Lend::getState, LendStatus.LEND, LendStatus.OVERTIME)
                 .count();
         if (existingLendCount > 0) {
             throw new LendException(ExceptionEnums.LEND_ALREADY_LEND);
@@ -231,7 +231,7 @@ public class AppLendServiceImpl extends ServiceImpl<LendMapper, Lend> implements
         // 检查该书库存是否为空
         Long count = lambdaQuery()
                 .eq(Lend::getBookId, bookId)
-                .in(Lend::getState, LendStatus.LEND, LendStatus.OVERDUE)
+                .in(Lend::getState, LendStatus.LEND, LendStatus.OVERTIME)
                 .count();
 
         if(count.equals(book.getNumber())) {
@@ -272,7 +272,7 @@ public class AppLendServiceImpl extends ServiceImpl<LendMapper, Lend> implements
         Lend lend = lambdaQuery()
                 .eq(Lend::getBookId, bookId)
                 .eq(Lend::getUserId, userId)
-                .in(Lend::getState, LendStatus.LEND, LendStatus.OVERDUE)
+                .in(Lend::getState, LendStatus.LEND, LendStatus.OVERTIME)
                 .one();
                 
         if (lend == null) {

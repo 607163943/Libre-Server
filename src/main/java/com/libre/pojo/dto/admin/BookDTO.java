@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -32,6 +33,10 @@ public class BookDTO {
     @NotNull(message = "出版社ID不能为空")
     private Long publisherId;
 
+    @ApiModelProperty("分类ID")
+    @NotNull(message = "分类ID不能为空")
+    private Long categoryId;
+
     @ApiModelProperty("封面文件ID")
     private Long fileId;
 
@@ -42,22 +47,19 @@ public class BookDTO {
     @NotBlank(message = "ISBN不能为空")
     private String isbn;
 
+    @ApiModelProperty("书架")
+    @NotBlank(message = "书架不能为空")
+    private String bookshelf;
+
     @ApiModelProperty("简介")
     private String introduction;
-
-    @ApiModelProperty("语言")
-    @NotBlank(message = "语言不能为空")
-    private String language;
 
     @ApiModelProperty("出版日期")
     @NotNull(message = "出版日期不能为空")
     private LocalDate publishDate;
 
-    @ApiModelProperty("价格")
-    @NotNull(message = "价格不能为空")
-    private Long price;
-
     @ApiModelProperty("数量")
     @NotNull(message = "数量不能为空")
+    @Min(value = 0,message = "数量不能小于0")
     private Integer number;
 }

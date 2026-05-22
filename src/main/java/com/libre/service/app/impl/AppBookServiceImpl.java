@@ -77,7 +77,7 @@ public class AppBookServiceImpl extends ServiceImpl<BookMapper, Book> implements
         Lend lend = Db.lambdaQuery(Lend.class)
                 .eq(Lend::getBookId, bookId)
                 .eq(Lend::getUserId, StpUtil.getLoginIdAsLong())
-                .in(Lend::getState, LendStatus.LEND, LendStatus.OVERDUE)
+                .in(Lend::getState, LendStatus.LEND, LendStatus.OVERTIME)
                 .one();
 
         if (lend == null) {
@@ -140,7 +140,7 @@ public class AppBookServiceImpl extends ServiceImpl<BookMapper, Book> implements
 
                 // 借阅书籍标记
                 List<Lend> lendList = chainWrapper
-                        .in(Lend::getState, LendStatus.LEND, LendStatus.OVERDUE)
+                        .in(Lend::getState, LendStatus.LEND, LendStatus.OVERTIME)
                         .list();
                 // 借阅书籍标注
                 Map<Long, Lend> lendBookStatusMap = lendList.stream()

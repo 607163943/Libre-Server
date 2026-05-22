@@ -53,7 +53,7 @@ public class CommonLendServiceImpl extends ServiceImpl<LendMapper, Lend> impleme
         // 1. 检查当前是否有逾期记录
         Long currentOverdueCount = lambdaQuery()
                 .eq(Lend::getId, userId)
-                .eq(Lend::getState, LendStatus.OVERDUE)
+                .eq(Lend::getState, LendStatus.OVERTIME)
                 .count();
 
         if (currentOverdueCount > 0) {
@@ -63,7 +63,7 @@ public class CommonLendServiceImpl extends ServiceImpl<LendMapper, Lend> impleme
         // 3. 获取当前用户的借阅数量（未归还的）
         Long currentLendCount = lambdaQuery()
                 .eq(Lend::getUserId, userId)
-                .in(Lend::getState, LendStatus.LEND, LendStatus.OVERDUE)
+                .in(Lend::getState, LendStatus.LEND, LendStatus.OVERTIME)
                 .count();
 
         // 4. 最大借书数量
@@ -100,7 +100,7 @@ public class CommonLendServiceImpl extends ServiceImpl<LendMapper, Lend> impleme
         // 检查库存是否为空
         Long lendBookNumber = lambdaQuery()
                 .eq(Lend::getBookId, bookId)
-                .in(Lend::getState, LendStatus.LEND, LendStatus.OVERDUE)
+                .in(Lend::getState, LendStatus.LEND, LendStatus.OVERTIME)
                 .count();
         if (lendBookNumber.equals(book.getNumber())) {
             throw new LendException(ExceptionEnums.LEND_BOOK_EMPTY);
@@ -151,14 +151,14 @@ public class CommonLendServiceImpl extends ServiceImpl<LendMapper, Lend> impleme
         Lend lend = lambdaQuery()
                 .eq(Lend::getBookId, bookId)
                 .eq(Lend::getUserId, userId)
-                .in(Lend::getState, LendStatus.LEND, LendStatus.OVERDUE)
+                .in(Lend::getState, LendStatus.LEND, LendStatus.OVERTIME)
                 .one();
         if (lend == null) {
             throw new LendException(ExceptionEnums.LEND_USER_NOT_LEND);
         }
 
         // 逾期日期更新
-        if (lend.getState().equals(LendStatus.OVERDUE)) {
+        if (lend.getState().equals(LendStatus.OVERTIME)) {
             lend.setDueTime(LocalDateTime.now().plusDays(7));
         } else {
             // 否则在当前截止日期续7天

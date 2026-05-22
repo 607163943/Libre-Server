@@ -23,11 +23,11 @@ public class BookPageDTO extends BasePageDTO {
     @ApiModelProperty("作者ID")
     private Long authorId;
 
+    @ApiModelProperty("分类ID")
+    private Long categoryId;
+
     @ApiModelProperty("出版社ID")
     private Long publisherId;
-
-    @ApiModelProperty("国际标准书号")
-    private String isbn;
 
     @ApiModelProperty("出版日期开始时间")
     @DateTimeFormat(pattern = "yyyy-MM-dd")

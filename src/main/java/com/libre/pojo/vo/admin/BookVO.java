@@ -15,26 +15,40 @@ import java.time.LocalDate;
 public class BookVO {
     @ApiModelProperty("图书id")
     private Long id;
+
     @ApiModelProperty("图书名")
     private String bookName;
+
     @ApiModelProperty("作者id")
     private Long authorId;
+
     @ApiModelProperty("出版社id")
     private Long publisherId;
+
+    @ApiModelProperty("分类id")
+    private Long categoryId;
+
     @ApiModelProperty("封面文件id")
     private Long fileId;
+
     @ApiModelProperty("封面图片")
     private String coverUrl;
+
     @ApiModelProperty("国际标准书号")
     private String isbn;
+
+    @ApiModelProperty("书架")
+    private String bookshelf;
+
     @ApiModelProperty("图书简介")
     private String introduction;
-    @ApiModelProperty("语言")
-    private String language;
+
     @ApiModelProperty("出版日期")
     private LocalDate publishDate;
-    @ApiModelProperty("价格")
-    private Long price;
+
     @ApiModelProperty("数量")
     private Integer number;
+
+    @ApiModelProperty("可借数量")
+    private Long availableNumber;
 }

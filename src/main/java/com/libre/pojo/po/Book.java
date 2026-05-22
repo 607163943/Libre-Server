@@ -22,9 +22,9 @@ public class Book extends BasePO {
     // 出版社id
     private Long publisherId;
     // 分类id
-    private Long classId;
+    private Long categoryId;
     // 书架
-    private String bookShelf;
+    private String bookshelf;
     // 封面图片
     private String coverUrl;
     // 国际标准书号

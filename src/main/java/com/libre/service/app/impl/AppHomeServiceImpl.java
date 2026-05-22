@@ -48,7 +48,7 @@ public class AppHomeServiceImpl implements AppHomeService {
         // 逾期统计
         Long overdueCount = lendService.lambdaQuery()
                 .eq(Lend::getUserId, userId)
-                .eq(Lend::getState, LendStatus.OVERDUE)
+                .eq(Lend::getState, LendStatus.OVERTIME)
                 .count();
         return HomeUserTotalVO.builder()
                 .lendCount(lendCount)

@@ -9,31 +9,33 @@
         book.book_name,
         book.author_id,
         book.publisher_id,
+        book.category_id,
         book.cover_url,
         book.isbn,
-        book.introduction,
-        book.language,
+        book.bookshelf,
         book.publish_date,
-        book.price,
         book.number,
+        book.available_number,
         author.author_name,
-        publish.publisher_name
+        publish.publisher_name,
+        category.category_name
         from tb_book book
         join tb_author author on book.author_id = author.id
         join tb_publisher publish
         on book.publisher_id = publish.id
+        join tb_category category on book.category_id = category.id
         where book.is_delete=0
         <if test="bookPageDTO.bookName != null and bookPageDTO.bookName != ''">
             and book.book_name like concat('%', #{bookPageDTO.bookName}, '%')
-        </if>
-        <if test="bookPageDTO.isbn != null and bookPageDTO.isbn != ''">
-            and book.isbn like concat('%', #{bookPageDTO.isbn}, '%')
         </if>
         <if test="bookPageDTO.authorId != null">
             and book.author_id = #{bookPageDTO.authorId}
         </if>
         <if test="bookPageDTO.publisherId != null">
             and book.publisher_id = #{bookPageDTO.publisherId}
+        </if>
+        <if test="bookPageDTO.categoryId != null">
+            and book.category_id = #{bookPageDTO.categoryId}
         </if>
         <if test="bookPageDTO.publishStartTime != null">
             and book.publish_date &gt;= #{bookPageDTO.publishStartTime}
@@ -53,18 +55,19 @@
     </select>
     <!--ES全量同步-->
     <select id="findAllBookDocs" resultType="com.libre.pojo.doc.BookDoc">
-        SELECT
-            book.id,
-            book.book_name as bookName,
-            author.author_name as authorName,
-            publisher.publisher_name as publisherName,
-            book.isbn,
-            book.cover_url as coverUrl,
-            book.publish_date as publishDate,
-            book.is_delete as isDelete
+        SELECT book.id,
+               book.book_name,
+               author.author_name,
+               publisher.publisher_name,
+               category.category_name,
+               book.isbn,
+               book.bookshelf,
+               book.cover_url,
+               book.publish_date
         FROM tb_book book
                  JOIN tb_author author ON book.author_id = author.id
                  JOIN tb_publisher publisher ON book.publisher_id = publisher.id
+                 JOIN tb_category category ON book.category_id = category.id
         WHERE book.is_delete = 0
     </select>
 
@@ -77,7 +80,6 @@
                book.introduction,
                book.publish_date,
                book.isbn,
-               book.language,
                book.cover_url
         from tb_book book
                  join tb_author author on book.author_id = author.id
@@ -86,19 +88,21 @@
           and book.is_delete = 0
     </select>
     <select id="findBookDockById" resultType="com.libre.pojo.doc.BookDoc">
-        SELECT
-            book.id,
-            book.book_name as bookName,
-            author.author_name as authorName,
-            publisher.publisher_name as publisherName,
-            book.isbn,
-            book.cover_url as coverUrl,
-            book.publish_date as publishDate,
-            book.is_delete as isDelete
+        SELECT book.id,
+               book.book_name,
+               author.author_name,
+               publisher.publisher_name,
+               category.category_name,
+               book.isbn,
+               book.bookshelf,
+               book.cover_url,
+               book.publish_date
         FROM tb_book book
                  JOIN tb_author author ON book.author_id = author.id
                  JOIN tb_publisher publisher ON book.publisher_id = publisher.id
-        WHERE book.id = #{bookId} and book.is_delete = 0
+                 JOIN tb_category category ON book.category_id = category.id
+        WHERE book.id = #{bookId}
+          and book.is_delete = 0
     </select>
     <!--带个人业务状态的图书查询-->
     <select id="search" resultType="com.libre.pojo.vo.app.SearchBookVO">

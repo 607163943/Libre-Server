@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.extension.toolkit.Db;
+import com.libre.constant.LendStatus;
 import com.libre.constant.ServiceType;
 import com.libre.enums.ExceptionEnums;
 import com.libre.exception.BookException;
@@ -92,24 +93,14 @@ public class AdminBookServiceImpl extends ServiceImpl<BookMapper, Book> implemen
             throw new BookException(ExceptionEnums.BOOK_EXIST);
         }
 
-        // 判断名称/作者/出版社/封面/简介/语言/出版日期是否已存在同时重复图书
-        bookCount = lambdaQuery()
-                .eq(Book::getBookName, bookDTO.getBookName())
-                .eq(Book::getAuthorId, bookDTO.getAuthorId())
-                .eq(Book::getPublisherId, bookDTO.getPublisherId())
-                .eq(Book::getPublishDate, bookDTO.getPublishDate())
-                .count();
-        if (bookCount > 0) {
-            throw new BookException(ExceptionEnums.BOOK_EXIST);
-        }
-
         Book book = BeanUtil.copyProperties(bookDTO, Book.class);
-        // 避免前端id残留数据影响
-        if (book.getId() != null) book.setId(null);
+        // 初始可借库存=总库存
+        book.setAvailableNumber(book.getNumber());
 
         bookService.save(book);
 
-        if(bookDTO.getFileId()!=null) {
+        // 记录图书封面资源引用信息
+        if (bookDTO.getFileId() != null) {
             // 记录文件引用关系
             UploadFileRef uploadFileRef = UploadFileRef.builder()
                     .serviceId(book.getId())
@@ -142,19 +133,18 @@ public class AdminBookServiceImpl extends ServiceImpl<BookMapper, Book> implemen
             throw new BookException(ExceptionEnums.BOOK_EXIST);
         }
 
-        // 判断名称/作者/出版社/封面/简介/语言/出版日期是否已存在同时重复图书
-        count = lambdaQuery()
-                .eq(Book::getBookName, bookDTO.getBookName())
-                .eq(Book::getAuthorId, bookDTO.getAuthorId())
-                .eq(Book::getPublisherId, bookDTO.getPublisherId())
-                .eq(Book::getPublishDate, bookDTO.getPublishDate())
-                .ne(Book::getId, bookDTO.getId())
-                .count();
-        if (count > 0) {
-            throw new BookException(ExceptionEnums.BOOK_EXIST);
-        }
-
         Book book = BeanUtil.copyProperties(bookDTO, Book.class);
+
+        // 动态计算可用库存
+        Long useBook = Db.lambdaQuery(Lend.class)
+                .eq(Lend::getId, book.getId())
+                .in(Lend::getState, LendStatus.LEND, LendStatus.OVERTIME)
+                .count();
+        if ((book.getNumber() - useBook) < 0) {
+            throw new BookException(ExceptionEnums.BOOK_NUMBER_ERROR);
+        }
+        book.setAvailableNumber(book.getNumber() - useBook);
+
         bookService.updateById(book);
 
         // 更新文件引用关系
@@ -178,7 +168,7 @@ public class AdminBookServiceImpl extends ServiceImpl<BookMapper, Book> implemen
                 .update();
 
         // 添加新关系
-        if(bookDTO.getFileId()!=null) {
+        if (bookDTO.getFileId() != null) {
             UploadFileRef uploadFileRef = UploadFileRef.builder()
                     .serviceType(ServiceType.BOOK_COVER)
                     .serviceId(bookDTO.getId())
@@ -205,12 +195,12 @@ public class AdminBookServiceImpl extends ServiceImpl<BookMapper, Book> implemen
      */
     @Override
     public void deleteBook(Long bookId) {
-        // 存在该图书的借阅则无法删除
+        // 存在该图书的借阅信息则无法删除
         Long lendCount = Db.lambdaQuery(Lend.class)
                 .eq(Lend::getBookId, bookId)
                 .count();
 
-        if(lendCount>0) {
+        if (lendCount > 0) {
             throw new BookException(ExceptionEnums.BOOK_HAS_LEND);
         }
         lambdaUpdate()
@@ -242,7 +232,7 @@ public class AdminBookServiceImpl extends ServiceImpl<BookMapper, Book> implemen
                 .in(Lend::getBookId, ids)
                 .count();
 
-        if(lendCount>0) {
+        if (lendCount > 0) {
             throw new BookException(ExceptionEnums.BOOK_HAS_LEND);
         }
 
@@ -272,11 +262,13 @@ public class AdminBookServiceImpl extends ServiceImpl<BookMapper, Book> implemen
     public BookVO getBook(Long bookId) {
         Book Book = getById(bookId);
         BookVO bookVO = BeanUtil.copyProperties(Book, BookVO.class);
+
+        // 获取图书封面文件id
         UploadFileRef uploadFileRef = uploadFileRefService.lambdaQuery()
                 .eq(UploadFileRef::getServiceId, Book.getId())
                 .eq(UploadFileRef::getServiceType, ServiceType.BOOK_COVER)
                 .one();
-        if(uploadFileRef!=null) {
+        if (uploadFileRef != null) {
             bookVO.setFileId(uploadFileRef.getFileId());
         }
         return bookVO;

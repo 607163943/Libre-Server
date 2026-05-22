@@ -26,26 +26,26 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 public class AdminBookController {
-    private final AdminBookService adminBookService;
+    private final AdminBookService bookService;
 
     @ApiOperation("图书分页查询接口")
     @GetMapping
     public Result<PageResult<List<BookPageVO>>> pageQueryBook(BookPageDTO bookPageDTO) {
-        PageResult<List<BookPageVO>> pageResult = adminBookService.pageQueryBook(bookPageDTO);
+        PageResult<List<BookPageVO>> pageResult = bookService.pageQueryBook(bookPageDTO);
         return Result.success(pageResult);
     }
 
     @ApiOperation("获取指定图书信息")
-    @GetMapping("{bookId}")
+    @GetMapping("/{bookId}")
     public Result<BookVO> getBook(@PathVariable Long bookId) {
-        BookVO bookVO = adminBookService.getBook(bookId);
+        BookVO bookVO = bookService.getBook(bookId);
         return Result.success(bookVO);
     }
 
     @ApiOperation("获取所有图书")
-    @GetMapping("all")
+    @GetMapping("/all")
     public Result<List<BookVO>> getAllBooks() {
-        List<Book> bookList = adminBookService.list();
+        List<Book> bookList = bookService.list();
         List<BookVO> bookVOList = BeanUtil.copyToList(bookList, BookVO.class);
         return Result.success(bookVOList);
     }
@@ -53,21 +53,21 @@ public class AdminBookController {
     @ApiOperation("图书添加接口")
     @PostMapping
     public Result<Void> addBook(@RequestBody @Valid BookDTO bookDTO) {
-        adminBookService.addBook(bookDTO);
+        bookService.addBook(bookDTO);
         return Result.success();
     }
 
     @ApiOperation("图书修改接口")
     @PutMapping
     public Result<Void> modifyBook(@RequestBody @Validated({Default.class, UpdateGroup.class}) BookDTO bookDTO) {
-        adminBookService.modifyBook(bookDTO);
+        bookService.modifyBook(bookDTO);
         return Result.success();
     }
 
     @ApiOperation("图书删除接口")
-    @DeleteMapping("{bookId}")
+    @DeleteMapping("/{bookId}")
     public Result<Void> deleteBook(@PathVariable Long bookId) {
-        adminBookService.deleteBook(bookId);
+        bookService.deleteBook(bookId);
         return Result.success();
     }
 
@@ -75,7 +75,7 @@ public class AdminBookController {
     @DeleteMapping
     public Result<Void> deleteBatchBook(@RequestParam List<Long> ids) {
         if(CollUtil.isNotEmpty(ids)) {
-            adminBookService.deleteBatchBook(ids);
+            bookService.deleteBatchBook(ids);
         }
         return Result.success();
     }

@@ -83,7 +83,7 @@ public class AdminLendServiceImpl extends ServiceImpl<LendMapper, Lend> implemen
         // 判断库存是否为空
         Long lendBookNumber = lambdaQuery()
                 .eq(Lend::getBookId, lendDTO.getBookId())
-                .in(Lend::getState, LendStatus.LEND, LendStatus.OVERDUE)
+                .in(Lend::getState, LendStatus.LEND, LendStatus.OVERTIME)
                 .count();
 
         // 相等说明库存为空
@@ -142,7 +142,7 @@ public class AdminLendServiceImpl extends ServiceImpl<LendMapper, Lend> implemen
                     // 排除自己
                     .ne(Lend::getId, lendDTO.getId())
                     .eq(Lend::getBookId, lendDTO.getBookId())
-                    .in(Lend::getState, LendStatus.LEND, LendStatus.OVERDUE)
+                    .in(Lend::getState, LendStatus.LEND, LendStatus.OVERTIME)
                     .count();
 
             // 相等说明库存为空
