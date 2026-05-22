@@ -1,6 +1,7 @@
 package com.libre.constant;
 
 public interface UserState {
-    Integer NORMAL = 0;
-    Integer DISABLE = 1;
+    Integer NORMAL = 1;
+    Integer OVERTIME_DISABLE = 2;
+    Integer ADMIN_DISABLE = 3;
 }

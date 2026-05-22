@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserProfileVO {
     @ApiModelProperty("用户姓名")
-    private String name;
+    private String nickName;
     
     @ApiModelProperty("邮箱")
     private String email;

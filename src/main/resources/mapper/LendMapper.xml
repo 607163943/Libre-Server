@@ -3,6 +3,17 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.libre.mapper.LendMapper">
+    <!--统计指定用户逾期截止借阅+10天的未还借阅记录数量-->
+    <select id="countOverduePlusTenDays" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM tb_lend
+        WHERE user_id = #{userId}
+          AND is_delete = 0
+            /* 未还状态：1借阅中，2已逾期未还 */
+          AND state IN (1, 2)
+            /* 当前时间 > 借阅截止日期 + 10天 */
+          AND NOW() > DATE_ADD(due_time, INTERVAL 10 DAY)
+    </select>
     <update id="updateOverTimeLend">
         UPDATE tb_lend
         SET state = 2

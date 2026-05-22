@@ -14,6 +14,7 @@ import com.aliyun.captcha20230305.models.VerifyIntelligentCaptchaResponse;
 import com.aliyun.teaopenapi.models.Config;
 import com.libre.constant.UserState;
 import com.libre.enums.ExceptionEnums;
+import com.libre.enums.UserRoleEnums;
 import com.libre.exception.LoginException;
 import com.libre.exception.RegisterException;
 import com.libre.pojo.dto.common.*;
@@ -93,11 +94,11 @@ public class CommonLoginServiceImpl implements CommonLoginService {
 
             // 2. 判断是否包含 超管(1L) 或 管理员(2L)
             boolean hasPermission = roleIds.stream().anyMatch(id ->
-                    com.libre.enums.UserRole.SUPER_ADMIN.getId().equals(id) ||
-                            com.libre.enums.UserRole.ADMIN.getId().equals(id)
+                    UserRoleEnums.SUPER_ADMIN.getId().equals(id) ||
+                            UserRoleEnums.ADMIN.getId().equals(id)
             );
 
-            if(!hasPermission) {
+            if (!hasPermission) {
                 throw new LoginException(ExceptionEnums.LOGIN_USER_NOT_ADMIN);
             }
 
@@ -112,7 +113,7 @@ public class CommonLoginServiceImpl implements CommonLoginService {
         SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
 
         return LoginVO.builder()
-                .name(user.getNickName())
+                .nickName(user.getNickName())
                 .tokenName(tokenInfo.getTokenName())
                 .tokenValue(tokenInfo.getTokenValue())
                 .build();
@@ -130,7 +131,7 @@ public class CommonLoginServiceImpl implements CommonLoginService {
         }
 
         // 检查账号是否被禁用
-        if (user.getState().equals(UserState.DISABLE)) {
+        if (user.getState().equals(UserState.OVERTIME_DISABLE) || user.getState().equals(UserState.ADMIN_DISABLE)) {
             throw new LoginException(ExceptionEnums.LOGIN_USER_DISABLE);
         }
     }
@@ -172,7 +173,7 @@ public class CommonLoginServiceImpl implements CommonLoginService {
     public void addUserRole(Long userId) {
         UserRole userRole = UserRole.builder()
                 .userId(userId)
-                .roleId(com.libre.enums.UserRole.READER.getId())
+                .roleId(UserRoleEnums.READER.getId())
                 .build();
 
         userRoleService.save(userRole);
@@ -285,7 +286,7 @@ public class CommonLoginServiceImpl implements CommonLoginService {
                 .one();
 
         // 用户存在但被禁用账号
-        if (user != null && user.getState().equals(UserState.DISABLE)) {
+        if (user != null && (user.getState().equals(UserState.OVERTIME_DISABLE) || user.getState().equals(UserState.ADMIN_DISABLE))) {
             throw new LoginException(ExceptionEnums.LOGIN_USER_DISABLE);
         }
 
@@ -319,7 +320,7 @@ public class CommonLoginServiceImpl implements CommonLoginService {
         SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
 
         return LoginVO.builder()
-                .name(user.getNickName())
+                .nickName(user.getNickName())
                 .tokenName(tokenInfo.getTokenName())
                 .tokenValue(tokenInfo.getTokenValue())
                 .build();

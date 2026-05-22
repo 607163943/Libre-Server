@@ -14,8 +14,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserPageDTO extends BasePageDTO {
-    @ApiModelProperty("用户名")
-    private String username;
-    @ApiModelProperty("姓名")
-    private String name;
+    @ApiModelProperty("昵称")
+    private String nickName;
 }

@@ -57,7 +57,9 @@ public enum ExceptionEnums {
 
     FILE_MD5_ERROR(11301, "文件MD5值异常"),
 
-    USER_PERMISSION_DENIED(11501, "权限不足，无法修改该用户信息");
+    USER_PERMISSION_DENIED(11501, "权限不足，无法修改该用户信息"),
+    USER_HAS_OVERDUE_PLUS_TEN_DAYS_LEND(11502, "用户存在逾期截止借阅+10天的未还借阅记录，无法启用"),
+    USER_MODIFY_SELF(11503, "该界面无法修改个人信息，请去个人中心修改");
 
     private final Integer code;
     private final String msg;

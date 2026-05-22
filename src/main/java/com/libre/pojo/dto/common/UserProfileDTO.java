@@ -13,9 +13,9 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserProfileDTO {
-    @ApiModelProperty("用户姓名")
-    @NotBlank(message = "用户姓名不能为空")
-    private String name;
+    @ApiModelProperty("用户昵称")
+    @NotBlank(message = "用户昵称不能为空")
+    private String nickName;
     @ApiModelProperty("邮箱")
     private String email;
     @ApiModelProperty("手机号")

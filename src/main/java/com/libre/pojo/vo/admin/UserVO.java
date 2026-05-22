@@ -15,6 +15,10 @@ public class UserVO {
     private Long id;
     @ApiModelProperty("用户名")
     private String username;
-    @ApiModelProperty("姓名")
-    private String name;
+    @ApiModelProperty("昵称")
+    private String nickName;
+    @ApiModelProperty("手机号")
+    private String phone;
+    @ApiModelProperty("邮箱")
+    private String email;
 }

@@ -50,7 +50,7 @@ public class AdminUserController {
     }
 
     @ApiOperation("获取所有用户")
-    @GetMapping("all")
+    @GetMapping("/all")
     public Result<List<UserVO>> getAllUsers() {
         List<User> userList = userService.list();
         List<UserVO> userVOList = BeanUtil.copyToList(userList, UserVO.class);
@@ -72,7 +72,7 @@ public class AdminUserController {
     }
 
     @ApiOperation("用户删除接口")
-    @DeleteMapping("{userId}")
+    @DeleteMapping("/{userId}")
     public Result<Void> deleteUser(@PathVariable Long userId) {
         userService.deleteUser(userId);
         return Result.success();
@@ -95,14 +95,14 @@ public class AdminUserController {
     }
 
     @ApiOperation("获取指定用户个人信息")
-    @GetMapping("profile")
+    @GetMapping("/profile")
     public Result<UserProfileVO> getUserProfile() {
         UserProfileVO userProfileVO = commonUserService.getUserProfile();
         return Result.success(userProfileVO);
     }
 
     @ApiOperation("修改指定用户个人信息")
-    @PutMapping("profile")
+    @PutMapping("/profile")
     public Result<Void> modifyUserProfile(@RequestBody @Valid UserProfileDTO userProfileDTO) {
         commonUserService.modifyUserProfile(userProfileDTO);
         return Result.success();

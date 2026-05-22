@@ -19,6 +19,13 @@ import java.util.List;
 
 public interface LendMapper extends BaseMapper<Lend> {
     /**
+     * 统计指定用户逾期截止借阅+10天的未还借阅记录数量
+     *
+     * @param userId 用户ID
+     * @return 记录数量
+     */
+    int countOverduePlusTenDays(@Param("userId") Long userId);
+    /**
      * 分页查询借阅信息
      * @param page 分页条件
      * @param lendPageDTO 查询参数

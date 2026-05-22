@@ -8,6 +8,7 @@ import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.libre.constant.RoleCode;
 import com.libre.enums.ExceptionEnums;
+import com.libre.enums.UserRoleEnums;
 import com.libre.exception.UserException;
 import com.libre.mapper.UserMapper;
 import com.libre.pojo.dto.common.UserPasswordDTO;
@@ -35,6 +36,8 @@ public class CommonUserServiceImpl extends ServiceImpl<UserMapper, User> impleme
     private final CommonUserRoleService userRoleService;
     private final SecurityUtil securityUtil;
     private final CacheUtil cacheUtil;
+
+    private static final String USER_PROFILE_CACHE_KEY_PREFIX = "user:profile:";
 
     @Lazy
     @Resource
@@ -74,7 +77,7 @@ public class CommonUserServiceImpl extends ServiceImpl<UserMapper, User> impleme
         }
 
         log.warn("检测到系统中已存在admin账户，建立初始化角色关联");
-        UserRole userRole = new UserRole(user.getId(), com.libre.enums.UserRole.SUPER_ADMIN.getId());
+        UserRole userRole = new UserRole(user.getId(), UserRoleEnums.SUPER_ADMIN.getId());
         userRoleService.save(userRole);
 
         log.info("初始化成功");
@@ -87,7 +90,7 @@ public class CommonUserServiceImpl extends ServiceImpl<UserMapper, User> impleme
     @Override
     public UserProfileVO getUserProfile() {
         Long userId = StpUtil.getLoginIdAsLong();
-        String cacheKey = "user:profile:" + userId;
+        String cacheKey = USER_PROFILE_CACHE_KEY_PREFIX + userId;
 
         // 尝试从缓存中获取
         String cachedData = cacheUtil.get(cacheKey);
@@ -121,8 +124,8 @@ public class CommonUserServiceImpl extends ServiceImpl<UserMapper, User> impleme
         }
 
         // 更新姓名
-        if (StrUtil.isNotBlank(userProfileDTO.getName())) {
-            user.setNickName(userProfileDTO.getName());
+        if (StrUtil.isNotBlank(userProfileDTO.getNickName())) {
+            user.setNickName(userProfileDTO.getNickName());
         }
 
         // 更新邮箱
@@ -158,7 +161,7 @@ public class CommonUserServiceImpl extends ServiceImpl<UserMapper, User> impleme
         updateById(user);
 
         // 清除缓存
-        String cacheKey = "user:profile:" + userId;
+        String cacheKey = USER_PROFILE_CACHE_KEY_PREFIX + userId;
         cacheUtil.delete(cacheKey);
     }
 

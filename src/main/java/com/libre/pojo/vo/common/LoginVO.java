@@ -13,8 +13,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LoginVO {
-    @ApiModelProperty("用户名")
-    private String name;
+    @ApiModelProperty("昵称")
+    private String nickName;
     @ApiModelProperty("token名称")
     private String tokenName;
     @ApiModelProperty("token值")
